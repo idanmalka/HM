@@ -6,6 +6,8 @@ import {HttpModule} from "@angular/http";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {AlertComponent} from "./alert/alert.component";
+import { AuthenticationService } from "./services/authentication.service";
+import { DatepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
 
 @NgModule({
   declarations: [
@@ -14,12 +16,15 @@ import {AlertComponent} from "./alert/alert.component";
   ],
   imports: [BrowserModule,
             FormsModule,
-            HttpModule],
-  providers: [ AlertService, UserService],
+            HttpModule,
+            DatepickerModule
+  ],
+  providers: [ AlertService, UserService, AuthenticationService],
   exports: [HeaderComponent,
             BrowserModule,
             FormsModule,
             HttpModule,
+            DatepickerModule,
             AlertComponent]
 })
 export class SharedModule {
