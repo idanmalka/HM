@@ -23,8 +23,8 @@ export class RegisterComponent {
 
   register() {
     this.loading = true;
-    model.isAdmin = false;
-    model.isManager = true;
+    this.model.isAdmin = false;
+    this.model.isManager = true;
     this.userService.create(this.model)
       .subscribe(
         data => {
