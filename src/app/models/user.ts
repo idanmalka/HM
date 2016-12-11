@@ -1,4 +1,5 @@
-import { Company } from "./company";
+import {Company} from "./company";
+import {Shift} from "./shift";
 
 export class User {
   id: number;
@@ -9,6 +10,7 @@ export class User {
   isManager: boolean;
   isAdmin: boolean;
   company: Company;
+  shifts: Shift[];
 
   constructor() {
     this.company = new Company();
