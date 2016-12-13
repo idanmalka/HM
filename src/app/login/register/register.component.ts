@@ -1,16 +1,19 @@
 import { Component } from '@angular/core';
+import { DatePipe } from '@angular/common/src/pipes';
 import { Router } from '@angular/router';
 
 import { AlertService } from '../../shared/services/alert.service';
 import { UserService } from '../../shared/services/user.service';
+import {User} from "../../models/user";
 
 @Component({
   templateUrl: './register.component.html',
-  styleUrls: [ './register.component.less']
+  styleUrls: [ './register.component.less'],
+  providers: [ DatePipe ]
 })
 
 export class RegisterComponent {
-  model: any = {};
+  model: User = new User();
   loading = false;
 
   constructor(
@@ -20,6 +23,8 @@ export class RegisterComponent {
 
   register() {
     this.loading = true;
+    this.model.isAdmin = false;
+    this.model.isManager = true;
     this.userService.create(this.model)
       .subscribe(
         data => {
