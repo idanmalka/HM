@@ -10,20 +10,27 @@ import { UserService } from "../../shared/services/user.service";
   styleUrls: ['home.component.less']
 })
 export class HomeComponent implements OnInit{
-  pageTitle :string = "HomePage";
   user: User;
+  displayCalendar: boolean = false;
 
   constructor(private authenticationService : AuthenticationService,
               private router: Router,
               private userService: UserService){ }
 
   ngOnInit(){
-    this.user = this.userService.getCurrentUser();
+    this.user = this.userService.getCurrentUser().user;
     console.log(this.user);
   }
 
-  logout(){
-  this.authenticationService.logout();
-  this.router.navigate(['/login']);
+  toggleCalendar() : void {
+    this.displayCalendar = !this.displayCalendar;
+  }
+
+  addShift() :void {
+    console.log("clicked add shift");
+  }
+
+  editShift() :void{
+    console.log("clicked edit shift");
   }
 }

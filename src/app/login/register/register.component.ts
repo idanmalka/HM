@@ -25,6 +25,8 @@ export class RegisterComponent {
     this.loading = true;
     this.model.isAdmin = false;
     this.model.isManager = true;
+    this.model.shifts = [];
+    this.model.company.employees = [];
     this.userService.create(this.model)
       .subscribe(
         data => {

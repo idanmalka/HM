@@ -3,7 +3,8 @@ import { RouterModule } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from "./guards/auth.guard";
-import {SharedModule} from "../shared/shared.module";
+import { SharedModule } from "../shared/shared.module";
+import { TooltipModule } from 'ng2-bootstrap/ng2-bootstrap';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import {SharedModule} from "../shared/shared.module";
   ],
   providers: [ AuthGuard ],
   imports: [
+    TooltipModule,
     SharedModule,
     RouterModule.forChild([ { path: '', component: HomeComponent, canActivate: [AuthGuard] }
     ])

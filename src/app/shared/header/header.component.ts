@@ -1,4 +1,6 @@
 import  { Component } from "@angular/core";
+import {Router} from "@angular/router";
+import {AuthenticationService} from "../services/authentication.service";
 
 @Component({
   selector: 'app-header',
@@ -8,4 +10,11 @@ import  { Component } from "@angular/core";
 
 export class HeaderComponent {
 
+  constructor(private authenticationService : AuthenticationService,
+              private router: Router){ }
+
+  logout(){
+    this.authenticationService.logout();
+    this.router.navigate(['/login']);
+  }
 }

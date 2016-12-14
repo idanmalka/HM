@@ -1,6 +1,70 @@
-
-
-<div>
-  {{pageTitle}}
-  <button (click)="logout()">Logout</button>
+<div class="container-fluid">
+  <div class="col-md-4 responsiveCal" *ngIf="displayCalendar">
+    <iframe
+      src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;height=600&amp;wkst=1&amp;hl=iw&amp;bgcolor=%23FFFFFF&amp;src=en.jewish%23holiday%40group.v.calendar.google.com&amp;color=%23125A12&amp;ctz=Asia%2FJerusalem"
+      style="border-width:0" width="500" height="600" frameborder="0" scrolling="no"></iframe>
+  </div>
+  <div [ngClass]="{'col-md-12': !user.isManager && !displayCalendar,
+                   'col-md-10': user.isManager && !displayCalendar,
+                   'col-md-6': user.isManager && displayCalendar,
+                   'col-md-8': !user.isManager && displayCalendar}">
+    <div class="shifts-buttons-area">
+      <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span class="glyphicon glyphicon-plus"></span></button>
+      <button class="btn btn-info" (click)="editShift()" tooltipPlacement="top" tooltip="ערוך דיווח"><span class="glyphicon glyphicon-pencil"></span></button>
+      <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top" tooltip="הצג/הסתר לוח שנה"><span class="glyphicon glyphicon-calendar"></span></button>
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">רשימת דיווחי שעות</div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>שעת התחלה</th>
+              <th>שעת סיום</th>
+              <th>סה"כ שעות</th>
+              <th>הערות</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="clickable">
+              <td>
+                First Content
+              </td>
+              <td>
+                second
+              </td>
+              <td>
+                second
+              </td>
+              <td>
+                second
+              </td>
+              <td>
+                second
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel-footer">Content</div>
+    </div>
+  </div>
+  <!--[ngClass]="{'col-md-2': !displayCalendar, 'col-md-1': displayCalendar}"-->
+  <div class="col-md-2" *ngIf="user.isManager">
+    <div class="panel panel-warning">
+      <div class="panel-heading">פעולות</div>
+      <div class="panel-body">
+        <ul class="actions-list">
+          <li><a>דיווח שעות</a></li>
+          <li><a>הוספת עובד חדש</a></li>
+          <li><a>פרטי החברה</a></li>
+          <li><a>פרטים אישיים</a></li>
+        </ul>
+      </div>
+      <div class="panel-footer">Content</div>
+    </div>
+  </div>
 </div>
