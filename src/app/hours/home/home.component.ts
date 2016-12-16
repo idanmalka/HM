@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { User } from "../../models/user";
 import { UserService } from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
+import {forEach} from "@angular/router/src/utils/collection";
 
 @Component({
   selector: 'home-page',
@@ -16,12 +17,11 @@ export class HomeComponent implements OnInit{
 
   rows:Array<any> = [];
   columns:Array<any> = [
-    {title: 'Name', name: 'name'},
-    {title: 'Position', name: 'position'},
-    {title: 'Office', name: 'office'},
-    {title: 'Extn.', name: 'ext'},
-    {title: 'Start date', name: 'startDate'},
-    {title: 'Salary ($)', name: 'salary'}
+    {title: 'תאריך', name: 'date'},
+    {title: 'שעת התחלה', name: 'startHour'},
+    {title: 'שעת סיום', name: 'endHour'},
+    {title: 'סה"כ שעות', name: 'totalHours'},
+    {title: 'הערות', name: 'comment'}
   ];
   page:number = 1;
   itemsPerPage:number = 10;
@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit{
     className: ['table-striped', 'table-bordered']
   };
 
-  private data:Array<Shift> = [];
+  private data:Array<any> = [];
 
   constructor(private authenticationService : AuthenticationService,
               private router: Router,
@@ -46,6 +46,45 @@ export class HomeComponent implements OnInit{
   ngOnInit(){
     this.user = this.userService.getCurrentUser().user;
     console.log(this.user);
+    this.user.shifts = [
+      {start:new Date(0), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "},
+      {start:new Date(), end:new Date(), comment:" "}
+    ];
+
+    for(let shift of this.user.shifts){
+      let date:string = shift.start.getDate()+"/"+(shift.start.getMonth()+1)+"/"+shift.start.getFullYear();
+      let startHour = shift.start.getHours()+":"+shift.start.getMinutes();
+      let endHour = shift.end.getHours()+":"+shift.end.getMinutes();
+      let diff = new Date(Math.abs(shift.end.getTime() - shift.start.getTime()));
+      let totalHours = diff.getHours()+":"+diff.getMinutes();
+      let comment = shift.comment;
+
+      this.data.push({ date:date,startHour:startHour,endHour:endHour,totalHours:totalHours,comment:comment })
+    }
     this.onChangeTable(this.config);
   }
 
@@ -123,16 +162,17 @@ export class HomeComponent implements OnInit{
   }
 
   public onChangeTable(config:any, page:any = {page: this.page, itemsPerPage: this.itemsPerPage}):any {
-    if (config.filtering) {
-      Object.assign(this.config.filtering, config.filtering);
-    }
+    // if (config.filtering) {
+    //   Object.assign(this.config.filtering, config.filtering);
+    // }
 
     if (config.sorting) {
       Object.assign(this.config.sorting, config.sorting);
     }
 
-    let filteredData = this.changeFilter(this.data, this.config);
-    let sortedData = this.changeSort(filteredData, this.config);
+    // let filteredData = this.changeFilter(this.data, this.config);
+    // let sortedData = this.changeSort(filteredData, this.config);
+    let sortedData = this.changeSort(this.data, this.config);
     this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
     this.length = sortedData.length;
   }
