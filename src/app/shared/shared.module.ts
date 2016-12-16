@@ -8,7 +8,7 @@ import {BrowserModule} from "@angular/platform-browser";
 import {AlertComponent} from "./alert/alert.component";
 import { AuthenticationService } from "./services/authentication.service";
 import { DatepickerModule, PaginationModule } from 'ng2-bootstrap/ng2-bootstrap';
-
+import { Ng2TableModule } from 'ng2-table/ng2-table';
 
 
 @NgModule({
@@ -29,6 +29,7 @@ import { DatepickerModule, PaginationModule } from 'ng2-bootstrap/ng2-bootstrap'
             HttpModule,
             DatepickerModule,
             PaginationModule,
+            Ng2TableModule,
             AlertComponent]
 })
 export class SharedModule {

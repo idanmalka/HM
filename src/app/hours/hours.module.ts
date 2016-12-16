@@ -6,6 +6,7 @@ import { AuthGuard } from "./guards/auth.guard";
 import { SharedModule } from "../shared/shared.module";
 import { TooltipModule } from 'ng2-bootstrap/ng2-bootstrap';
 
+
 @NgModule({
   declarations: [
                   HomeComponent,
