@@ -14,8 +14,10 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-navbar-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">שמור</a></li>
-        <li><a href="#">רענן</a></li>
+        <li><a (click)="goto('home')">דיווח שעות</a></li>
+        <li><a (click)="goto('new-employee')">הוספת עובד חדש</a></li>
+        <li><a (click)="goto('company-details')">פרטי החברה</a></li>
+        <li><a (click)="goto('personal-details')">פרטים אישיים</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-left">
         <li><a (click)="logout()">התנתק</a></li>

@@ -3,8 +3,6 @@ import { AuthenticationService } from "../../shared/services/authentication.serv
 import { Router } from "@angular/router";
 import { User } from "../../models/user";
 import { UserService } from "../../shared/services/user.service";
-import {Shift} from "../../models/shift";
-import {forEach} from "@angular/router/src/utils/collection";
 
 @Component({
   selector: 'home-page',
@@ -25,7 +23,7 @@ export class HomeComponent implements OnInit{
   ];
   page:number = 1;
   itemsPerPage:number = 10;
-  maxSize:number = 5;
+  maxSize:number = 3;
   numPages:number = 1;
   length:number = 0;
 
@@ -46,34 +44,73 @@ export class HomeComponent implements OnInit{
   ngOnInit(){
     this.user = this.userService.getCurrentUser().user;
     console.log(this.user);
-    this.user.shifts = [
-      {start:new Date(0), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "},
-      {start:new Date(), end:new Date(), comment:" "}
-    ];
+    // this.user.shifts = [
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "},
+    //   {start:new Date(), end:new Date(), comment:" "}
+    // ];
 
     for(let shift of this.user.shifts){
       let date:string = shift.start.getDate()+"/"+(shift.start.getMonth()+1)+"/"+shift.start.getFullYear();
@@ -181,9 +218,6 @@ export class HomeComponent implements OnInit{
     console.log(data);
   }
 
-
-
-
   toggleCalendar() : void {
     this.displayCalendar = !this.displayCalendar;
   }
@@ -192,7 +226,16 @@ export class HomeComponent implements OnInit{
     console.log("clicked add shift");
   }
 
-  editShift() :void{
+  editShift() : void {
     console.log("clicked edit shift");
+  }
+
+  refreshPage() : void {
+    this.router.navigate(['/']);
+  }
+
+  saveData() : void {
+    console.log('updating user data');
+    this.userService.update(this.user);
   }
 }

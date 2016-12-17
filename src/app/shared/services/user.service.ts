@@ -28,8 +28,12 @@ export class UserService {
   }
 
   getCurrentUser(){
-    return JSON.parse(localStorage['currentUser']);
+    if (localStorage.getItem("currentUser") === null)
+      return;
+    let user = JSON.parse(localStorage['currentUser']);
+    if (user && user.token) return user;
   }
+
   // private helper methods
 
   private jwt() {

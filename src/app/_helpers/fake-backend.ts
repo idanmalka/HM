@@ -43,10 +43,10 @@ export let fakeBackendProvider = {
         if (connection.request.url.endsWith('/api/users') && connection.request.method === RequestMethod.Get) {
           // check for fake auth token in header and return users if valid, this security is implemented server side in a real application
           if (connection.request.headers.get('Authorization') === 'Bearer fake-jwt-token') {
-            connection.mockRespond(new Response(new ResponseOptions({ status: 200, body: users })));
+            connection.mockRespond(new Response(new ResponseOptions({status: 200, body: users})));
           } else {
             // return 401 not authorised if token is null or invalid
-            connection.mockRespond(new Response(new ResponseOptions({ status: 401 })));
+            connection.mockRespond(new Response(new ResponseOptions({status: 401})));
           }
         }
 
@@ -57,14 +57,16 @@ export let fakeBackendProvider = {
             // find user by id in users array
             let urlParts = connection.request.url.split('/');
             let id = parseInt(urlParts[urlParts.length - 1]);
-            let matchedUsers = users.filter(user => { return user.id === id; });
+            let matchedUsers = users.filter(user => {
+              return user.id === id;
+            });
             let user = matchedUsers.length ? matchedUsers[0] : null;
 
             // respond 200 OK with user
-            connection.mockRespond(new Response(new ResponseOptions({ status: 200, body: user })));
+            connection.mockRespond(new Response(new ResponseOptions({status: 200, body: user})));
           } else {
             // return 401 not authorised if token is null or invalid
-            connection.mockRespond(new Response(new ResponseOptions({ status: 401 })));
+            connection.mockRespond(new Response(new ResponseOptions({status: 401})));
           }
         }
 
@@ -74,7 +76,9 @@ export let fakeBackendProvider = {
           let newUser = JSON.parse(connection.request.getBody());
 
           // validation
-          let duplicateUser = users.filter(user => { return user.username === newUser.username; }).length;
+          let duplicateUser = users.filter(user => {
+            return user.username === newUser.username;
+          }).length;
           if (duplicateUser) {
             return connection.mockError(new Error('Username "' + newUser.username + '" is already taken'));
           }
@@ -85,8 +89,36 @@ export let fakeBackendProvider = {
           localStorage.setItem('users', JSON.stringify(users));
 
           // respond 200 OK
-          connection.mockRespond(new Response(new ResponseOptions({ status: 200 })));
+          connection.mockRespond(new Response(new ResponseOptions({status: 200})));
         }
+
+        // update user
+        if (connection.request.url.endsWith('api/users') && connection.request.method === RequestMethod.Put) {
+
+          // get new user object from post body
+          let newUser = JSON.parse(connection.request.getBody());
+
+          // find user by id in users array
+          let urlParts = connection.request.url.split('/');
+          let id = parseInt(urlParts[urlParts.length - 1]);
+          for (let i = 0; i < users.length; i++) {
+            let user = users[i];
+            if (user.id === id) {
+              // delete user
+              users.splice(i, 1);
+              // insert new user data
+              users.push(newUser);
+              localStorage.setItem('users', JSON.stringify(users));
+              break;
+            }
+          }
+
+          // respond 200 OK
+          connection.mockRespond(new Response(new ResponseOptions({status: 200})));
+        }
+
+
+
 
         // delete user
         if (connection.request.url.match(/\/api\/users\/\d+$/) && connection.request.method === RequestMethod.Delete) {
