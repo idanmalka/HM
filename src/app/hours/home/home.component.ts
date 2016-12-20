@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AuthenticationService} from "../../shared/services/authentication.service";
 import {Router} from "@angular/router";
 import {User} from "../../models/user";
 import {UserService} from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
+import {ModalDirective} from "ng2-bootstrap";
 
 @Component({
   selector: 'home-page',
@@ -11,6 +12,7 @@ import {Shift} from "../../models/shift";
   styleUrls: ['home.component.less']
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('childModal') public childModal:ModalDirective;
   user: User;
   displayCalendar: boolean = false;
 
@@ -27,6 +29,7 @@ export class HomeComponent implements OnInit {
   maxSize: number = 3;
   numPages: number = 1;
   length: number = 0;
+  checkedRow: number;
 
   config: any = {
     paging: true,
@@ -35,6 +38,15 @@ export class HomeComponent implements OnInit {
   };
 
   private data: Array<any> = [];
+
+  modalStartHour: Date;
+  modalEndHour: Date;
+  modalDate: Date;
+  modalComment: string;
+  public options:any = {
+    hstep: [1, 2, 3],
+    mstep: [1, 5, 10, 15, 25, 30]
+  };
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
@@ -45,7 +57,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    let index = 0;
     for (let shift of this.user.shifts) {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
@@ -56,7 +68,7 @@ export class HomeComponent implements OnInit {
       let totalHours = diff.getHours() + ":" + diff.getMinutes();
       let comment = shift.comment;
 
-      this.data.push({date: date, startHour: startHour, endHour: endHour, totalHours: totalHours, comment: comment})
+      this.data.push({index:index++, date: date, startHour: startHour, endHour: endHour, totalHours: totalHours, comment: comment})
     }
     this.onChangeTable(this.config);
   }
@@ -152,6 +164,9 @@ export class HomeComponent implements OnInit {
 
   public onCellClick(data: any): any {
     console.log(data);
+    this.checkedRow = data.row.index;
+    this.updateModal(data.row.startHour, data.row.endHour, data.row.date, data.row.comment);
+    this.showChildModal();
   }
 
   toggleCalendar(): void {
@@ -160,6 +175,7 @@ export class HomeComponent implements OnInit {
 
   addShift(): void {
     console.log("clicked add shift");
+    this.showChildModal();
   }
 
   editShift(): void {
@@ -173,5 +189,26 @@ export class HomeComponent implements OnInit {
   saveData(): void {
     console.log('updating user data');
     this.userService.update(this.user);
+  }
+
+  updateModal(startHour = void 0, endHour = void 0, date = void 0, comment = void 0){
+    this.modalStartHour = new Date(startHour);
+    this.modalEndHour = new Date(endHour);
+    this.modalDate = new Date(date);
+    this.modalComment = comment;
+  }
+
+  showChildModal():void {
+    this.childModal.config.backdrop = false;
+    this.childModal.show();
+  }
+
+  hideChildModal():void {
+    this.childModal.hide();
+  }
+
+  confirmShift() : boolean {
+    console.log("submitted");
+    return true;
   }
 }
