@@ -93,7 +93,7 @@ export let fakeBackendProvider = {
         }
 
         // update user
-        if (connection.request.url.endsWith('api/users') && connection.request.method === RequestMethod.Put) {
+        if (connection.request.url.match(/\/api\/users\/\d+$/) && connection.request.method === RequestMethod.Put) {
 
           // get new user object from post body
           let newUser = JSON.parse(connection.request.getBody());

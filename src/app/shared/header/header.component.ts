@@ -15,12 +15,13 @@ export class HeaderComponent implements OnInit{
 
   constructor(private userService: UserService,
               private authenticationService : AuthenticationService,
-              private router: Router){ }
+              private router: Router){
+
+  }
 
   ngOnInit() : void {
-    let curUser = this.userService.getCurrentUser();
-    if (curUser)
-      this.user = curUser.user;
+    this.authenticationService.validate();
+    this.user = this.authenticationService.user;
   }
 
   logout() : void{
