@@ -9,8 +9,6 @@
     <div class="shifts-buttons-area">
       <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
         class="glyphicon glyphicon-plus"></span></button>
-      <button class="btn btn-info" (click)="editShift()" tooltipPlacement="top" tooltip="ערוך דיווח"><span
-        class="glyphicon glyphicon-pencil"></span></button>
       <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top" tooltip="הצג/הסתר לוח שנה"><span
         class="glyphicon glyphicon-calendar"></span></button>
       <button class="btn btn-default" (click)="refreshPage()" tooltipPlacement="top" tooltip="רענן רשימת דיווחים"><span
@@ -73,48 +71,35 @@
         <form name="form" (ngSubmit)="f.form.valid && confirmShift()" #f="ngForm" novalidate>
           <div class="row">
             <div class="form-group col-sm-offset-3 col-sm-4" [ngClass]="{ 'has-error': f.submitted && !date.valid }">
-              <label for="date">תאריך</label>
-              <input type="text" disabled class="form-control" name="date"
-                     [ngModel]="modalDate | date"
-                     #date="ngModel"
-                     required/>
+              <label>תאריך</label>
+              <input type="text" disabled class="form-control"
+                     value="{{getDate() | date: 'dd/MM/yyyy'}}" />
               <div style="display: inline-block;min-height:267px;">
-                <datepicker shortcutPropagation="true" [(ngModel)]="modalDate" [showWeeks]="true"
-                            name="date"></datepicker>
+                <datepicker shortcutPropagation="true" [(ngModel)]="modalDate" [showWeeks]="false"
+                            #date='ngModel' name="date" requierd (ngModelChange)="print($event)"></datepicker>
               </div>
               <div *ngIf="f.submitted && !date.valid" class="help-block">אנא הכנס תאריך דיווח</div>
             </div>
             <div class="col-sm-4">
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !modalStart.valid }" dir="ltr">
-                <label for="modalStart">שעת התחלה</label>
-                <input style="display: none;"
-                       type="text" disabled class="form-control" name="modalStart"
-                       [ngModel]="modalStartHour"
-                       value={{modalStartHour}}
-                       #modalStart="ngModel"
-                       required/>
+                <label>שעת התחלה</label>
                 <!--<div style="display: inline-block;min-height:267px;">-->
                 <timepicker name="modalStart"
                             [(ngModel)]="modalStartHour" [hourStep]="hstep"
                             [minuteStep]="mstep" [showMeridian]="true"
-                            [readonlyInput]="false"></timepicker>
+                            [readonlyInput]="false" required name="modalStart" #modalStart="ngModel"></timepicker>
                 <!--</div>-->
                 <div *ngIf="f.submitted && !modalStart.valid" class="help-block">אנא הכנס שעת התחלה</div>
               </div>
 
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !modalEnd.valid }" dir="ltr">
-                <label for="modalEnd">שעת סיום</label>
-                <input style="display: none;"
-                       type="text" disabled class="form-control" name="modalEnd"
-                       [ngModel]="modalEndHour"
-                       value="{{modalEndHour}}"
-                       #modalEnd="ngModel"
-                       required/>
+                <label>שעת סיום</label>
                 <!--<div style="display: inline-block;min-height:267px;">-->
                 <timepicker name="modalEnd"
                             [(ngModel)]="modalEndHour" [hourStep]="hstep"
                             [minuteStep]="mstep" [showMeridian]="true"
-                            [readonlyInput]="false"></timepicker>
+                            [readonlyInput]="false" name="modalEnd" #modalEnd="ngModel"
+                            required></timepicker>
                 <!--</div>-->
                 <div *ngIf="f.submitted && !modalEnd.valid" class="help-block">אנא הכנס שעת סיום</div>
               </div>
@@ -122,7 +107,7 @@
           </div>
           <div class="row">
             <div class="form-group col-sm-offset-2 col-sm-8">
-              <label for="modalComment">הערות</label>
+              <label>הערות</label>
               <input type="text" class="form-control" name="modalComment" [(ngModel)]="modalComment" #comment="ngModel"
               />
             </div>

@@ -57,29 +57,89 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.user.shifts = [
+      {start:new Date(), end:new Date(), comment:" ss", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"asd ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"asd ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"ff ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"gg ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"hh ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:" h", date:new Date()},
+      {start:new Date(), end:new Date(), comment:" h", date:new Date()},
+      {start:new Date(), end:new Date(), comment:" hh", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"hh ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"ffff ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"sss ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:"ddd ", date:new Date()},
+      {start:new Date(), end:new Date(), comment:" fff", date:new Date()}
+    ];
+    this.initTableData();
+  }
+
+  initTableData(): void {
+    this.data = [];
     let index = 0;
     for (let shift of this.user.shifts) {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
-      let date: string = start.getDate() + "/" + (start.getMonth() + 1) + "/" + start.getFullYear();
-      let startHour = start.getHours() + ":" + start.getMinutes();
-      let endHour = end.getHours() + ":" + end.getMinutes();
+      let date = new Date(shift.date);
+      let dateStr : string = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+      let startStr = start.getHours() + ":" + start.getMinutes();
+      let endStr = end.getHours() + ":" + end.getMinutes();
       let diff = new Date(Math.abs(end.getTime() - start.getTime()));
-      let totalHours = diff.getHours() + ":" + diff.getMinutes();
+      let totalHoursStr = diff.getHours() + ":" + diff.getMinutes();
       let comment = shift.comment;
 
-      this.data.push({index:index++, date: date, startHour: startHour, endHour: endHour, totalHours: totalHours, comment: comment})
+      this.data.push({index:index++, date: dateStr, startHour: startStr, endHour: endStr, totalHours: totalHoursStr, comment: comment})
     }
     this.onChangeTable(this.config);
   }
 
-  public changePage(page: any, data: Array<any> = this.data): Array<any> {
+  updateUserShifts(){
+    let start = new Date(this.modalStartHour);
+    let end = new Date(this.modalEndHour);
+    let date = new Date(this.modalDate);
+
+    if (this.checkedRow > -1) {
+      this.user.shifts[this.checkedRow].start = new Date(this.modalStartHour);
+      this.user.shifts[this.checkedRow].end = new Date(this.modalEndHour);
+      this.user.shifts[this.checkedRow].date = new Date(this.modalDate);
+      this.user.shifts[this.checkedRow].comment = this.modalComment;
+    }else {
+      this.user.shifts.push({start: start, end:end, date: date, comment:this.modalComment});
+    }
+  }
+
+  updateTableData(){
+
+    let dateStr = this.modalDate.getDate() + "/" + (this.modalDate.getMonth() + 1) + "/" + this.modalDate.getFullYear();
+    let startStr = this.modalStartHour.getHours() + ":" + this.modalStartHour.getMinutes();
+    let endStr = this.modalEndHour.getHours() + ":" + this.modalEndHour.getMinutes();
+    let diff = new Date(Math.abs(this.modalEndHour.getTime() - this.modalStartHour.getTime()));
+    let totalHoursStr = diff.getHours() + ":" + diff.getMinutes();
+
+    if (this.checkedRow > -1){
+      let row = this.data.find((val,i,arr) => { return val.index === this.checkedRow; });
+      row.date = dateStr;
+      row.startHour = startStr;
+      row.endHour = endStr;
+      row.totalHours = totalHoursStr;
+      row.comment = this.modalComment;
+    }else{
+      let index = this.data.length;
+      this.data.push({index:index, date: dateStr, startHour: startStr, endHour: endStr, totalHours: totalHoursStr, comment: this.modalComment});
+    }
+
+
+  }
+
+  changePage(page: any, data: Array<any> = this.data): Array<any> {
     let start = (page.page - 1) * page.itemsPerPage;
     let end = page.itemsPerPage > -1 ? (start + page.itemsPerPage) : data.length;
     return data.slice(start, end);
   }
 
-  public changeSort(data: any, config: any): any {
+  changeSort(data: any, config: any): any {
     if (!config.sorting) {
       return data;
     }
@@ -110,7 +170,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  public changeFilter(data: any, config: any): any {
+  changeFilter(data: any, config: any): any {
     let filteredData: Array<any> = data;
     this.columns.forEach((column: any) => {
       if (column.filtering) {
@@ -146,7 +206,7 @@ export class HomeComponent implements OnInit {
     return filteredData;
   }
 
-  public onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
+  onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
     // if (config.filtering) {
     //   Object.assign(this.config.filtering, config.filtering);
     // }
@@ -162,10 +222,13 @@ export class HomeComponent implements OnInit {
     this.length = sortedData.length;
   }
 
-  public onCellClick(data: any): any {
+  onCellClick(data: any): any {
     console.log(data);
     this.checkedRow = data.row.index;
-    this.updateModal(data.row.startHour, data.row.endHour, data.row.date, data.row.comment);
+    this.updateModal(this.user.shifts[this.checkedRow].start,
+                     this.user.shifts[this.checkedRow].end,
+                     this.user.shifts[this.checkedRow].date,
+                     this.user.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
 
@@ -175,6 +238,8 @@ export class HomeComponent implements OnInit {
 
   addShift(): void {
     console.log("clicked add shift");
+    this.checkedRow = -1;
+    this.updateModal();
     this.showChildModal();
   }
 
@@ -191,7 +256,7 @@ export class HomeComponent implements OnInit {
     this.userService.update(this.user);
   }
 
-  updateModal(startHour = void 0, endHour = void 0, date = void 0, comment = void 0){
+  updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = ""){
     this.modalStartHour = new Date(startHour);
     this.modalEndHour = new Date(endHour);
     this.modalDate = new Date(date);
@@ -207,8 +272,28 @@ export class HomeComponent implements OnInit {
     this.childModal.hide();
   }
 
+  public getDate():Date {
+    return this.modalDate || new Date();
+  }
+
   confirmShift() : boolean {
     console.log("submitted");
-    return true;
+    this.updateDataFromModal();
+    this.hideChildModal();
+    return false;
+  }
+
+  updateDataFromModal(): void {
+    console.log(this.modalStartHour);
+    console.log(this.modalEndHour);
+    console.log(this.modalDate);
+    console.log(this.checkedRow);
+    this.updateUserShifts();
+    this.updateTableData();
+  }
+
+  print(a) {
+    console.log(a.getDate());
+    console.log(this.modalDate);
   }
 }
