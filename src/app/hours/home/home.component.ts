@@ -113,8 +113,7 @@ export class HomeComponent implements OnInit {
       let index = this.data.length;
       this.data.push({index:index, date: dateStr, startHour: startStr, endHour: endStr, totalHours: totalHoursStr, comment: this.modalComment});
     }
-
-
+    this.onChangeTable(this.config);
   }
 
   changePage(page: any, data: Array<any> = this.data): Array<any> {
