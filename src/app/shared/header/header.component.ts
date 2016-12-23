@@ -1,4 +1,8 @@
-import  { Component } from "@angular/core";
+import  { Component, OnInit } from "@angular/core";
+import {Router} from "@angular/router";
+import {AuthenticationService} from "../services/authentication.service";
+import {User} from "../../models/user";
+import {UserService} from "../services/user.service";
 
 @Component({
   selector: 'app-header',
@@ -6,6 +10,27 @@ import  { Component } from "@angular/core";
   styleUrls: ["header.component.less"]
 })
 
-export class HeaderComponent {
+export class HeaderComponent implements OnInit{
+  private user : User;
 
+  constructor(private userService: UserService,
+              private authenticationService : AuthenticationService,
+              private router: Router){
+
+  }
+
+  ngOnInit() : void {
+    this.authenticationService.validate();
+    this.user = this.authenticationService.user;
+  }
+
+  logout() : void{
+    this.authenticationService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  goto(location:string):void {
+    console.log('going to: '+location);
+    this.router.navigate(['/'+location]);
+  }
 }

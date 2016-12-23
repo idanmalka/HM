@@ -7,7 +7,9 @@ import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {AlertComponent} from "./alert/alert.component";
 import { AuthenticationService } from "./services/authentication.service";
-import { DatepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
+import { DatepickerModule, PaginationModule, ModalModule, TimepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
+import { Ng2TableModule } from 'ng2-table/ng2-table';
+
 
 @NgModule({
   declarations: [
@@ -17,7 +19,6 @@ import { DatepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
   imports: [BrowserModule,
             FormsModule,
             HttpModule,
-            DatepickerModule
   ],
   providers: [ AlertService, UserService, AuthenticationService],
   exports: [HeaderComponent,
@@ -25,7 +26,11 @@ import { DatepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
             FormsModule,
             HttpModule,
             DatepickerModule,
-            AlertComponent]
+            PaginationModule,
+            Ng2TableModule,
+            ModalModule,
+            AlertComponent,
+            TimepickerModule]
 })
 export class SharedModule {
 
