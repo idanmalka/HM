@@ -57,22 +57,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.user.shifts = [
-      {start:new Date(), end:new Date(), comment:" ss", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"asd ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"asd ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"ff ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"gg ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"hh ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:" h", date:new Date()},
-      {start:new Date(), end:new Date(), comment:" h", date:new Date()},
-      {start:new Date(), end:new Date(), comment:" hh", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"hh ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"ffff ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"sss ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:"ddd ", date:new Date()},
-      {start:new Date(), end:new Date(), comment:" fff", date:new Date()}
-    ];
     this.initTableData();
   }
 

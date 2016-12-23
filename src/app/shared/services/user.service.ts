@@ -19,8 +19,11 @@ export class UserService {
     return this.http.post('/api/users', user, this.jwt()).map((response: Response) => response.json());
   }
 
-  update(user: User) {
-    return this.http.put('/api/users/'+user.id, user, this.jwt()).map((response: Response) => response.json());
+  update(updatedUser: User) {
+    let user = JSON.parse(localStorage['currentUser']);
+    Object.assign(user.user,updatedUser);
+    localStorage.setItem('currentUser',JSON.stringify(user));
+    return this.http.put('/api/users/'+updatedUser.id, updatedUser, this.jwt()).map((response: Response) => response.json());
   }
 
   delete(id: number) {
