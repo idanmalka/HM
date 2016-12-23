@@ -5,6 +5,6 @@ import { Component } from '@angular/core';
   templateUrl: './new-employee.component.html',
   styleUrls: ['new-employee.component.less']
 })
-export class newEmployeeComponent{
-
+export class NewEmployeeComponent{
+  pageTitle: string = "New Employee Component";
 }
