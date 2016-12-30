@@ -12,13 +12,27 @@ import {ModalDirective} from "ng2-bootstrap";
   styleUrls: ['home.component.less']
 })
 export class HomeComponent implements OnInit {
-  @ViewChild('childModal') public childModal:ModalDirective;
+  @ViewChild('childModal') public childModal: ModalDirective;
   user: User;
   displayCalendar: boolean = false;
-
+  chosenMonth: number = (new Date()).getMonth();
+  months = [
+    {value:0, name:  'ינואר'},
+    {value:1, name:  'פברואר'},
+    {value:2, name:  'מרץ'},
+    {value:3, name:  'אפריל'},
+    {value:4, name:  'מאי'},
+    {value:5, name:  'יוני'},
+    {value:6, name:  'יולי'},
+    {value:7, name:  'אוגוסט'},
+    {value:8, name:  'ספטמבר'},
+    {value:9, name:  'אוקטובר'},
+    {value:10, name:  'נובמבר'},
+    {value:11, name:  'דצמבר'}
+  ];
   rows: Array<any> = [];
   columns: Array<any> = [
-    {title: 'תאריך', name: 'date'},
+    {title: 'תאריך', name: 'date', sort: 'desc'},
     {title: 'שעת התחלה', name: 'startHour'},
     {title: 'שעת סיום', name: 'endHour'},
     {title: 'סה"כ שעות', name: 'totalHours'},
@@ -30,23 +44,21 @@ export class HomeComponent implements OnInit {
   numPages: number = 1;
   length: number = 0;
   checkedRow: number;
+  modalStartHour: Date;
+  modalEndHour: Date;
+  modalDate: Date;
+  modalComment: string;
 
+  options: any = {
+    hstep: [1, 2, 3],
+    mstep: [1, 5, 10, 15, 25, 30]
+  };
   config: any = {
     paging: true,
     sorting: {columns: this.columns},
     className: ['table-striped', 'table-bordered']
   };
-
-  private data: Array<any> = [];
-
-  modalStartHour: Date;
-  modalEndHour: Date;
-  modalDate: Date;
-  modalComment: string;
-  public options:any = {
-    hstep: [1, 2, 3],
-    mstep: [1, 5, 10, 15, 25, 30]
-  };
+  data: Array<any> = [];
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
@@ -67,53 +79,43 @@ export class HomeComponent implements OnInit {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
       let date = new Date(shift.date);
-      let dateStr : string = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
-      let startStr = start.getHours() + ":" + start.getMinutes();
-      let endStr = end.getHours() + ":" + end.getMinutes();
-      let diff = new Date(Math.abs(end.getTime() - start.getTime()));
-      let totalHoursStr = diff.getHours() + ":" + diff.getMinutes();
-      let comment = shift.comment;
+      console.log(date.getMonth());
+      if (date.getMonth() === this.chosenMonth) {
 
-      this.data.push({index:index++, date: dateStr, startHour: startStr, endHour: endStr, totalHours: totalHoursStr, comment: comment})
+        let dateStr: string = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+        let startStr = start.getHours() + ":" + start.getMinutes();
+        let endStr = end.getHours() + ":" + end.getMinutes();
+        let diff = new Date(Math.abs(end.getTime() - start.getTime()));
+        let totalHoursStr = (diff.getHours() - 2) + ":" + diff.getMinutes();
+        let comment = shift.comment;
+
+        this.data.push({
+          index: index,
+          date: dateStr,
+          startHour: startStr,
+          endHour: endStr,
+          totalHours: totalHoursStr,
+          comment: comment
+        });
+      }
+      index++;
     }
     this.onChangeTable(this.config);
   }
 
-  updateUserShifts(){
+  updateUserShifts() {
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
 
     if (this.checkedRow > -1) {
-      this.user.shifts[this.checkedRow].start = new Date(this.modalStartHour);
-      this.user.shifts[this.checkedRow].end = new Date(this.modalEndHour);
-      this.user.shifts[this.checkedRow].date = new Date(this.modalDate);
+      this.user.shifts[this.checkedRow].start = start;
+      this.user.shifts[this.checkedRow].end = end;
+      this.user.shifts[this.checkedRow].date = date;
       this.user.shifts[this.checkedRow].comment = this.modalComment;
-    }else {
-      this.user.shifts.push({start: start, end:end, date: date, comment:this.modalComment});
+    } else {
+      this.user.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
     }
-  }
-
-  updateTableData(){
-
-    let dateStr = this.modalDate.getDate() + "/" + (this.modalDate.getMonth() + 1) + "/" + this.modalDate.getFullYear();
-    let startStr = this.modalStartHour.getHours() + ":" + this.modalStartHour.getMinutes();
-    let endStr = this.modalEndHour.getHours() + ":" + this.modalEndHour.getMinutes();
-    let diff = new Date(Math.abs(this.modalEndHour.getTime() - this.modalStartHour.getTime()));
-    let totalHoursStr = diff.getHours() + ":" + diff.getMinutes();
-
-    if (this.checkedRow > -1){
-      let row = this.data.find((val,i,arr) => { return val.index === this.checkedRow; });
-      row.date = dateStr;
-      row.startHour = startStr;
-      row.endHour = endStr;
-      row.totalHours = totalHoursStr;
-      row.comment = this.modalComment;
-    }else{
-      let index = this.data.length;
-      this.data.push({index:index, date: dateStr, startHour: startStr, endHour: endStr, totalHours: totalHoursStr, comment: this.modalComment});
-    }
-    this.onChangeTable(this.config);
   }
 
   changePage(page: any, data: Array<any> = this.data): Array<any> {
@@ -209,9 +211,9 @@ export class HomeComponent implements OnInit {
     console.log(data);
     this.checkedRow = data.row.index;
     this.updateModal(this.user.shifts[this.checkedRow].start,
-                     this.user.shifts[this.checkedRow].end,
-                     this.user.shifts[this.checkedRow].date,
-                     this.user.shifts[this.checkedRow].comment);
+      this.user.shifts[this.checkedRow].end,
+      this.user.shifts[this.checkedRow].date,
+      this.user.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
 
@@ -226,40 +228,37 @@ export class HomeComponent implements OnInit {
     this.showChildModal();
   }
 
-  editShift(): void {
-    console.log("clicked edit shift");
-  }
-
-  refreshPage(): void {
-    this.router.navigate(['/']);
-  }
-
   saveData(): void {
     console.log('updating user data');
     this.userService.update(this.user);
   }
 
-  updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = ""){
+  updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {
+    if(this.checkedRow === -1) {
+      date.setMonth(this.chosenMonth);
+      date.setDate(1);
+    }
+
     this.modalStartHour = new Date(startHour);
     this.modalEndHour = new Date(endHour);
     this.modalDate = new Date(date);
     this.modalComment = comment;
   }
 
-  showChildModal():void {
+  showChildModal(): void {
     this.childModal.config.backdrop = false;
     this.childModal.show();
   }
 
-  hideChildModal():void {
+  hideChildModal(): void {
     this.childModal.hide();
   }
 
-  public getDate():Date {
+  getDate(): Date {
     return this.modalDate || new Date();
   }
 
-  confirmShift() : boolean {
+  confirmShift(): boolean {
     console.log("submitted");
     this.updateDataFromModal();
     this.hideChildModal();
@@ -272,11 +271,18 @@ export class HomeComponent implements OnInit {
     console.log(this.modalDate);
     console.log(this.checkedRow);
     this.updateUserShifts();
-    this.updateTableData();
+    this.initTableData();
+  }
+
+  deleteShift(): void{
+    this.user.shifts.splice(this.checkedRow,1);
+    this.initTableData();
+    this.hideChildModal();
   }
 
   print(a) {
     console.log(a.getDate());
     console.log(this.modalDate);
   }
+
 }
