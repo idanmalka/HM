@@ -7,12 +7,13 @@
   <div [ngClass]="{'col-md-12': !displayCalendar,
                    'col-md-8': displayCalendar}">
     <div class="shifts-buttons-area">
+      <select name="month" id="month" [(ngModel)]="chosenMonth" size="1" (change)="initTableData()">
+        <option *ngFor="let month of months" [ngValue]="month.value">{{month.name}}</option>
+      </select>
       <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
         class="glyphicon glyphicon-plus"></span></button>
       <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top" tooltip="הצג/הסתר לוח שנה"><span
         class="glyphicon glyphicon-calendar"></span></button>
-      <button class="btn btn-default" (click)="refreshPage()" tooltipPlacement="top" tooltip="רענן רשימת דיווחים"><span
-        class="glyphicon glyphicon-refresh"></span></button>
       <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
         class="glyphicon glyphicon-floppy-save"></span></button>
     </div>
@@ -35,27 +36,14 @@
                     [boundaryLinks]="true"
                     [rotate]="false"
                     (pageChanged)="onChangeTable(config, $event)"
-                    (numPages)="numPages = $event">
+                    (numPages)="numPages = $event"
+                    nextText="&lsaquo;" previousText="&rsaquo;" lastText="&laquo;" firstText="&raquo;">
         </pagination>
       </div>
     </div>
   </div>
-  <!--[ngClass]="{'col-md-2': !displayCalendar, 'col-md-1': displayCalendar}"-->
-  <!--<div class="col-md-2" *ngIf="user.isManager">-->
-  <!--<div class="panel panel-primary">-->
-  <!--<div class="panel-heading">פעולות</div>-->
-  <!--<div class="panel-body">-->
-  <!--<ul class="actions-list">-->
-  <!--<li><a>דיווח שעות</a></li>-->
-  <!--<li><a>הוספת עובד חדש</a></li>-->
-  <!--<li><a>פרטי החברה</a></li>-->
-  <!--<li><a>פרטים אישיים</a></li>-->
-  <!--</ul>-->
-  <!--</div>-->
-  <!--<div class="panel-footer">Content</div>-->
-  <!--</div>-->
-  <!--</div>-->
 </div>
+
 <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
      aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -68,14 +56,14 @@
       </div>
       <div class="modal-body">
 
-        <form name="form" (ngSubmit)="f.form.valid && confirmShift()" #f="ngForm" novalidate>
+        <form name="form" (ngSubmit)="f.form.valid" #f="ngForm" novalidate>
           <div class="row">
-            <div class="form-group col-sm-offset-3 col-sm-4" [ngClass]="{ 'has-error': f.submitted && !date.valid }">
+            <div class="form-group col-sm-offset-3 col-sm-4 modal-pick-date-section" [ngClass]="{ 'has-error': f.submitted && !date.valid }">
               <label>תאריך</label>
               <input type="text" disabled class="form-control"
                      value="{{getDate() | date: 'dd/MM/yyyy'}}" />
               <div style="display: inline-block;min-height:267px;">
-                <datepicker shortcutPropagation="true" [(ngModel)]="modalDate" [showWeeks]="false"
+                <datepicker dir="ltr" shortcutPropagation="true" [(ngModel)]="modalDate" [showWeeks]="false"
                             #date='ngModel' name="date" requierd (ngModelChange)="print($event)"></datepicker>
               </div>
               <div *ngIf="f.submitted && !date.valid" class="help-block">אנא הכנס תאריך דיווח</div>
@@ -86,7 +74,7 @@
                 <!--<div style="display: inline-block;min-height:267px;">-->
                 <timepicker name="modalStart"
                             [(ngModel)]="modalStartHour" [hourStep]="hstep"
-                            [minuteStep]="mstep" [showMeridian]="true"
+                            [minuteStep]="mstep" [showMeridian]="false"
                             [readonlyInput]="false" required name="modalStart" #modalStart="ngModel"></timepicker>
                 <!--</div>-->
                 <div *ngIf="f.submitted && !modalStart.valid" class="help-block">אנא הכנס שעת התחלה</div>
@@ -97,7 +85,7 @@
                 <!--<div style="display: inline-block;min-height:267px;">-->
                 <timepicker name="modalEnd"
                             [(ngModel)]="modalEndHour" [hourStep]="hstep"
-                            [minuteStep]="mstep" [showMeridian]="true"
+                            [minuteStep]="mstep" [showMeridian]="false"
                             [readonlyInput]="false" name="modalEnd" #modalEnd="ngModel"
                             required></timepicker>
                 <!--</div>-->
@@ -113,7 +101,8 @@
             </div>
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-primary">אישור</button>
+            <button class="btn btn-primary" (click)="confirmShift()">אישור</button>
+            <button class="btn btn-danger" (click)="deleteShift()">מחק דיווח</button>
           </div>
         </form>
       </div>
