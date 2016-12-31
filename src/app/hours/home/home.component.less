@@ -1,40 +1,40 @@
-.container-fluid{
+.container-fluid {
   background: #e7e7e7;
   padding: 15px;
   border-radius: 20px;
 }
 
-tbody{
+tbody {
   max-height: 100%;
   overflow: auto;
   position: relative;
 }
 
-.close{
+.close {
   float: left;
 }
 
 ng-table {
-  /deep/ th{
+  /deep/ th {
     text-align: center;
     .clickable;
   }
-  /deep/ td{
+  /deep/ td {
     .clickable;
   }
-  /deep/ tbody tr{
-    &:hover{
+  /deep/ tbody tr {
+    &:hover {
       background-color: beige;
     }
   }
 
 }
 
-.panel-body{
-  height: 450px;
+.panel-body {
+  height: 480px;
 }
 
-.shifts-buttons-area{
+.shifts-buttons-area {
   position: absolute;
   width: auto;
   height: auto;
@@ -42,7 +42,7 @@ ng-table {
   top: 3px;
 }
 
-.clickable{
+.clickable {
   cursor: pointer;
 }
 
@@ -61,10 +61,15 @@ ng-table {
   }
 }
 
-#month{
+#month, #year {
   margin-left: 5px;
 }
 
-.modal-pick-date-section{
+.modal-pick-date-section {
   margin-bottom: 0;
+}
+
+#filter-container {
+  float: right;
+  margin-bottom: 10px;
 }
