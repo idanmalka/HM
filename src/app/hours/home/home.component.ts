@@ -16,27 +16,30 @@ export class HomeComponent implements OnInit {
   user: User;
   displayCalendar: boolean = false;
   chosenMonth: number = (new Date()).getMonth();
+  chosenYear: number = (new Date()).getFullYear();
+
+  years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
   months = [
-    {value:0, name:  'ינואר'},
-    {value:1, name:  'פברואר'},
-    {value:2, name:  'מרץ'},
-    {value:3, name:  'אפריל'},
-    {value:4, name:  'מאי'},
-    {value:5, name:  'יוני'},
-    {value:6, name:  'יולי'},
-    {value:7, name:  'אוגוסט'},
-    {value:8, name:  'ספטמבר'},
-    {value:9, name:  'אוקטובר'},
-    {value:10, name:  'נובמבר'},
-    {value:11, name:  'דצמבר'}
+    {value: 0, name: 'ינואר'},
+    {value: 1, name: 'פברואר'},
+    {value: 2, name: 'מרץ'},
+    {value: 3, name: 'אפריל'},
+    {value: 4, name: 'מאי'},
+    {value: 5, name: 'יוני'},
+    {value: 6, name: 'יולי'},
+    {value: 7, name: 'אוגוסט'},
+    {value: 8, name: 'ספטמבר'},
+    {value: 9, name: 'אוקטובר'},
+    {value: 10, name: 'נובמבר'},
+    {value: 11, name: 'דצמבר'}
   ];
   rows: Array<any> = [];
   columns: Array<any> = [
-    {title: 'תאריך', name: 'date', sort: 'desc'},
-    {title: 'שעת התחלה', name: 'startHour'},
-    {title: 'שעת סיום', name: 'endHour'},
-    {title: 'סה"כ שעות', name: 'totalHours'},
-    {title: 'הערות', name: 'comment'}
+    {title: 'תאריך', name: 'date', sort: "desc"},
+    {title: 'שעת התחלה', name: 'startHour', sort:''},
+    {title: 'שעת סיום', name: 'endHour', sort:''},
+    {title: 'סה"כ שעות', name: 'totalHours', sort: ''},
+    {title: 'הערות', name: 'comment', sort: ''}
   ];
   page: number = 1;
   itemsPerPage: number = 10;
@@ -49,15 +52,13 @@ export class HomeComponent implements OnInit {
   modalDate: Date;
   modalComment: string;
 
-  options: any = {
-    hstep: [1, 2, 3],
-    mstep: [1, 5, 10, 15, 25, 30]
-  };
   config: any = {
+    filtering: {filterString: ""},
     paging: true,
     sorting: {columns: this.columns},
     className: ['table-striped', 'table-bordered']
   };
+
   data: Array<any> = [];
 
   constructor(private authenticationService: AuthenticationService,
@@ -80,9 +81,9 @@ export class HomeComponent implements OnInit {
       let end = new Date(shift.end);
       let date = new Date(shift.date);
       console.log(date.getMonth());
-      if (date.getMonth() === this.chosenMonth) {
+      if (date.getMonth() === this.chosenMonth && date.getFullYear() === this.chosenYear) {
 
-        let dateStr: string = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+        let dateStr = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
         let startStr = start.getHours() + ":" + start.getMinutes();
         let endStr = end.getHours() + ":" + end.getMinutes();
         let diff = new Date(Math.abs(end.getTime() - start.getTime()));
@@ -144,14 +145,23 @@ export class HomeComponent implements OnInit {
       return data;
     }
 
-    // simple sorting
+    //simple sorting
     return data.sort((previous: any, current: any) => {
-      if (previous[columnName] > current[columnName]) {
-        return sort === 'desc' ? -1 : 1;
-      } else if (previous[columnName] < current[columnName]) {
-        return sort === 'asc' ? -1 : 1;
+      if (columnName !== "date") {
+        if (previous[columnName] > current[columnName]) {
+          return sort === 'desc' ? -1 : 1;
+        } else if (previous[columnName] < current[columnName]) {
+          return sort === 'asc' ? -1 : 1;
+        }
+        return 0;
+      } else {
+        if (+(previous[columnName].split("/")[0]) > +(current[columnName].split("/")[0])) {
+          return sort === 'desc' ? -1 : 1;
+        } else if (+(previous[columnName].split("/")[0]) < +(current[columnName].split("/")[0])) {
+          return sort === 'asc' ? -1 : 1;
+        }
+        return 0;
       }
-      return 0;
     });
   }
 
@@ -195,14 +205,13 @@ export class HomeComponent implements OnInit {
     // if (config.filtering) {
     //   Object.assign(this.config.filtering, config.filtering);
     // }
+    //
+    // if (config.sorting) {
+    //   Object.assign(this.config.sorting, config.sorting);
+    // }
 
-    if (config.sorting) {
-      Object.assign(this.config.sorting, config.sorting);
-    }
-
-    // let filteredData = this.changeFilter(this.data, this.config);
-    // let sortedData = this.changeSort(filteredData, this.config);
-    let sortedData = this.changeSort(this.data, this.config);
+    let filteredData = this.changeFilter(this.data, this.config);
+    let sortedData = this.changeSort(filteredData, this.config);
     this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
     this.length = sortedData.length;
   }
@@ -234,9 +243,12 @@ export class HomeComponent implements OnInit {
   }
 
   updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {
-    if(this.checkedRow === -1) {
+    if (this.checkedRow === -1) {
+      if (this.chosenMonth !== date.getMonth() || this.chosenYear !== date.getFullYear()) {
+        date.setDate(1);
+        date.setFullYear(this.chosenYear);
+      }
       date.setMonth(this.chosenMonth);
-      date.setDate(1);
     }
 
     this.modalStartHour = new Date(startHour);
@@ -274,8 +286,8 @@ export class HomeComponent implements OnInit {
     this.initTableData();
   }
 
-  deleteShift(): void{
-    this.user.shifts.splice(this.checkedRow,1);
+  deleteShift(): void {
+    this.user.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
   }
