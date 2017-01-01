@@ -2,6 +2,7 @@ import {NgModule} from "@angular/core";
 import {HeaderComponent} from "./header/header.component";
 import {AlertService} from "./services/alert.service";
 import {UserService} from "./services/user.service";
+import {CompanyService} from "./services/company.service";
 import {HttpModule} from "@angular/http";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
@@ -20,7 +21,7 @@ import { Ng2TableModule } from 'ng2-table/ng2-table';
             FormsModule,
             HttpModule,
   ],
-  providers: [ AlertService, UserService, AuthenticationService],
+  providers: [ AlertService, UserService, CompanyService, AuthenticationService],
   exports: [HeaderComponent,
             BrowserModule,
             FormsModule,

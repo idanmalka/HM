@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 
 import { User } from '../../models/user';
+import { Company } from '../../models/company';
 
 @Injectable()
 export class UserService {
@@ -21,7 +22,7 @@ export class UserService {
 
   update(updatedUser: User) {
     let user = JSON.parse(localStorage['currentUser']);
-    Object.assign(user.user,updatedUser);
+    Object.assign(user,updatedUser);
     localStorage.setItem('currentUser',JSON.stringify(user));
     return this.http.put('/api/users/'+updatedUser.id, updatedUser, this.jwt()).map((response: Response) => response.json());
   }

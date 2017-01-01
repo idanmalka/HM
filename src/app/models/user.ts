@@ -7,13 +7,17 @@ export class User {
   password: string;
   firstName: string;
   lastName: string;
+  email : string;
+  phone: string;
+  address: string;
+  department: string;
+  role: string;
   isManager: boolean;
   isAdmin: boolean;
-  company: Company;
+  companyId: number;
   shifts: Shift[];
 
   constructor() {
-    this.company = new Company();
     this.shifts = [];
   }
 }
