@@ -1,0 +1,53 @@
+.container-fluid {
+  background: #e7e7e7;
+  padding: 15px;
+  border-radius: 20px;
+}
+
+tbody {
+  max-height: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+.close {
+  float: left;
+}
+
+ng-table {
+  /deep/ th {
+    text-align: center;
+    .clickable;
+  }
+  /deep/ td {
+    .clickable;
+  }
+  /deep/ tbody tr {
+    &:hover {
+      background-color: beige;
+    }
+  }
+
+}
+
+.panel-body {
+  position: relative;
+  height: 480px;
+}
+
+.buttons-area {
+  position: absolute;
+  width: auto;
+  height: auto;
+  left: 7px;
+  top: -37px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+#filter-container {
+  float: right;
+  margin-bottom: 10px;
+}

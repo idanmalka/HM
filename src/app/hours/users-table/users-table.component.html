@@ -1,0 +1,53 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">רשימת עובדי החברה</div>
+  <div class="panel-body">
+    <div *ngIf="user.isManager && editable" class="buttons-area">
+      <button class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span
+        class="glyphicon glyphicon-plus"></span></button>
+      <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
+        class="glyphicon glyphicon-floppy-save"></span></button>
+    </div>
+    <div id="filter-container" class="col-md-2">
+      <input *ngIf="config.filtering" placeholder="סינון"
+             [ngTableFiltering]="config.filtering"
+             class="form-control"
+             (tableChanged)="onChangeTable(config)"/>
+    </div>
+    <ng-table [config]="config"
+              (tableChanged)="onChangeTable(config)"
+              (cellClicked)="onCellClick($event)"
+              [rows]="rows" [columns]="columns">
+    </ng-table>
+  </div>
+  <div class="panel-footer">
+    <pagination *ngIf="config.paging"
+                class="pagination-sm"
+                [(ngModel)]="page"
+                [totalItems]="length"
+                [itemsPerPage]="itemsPerPage"
+                [maxSize]="maxSize"
+                [boundaryLinks]="true"
+                [rotate]="false"
+                (pageChanged)="onChangeTable(config, $event)"
+                (numPages)="numPages = $event"
+                nextText="&lsaquo;" previousText="&rsaquo;" lastText="&laquo;" firstText="&raquo;">
+    </pagination>
+  </div>
+</div>
+
+<div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" aria-label="Close" (click)="hideChildModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">עובדים</h4>
+      </div>
+      <div class="modal-body">
+
+    </div>
+  </div>
+</div>
+</div>

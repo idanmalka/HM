@@ -61,40 +61,28 @@
         </div>
 
 </form>
-
-<div class="row" *ngIf="!model.isManager">
-            <div class="col-md-offset-7 col-md-5">
-                <div >
-                    <label for="companyName">שם החברה</label>
-                    <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyName" [ngModel]="model.company.name"
-                        #companyName="ngModel"
-                         />
-                </div>
-                <div >
-                    <label for="companyAddress">כתובת החברה</label>
-                    <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyAddress" [(ngModel)]="model.company.address"
-                           #companyAddress="ngModel"
-                            />
-                </div>
-                <div >
-                    <label for="companyField">תחום עיסוק חברה</label>
-                    <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyField" [(ngModel)]="model.company.field"
-                           #companyField="ngModel"
-                            />
-                </div>
-            </div>
-</div> 
-
-    <br>
-        <div class="panel panel-primary">
-            <div class="panel-heading">רשימת עובדי החברה</div>
-            <div class="panel-body">
-                <ng-table [config]="config"
-                        (tableChanged)="onChangeTable(config)"
-                        [rows]="rows" [columns]="columns"
-                        >
-                </ng-table>
-            </div>
-
-        </div>
+  <div class="row" *ngIf="!model.isManager">
+    <div class="col-md-offset-7 col-md-5">
+      <div >
+        <label for="companyName">שם החברה</label>
+        <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyName" [ngModel]="model.company.name"
+               #companyName="ngModel"
+        />
+      </div>
+      <div >
+        <label for="companyAddress">כתובת החברה</label>
+        <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyAddress" [(ngModel)]="model.company.address"
+               #companyAddress="ngModel"
+        />
+      </div>
+      <div >
+        <label for="companyField">תחום עיסוק חברה</label>
+        <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyField" [(ngModel)]="model.company.field"
+               #companyField="ngModel"
+        />
+      </div>
+    </div>
+  </div>
+  <br>
+<users-table [editable]="false"></users-table>
 </div>
