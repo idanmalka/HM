@@ -21,14 +21,14 @@ export class RegisterComponent {
 
   constructor(
     private router: Router,
-    private companyService: CompanyService, 
+    private companyService: CompanyService,
     private userService: UserService,
     private alertService: AlertService) { }
 
   register() {
     this.loading = true;
-    this.model.department = "הנהלה"; 
-    this.model.role = "מנהל כללי"; 
+    this.model.department = "הנהלה";
+    this.model.role = "מנהל כללי";
     this.model.isAdmin = false;
     this.model.isManager = true;
     this.model.shifts = [];
@@ -47,7 +47,7 @@ export class RegisterComponent {
           this.loading = false;
         });
 
-    // this.userService.create(this.model)
+    // this.userService.create(this.user)
     //   .subscribe(
     //     data => {
     //       this.alertService.success('Registration successful', true);

@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit {
   ];
   page: number = 1;
   itemsPerPage: number = 10;
-  maxSize: number = 3;
+  maxSize: number = 5;
   numPages: number = 1;
   length: number = 0;
   checkedRow: number;
