@@ -31,6 +31,16 @@ export class UsersTableComponent implements OnInit {
   length: number = 0;
   checkedRow: number;
 
+  modalUserName : string;
+  modalPassword: string;
+  modalFirstName: string;
+  modalLastName: string;
+  modalEmail : string;
+  modalPhone: string;
+  modalAddress: string;
+  modalDepartment: string;
+  modalRole: string;
+
   config: any = {
     filtering: {filterString: ""},
     paging: true,
@@ -162,12 +172,29 @@ export class UsersTableComponent implements OnInit {
   }
 
   addUser() {
+    console.log("clicked add user");
+    this.checkedRow = -1;
+    this.updateModal();
+    this.showChildModal();
+   
   }
 
+  updateModal(UserName="", Password = "", FirstName = "", LastName = "", Email = "" , Phone = "" , Address = "" , Department = "" , Role="") {
+      this.modalUserName = UserName;
+      this.modalPassword = Password;
+      this.modalFirstName = FirstName;
+      this.modalLastName = LastName;
+      this.modalEmail = Email;
+      this.modalPhone = Phone;
+      this.modalAddress = Address;
+      this.modalDepartment = Department;
+      this.modalRole = Role;
+  }
+//////////
   confirmUser() {
     console.log('clicked confirm user');
   }
-
+/////////
   deleteUser() {
     console.log('clicked delete user');
   }
@@ -178,6 +205,16 @@ export class UsersTableComponent implements OnInit {
 
     console.log(data);
     this.checkedRow = data.row.index;
+    this.updateModal(
+        this.company.employees[this.checkedRow].username,
+        this.company.employees[this.checkedRow].password,
+        this.company.employees[this.checkedRow].firstName,
+        this.company.employees[this.checkedRow].lastName,
+        this.company.employees[this.checkedRow].email,
+        this.company.employees[this.checkedRow].phone,
+        this.company.employees[this.checkedRow].address,
+        this.company.employees[this.checkedRow].department,
+        this.company.employees[this.checkedRow].role, );
     this.showChildModal();
   }
 
@@ -189,4 +226,12 @@ export class UsersTableComponent implements OnInit {
   hideChildModal(): void {
     this.childModal.hide();
   }
+
+// לעשות בסוף
+  // saveData(): void {
+  //   console.log('updating user data');
+  //   this.userService.update(this.user);
+  // }
+
+
 }

@@ -47,7 +47,74 @@
       </div>
       <div class="modal-body">
 
-    </div>
+        <form name="form" (ngSubmit)="f.form.valid" #f="ngForm" novalidate>
+            <div class="row">
+            <div class="col-md-5">
+                    <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+                            <label for="email">דוא"ל</label>
+                            <input type="email" class="form-control" name="email" [(ngModel)]="modalEmail"
+                                    #email="ngModel"
+                                    required/>
+                            <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס דוא"ל</div>
+                    </div> 
+                    <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }">
+                            <label for="phone">מספר טלפון</label>
+                            <input type="text" class="form-control" name="phone" [(ngModel)]="modalPhone"
+                                    #phone="ngModel"
+                                    required/>
+                            <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון</div>
+                    </div>     
+                    <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !userAddress.valid }">
+                            <label for="userAddress">כתובת</label>
+                            <input type="text" class="form-control" name="userAddress" [(ngModel)]="modalAddress"
+                                    #userAddress="ngModel"
+                                    required/>
+                            <div *ngIf="f.submitted && !userAddress.valid" class="help-block">אנא הכנס כתובת</div>
+                    </div>       
+                    <div class="form-group">
+                            <label for="department">שם מחלקה</label>
+                            <input type="text" class="form-control" name="department" [ngModel]="modalDepartment" #department="ngModel"
+                                    required/>
+                    </div>
+                    <div class="form-group">
+                            <label for="role">שם תפקיד</label>
+                            <input type="text" class="form-control" name="role" [ngModel]="modalRole" #role="ngModel"
+                                    required/>
+                    </div>
+            </div>
+            <div class="col-md-offset-2 col-md-5">
+                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
+                <label for="firstName">שם פרטי</label>
+                <input type="text" class="form-control" name="firstName" [(ngModel)]="modalFirstName" #firstName="ngModel"
+                        required/>
+                <div *ngIf="f.submitted && !firstName.valid" class="help-block">אנא הכנס שם פרטי</div>
+                </div>
+                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
+                <label for="lastName">שם משפחה</label>
+                <input type="text" class="form-control" name="lastName" [(ngModel)]="modalLastName" #lastName="ngModel"
+                        required/>
+                <div *ngIf="f.submitted && !lastName.valid" class="help-block">אנא הכנס שם משפחה</div>
+                </div>
+                <div class="form-group">
+                <label for="username">שם משתמש</label>
+                <input [disabled]="checkedRow!==-1" type="text" class="form-control" name="username" [ngModel]="modalUserName" #username="ngModel"
+                        required/>
+                <div *ngIf="f.submitted && !username.valid" class="help-block">אנא הכנס שם משתמש</div>
+                </div>
+                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+                <label for="password">סיסמא</label>
+                <input type="password" class="form-control" name="password" [(ngModel)]="modalPassword" #password="ngModel"
+                        required/>
+                <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
+                </div>
+            </div>
+            </div>
+          <div class="form-group">
+            <button class="btn btn-primary" (click)="confirmUser()">אישור</button>
+            <button *ngIf="checkedRow !== -1 " class="btn btn-danger" (click)="deleteUser()">הסר עובד</button>
+          </div>
+        </form>
+      </div>
   </div>
 </div>
 </div>
