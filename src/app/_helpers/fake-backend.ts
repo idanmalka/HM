@@ -210,6 +210,32 @@ export let fakeBackendProvider = {
           connection.mockRespond(new Response(new ResponseOptions({status: 200})));
         }
 
+        // update company users
+        if (connection.request.url.match(/\/api\/companyUsers\/\d+$/) && connection.request.method === RequestMethod.Put) {
+
+          // get new company object from post body
+          let obj = JSON.parse(connection.request.getBody());
+
+          // find company by id in users array
+          let urlParts = connection.request.url.split('/');
+          let id = parseInt(urlParts[urlParts.length - 1]);
+          for (let i = 0; i < companies.length; i++) {
+            let company = companies[i];
+            if (company.id === id) {
+              // delete company
+              companies.splice(i, 1);
+              // insert new company data
+              companies.push(obj.UpdatedCompany);
+              localStorage.setItem('companies', JSON.stringify(companies));
+              //להוסיף מחיקת יוזרים
+              break;
+            }
+          }
+
+          // respond 200 OK
+          connection.mockRespond(new Response(new ResponseOptions({status: 200})));
+        }
+
         // get company by id
         if (connection.request.url.match(/\/api\/companies\/\d+$/) && connection.request.method === RequestMethod.Get) {
           // check for fake auth token in header and return company if valid, this security is implemented server side in a real application

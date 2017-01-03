@@ -21,6 +21,13 @@ export class CompanyService {
     return this.http.put('/api/companies/'+updatedCompany.id, updatedCompany, this.jwt()).map((response: Response) => response.json());
   }
 
+  updateCompanyUsers(updatedCompany: Company , deletedUsers: Array<any>) {
+    let company = JSON.parse(localStorage['currentCompany']);
+    Object.assign(company,updatedCompany);
+    localStorage.setItem('currentCompany',JSON.stringify(company));
+  return this.http.put('/api/companyUsers/'+updatedCompany.id, { UpdatedCompany :updatedCompany, DeletedUsers: deletedUsers } ,this.jwt()).map((response: Response) => response.json());
+  }
+
   getById(id: number) {
     return this.http.get('/api/companies/' + id, this.jwt()).map((response: Response) => response.json());
   }

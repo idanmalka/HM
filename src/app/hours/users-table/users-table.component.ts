@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import {Company} from "../../models/company";
 import {User} from "../../models/user";
 import {AuthenticationService} from "../../shared/services/authentication.service";
+import { CompanyService } from '../../shared/services/company.service';
 import {ModalDirective} from "ng2-bootstrap";
 
 @Component({
@@ -48,8 +49,10 @@ export class UsersTableComponent implements OnInit {
     className: ['table-striped', 'table-bordered']
   };
   data: Array<any> = [];
+  deletedUsers: Array<User> = [];
 
-  constructor(private authService: AuthenticationService) {
+  constructor(private authService: AuthenticationService,
+              private companyService: CompanyService) {
   }
 
   ngOnInit(): void {
@@ -190,13 +193,54 @@ export class UsersTableComponent implements OnInit {
       this.modalDepartment = Department;
       this.modalRole = Role;
   }
-//////////
+
   confirmUser() {
     console.log('clicked confirm user');
+    this.updateDataFromModal();
+    this.hideChildModal();
   }
-/////////
+
+  updateDataFromModal(): void {
+    this.updateUsersData();
+    this.initTableData();
+  }
+
+  updateUsersData() : void {
+      let UserName = this.modalUserName;
+      let Password = this.modalPassword;
+      let FirstName = this.modalFirstName;
+      let LastName = this.modalLastName;
+      let Email = this.modalEmail;
+      let Phone = this.modalPhone;
+      let Address = this.modalAddress;
+      let Department = this.modalDepartment;
+      let Role = this.modalRole;
+
+      if (this.checkedRow > -1) {
+        this.company.employees[this.checkedRow].username = UserName;
+        this.company.employees[this.checkedRow].password = Password;
+        this.company.employees[this.checkedRow].firstName = FirstName;
+        this.company.employees[this.checkedRow].lastName = LastName;
+        this.company.employees[this.checkedRow].email = Email;
+        this.company.employees[this.checkedRow].phone = Phone;
+        this.company.employees[this.checkedRow].address = Address;
+        this.company.employees[this.checkedRow].department = Department;
+        this.company.employees[this.checkedRow].role = Role;
+      } else {
+        this.company.employees.push({id: -1 , username: UserName, password: Password, firstName: FirstName, 
+                                    lastName: LastName , email: Email , phone : Phone , address: Address,
+                                    department: Department , role: Role , isManager: false , isAdmin : false ,
+                                    companyId : this.user.companyId , shifts: [] } );
+      }
+  }
+
   deleteUser() {
     console.log('clicked delete user');
+    this.deletedUsers.push(this.company.employees[this.checkedRow]);
+    this.company.employees.splice(this.checkedRow, 1);
+    this.initTableData();
+    this.hideChildModal();
+    console.log(this.deletedUsers);
   }
 
   onCellClick(data: any): any {
@@ -214,7 +258,7 @@ export class UsersTableComponent implements OnInit {
         this.company.employees[this.checkedRow].phone,
         this.company.employees[this.checkedRow].address,
         this.company.employees[this.checkedRow].department,
-        this.company.employees[this.checkedRow].role, );
+        this.company.employees[this.checkedRow].role );
     this.showChildModal();
   }
 
@@ -227,11 +271,10 @@ export class UsersTableComponent implements OnInit {
     this.childModal.hide();
   }
 
-// לעשות בסוף
-  // saveData(): void {
-  //   console.log('updating user data');
-  //   this.userService.update(this.user);
-  // }
+  saveData(): void {
+    console.log('updating user data');
+    this.companyService.updateCompanyUsers(this.company, this.deletedUsers);
+  }
 
 
 }
