@@ -10,7 +10,7 @@ import {AlertComponent} from "./alert/alert.component";
 import { AuthenticationService } from "./services/authentication.service";
 import { DatepickerModule, PaginationModule, ModalModule, TimepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { Ng2TableModule } from 'ng2-table/ng2-table';
-
+import { ChartModule } from 'primeng/primeng';
 
 @NgModule({
   declarations: [
@@ -31,7 +31,8 @@ import { Ng2TableModule } from 'ng2-table/ng2-table';
             Ng2TableModule,
             ModalModule,
             AlertComponent,
-            TimepickerModule]
+            TimepickerModule,
+            ChartModule]
 })
 export class SharedModule {
 

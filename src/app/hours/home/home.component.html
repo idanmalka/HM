@@ -4,8 +4,13 @@
       src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;height=600&amp;wkst=1&amp;hl=iw&amp;bgcolor=%23FFFFFF&amp;src=en.jewish%23holiday%40group.v.calendar.google.com&amp;color=%23125A12&amp;ctz=Asia%2FJerusalem"
       style="border-width:0" width="500" height="600" frameborder="0" scrolling="no"></iframe>
   </div>
-  <div [ngClass]="{'col-md-12': !displayCalendar,
-                   'col-md-8': displayCalendar}">
+
+  <div class="col-md-4" *ngIf="showDailyHoursChart">
+    <p-chart #chart type="bar" [data]="chartData" width="100%" height="100%"></p-chart>
+    <button type="button" pButton (click)="update(chart)"></button>
+  </div>
+  <div [ngClass]="{'col-md-12': !displayCalendar && !showDailyHoursChart,
+                   'col-md-8': displayCalendar || showDailyHoursChart}">
     <div class="shifts-buttons-area">
       <select name="month" id="month" [(ngModel)]="chosenMonth" size="1" (change)="initTableData()">
         <option *ngFor="let month of months" [ngValue]="month.value">{{month.name}}</option>
@@ -17,6 +22,8 @@
         class="glyphicon glyphicon-plus"></span></button>
       <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top" tooltip="הצג/הסתר לוח שנה"><span
         class="glyphicon glyphicon-calendar"></span></button>
+      <button class="btn btn-default" (click)="toggleDailyHoursChart()" tooltipPlacement="top" tooltip="הצג/הסתר טבלת שעות חודשית"><span
+        class="glyphicon glyphicon-equalizer"></span></button>
       <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
         class="glyphicon glyphicon-floppy-save"></span></button>
     </div>

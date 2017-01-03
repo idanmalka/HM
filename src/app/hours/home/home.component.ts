@@ -5,6 +5,7 @@ import {User} from "../../models/user";
 import {UserService} from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
 import {ModalDirective} from "ng2-bootstrap";
+import {UIChart} from "primeng/components/chart/chart";
 
 @Component({
   selector: 'home-page',
@@ -13,8 +14,11 @@ import {ModalDirective} from "ng2-bootstrap";
 })
 export class HomeComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
+  @ViewChild('chart') public chart: UIChart;
+
   user: User;
   displayCalendar: boolean = false;
+
   chosenMonth: number = (new Date()).getMonth();
   chosenYear: number = (new Date()).getFullYear();
 
@@ -33,6 +37,7 @@ export class HomeComponent implements OnInit {
     {value: 10, name: 'נובמבר'},
     {value: 11, name: 'דצמבר'}
   ];
+
   rows: Array<any> = [];
   columns: Array<any> = [
     {title: 'תאריך', name: 'date', sort: "desc"},
@@ -47,19 +52,22 @@ export class HomeComponent implements OnInit {
   numPages: number = 1;
   length: number = 0;
   checkedRow: number;
-  modalStartHour: Date;
-  modalEndHour: Date;
-  modalDate: Date;
-  modalComment: string;
-
   config: any = {
     filtering: {filterString: ""},
     paging: true,
     sorting: {columns: this.columns},
     className: ['table-striped', 'table-bordered']
   };
-
   data: Array<any> = [];
+
+  modalStartHour: Date;
+  modalEndHour: Date;
+  modalDate: Date;
+  modalComment: string;
+
+  showDailyHoursChart: boolean = false;
+  chartData: any;
+  filteredSortedData = [];
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
@@ -71,6 +79,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.initTableData();
+    this.initChartData();
   }
 
   initTableData(): void {
@@ -102,6 +111,35 @@ export class HomeComponent implements OnInit {
       index++;
     }
     this.onChangeTable(this.config);
+    //this.initChartData();
+   //this.chart.refresh();
+  }
+
+  initChartData(): void{
+    let data = [];
+    let chartLabels = [];
+    let lastDayOfMonth = (new Date(this.chosenYear,this.chosenMonth+1,0)).getDate();
+    for(let i = 1; i <= lastDayOfMonth; i++){
+      chartLabels.push(i.toString());
+      for(let row of this.filteredSortedData){
+        if (+row.date.split("/")[0] === i) {
+          let totalArr = row.totalHours.split(":");
+          let sum = +totalArr[0] + (+totalArr[1])/60;
+          data.push(sum);
+        }
+      }
+      if(data.length < i)
+        data.push(0);
+    }
+    this.chartData = {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: 'התפלגות שעות לימים',
+          backgroundColor: '#42A5F5',
+          borderColor: '#1E88E5',
+          data: data
+        }]};
   }
 
   updateUserShifts() {
@@ -202,16 +240,9 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
-    // if (config.filtering) {
-    //   Object.assign(this.config.filtering, config.filtering);
-    // }
-    //
-    // if (config.sorting) {
-    //   Object.assign(this.config.sorting, config.sorting);
-    // }
-
     let filteredData = this.changeFilter(this.data, this.config);
     let sortedData = this.changeSort(filteredData, this.config);
+    Object.assign(this.filteredSortedData,sortedData);
     this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
     this.length = sortedData.length;
   }
@@ -227,7 +258,13 @@ export class HomeComponent implements OnInit {
   }
 
   toggleCalendar(): void {
+    this.showDailyHoursChart = false;
     this.displayCalendar = !this.displayCalendar;
+  }
+
+  toggleDailyHoursChart(): void {
+    this.displayCalendar = false;
+    this.showDailyHoursChart = !this.showDailyHoursChart;
   }
 
   addShift(): void {
@@ -297,4 +334,8 @@ export class HomeComponent implements OnInit {
     console.log(this.modalDate);
   }
 
+  update(chart){
+    this.initChartData();
+    chart.refresh();
+  }
 }
