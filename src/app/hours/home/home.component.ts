@@ -6,6 +6,8 @@ import {UserService} from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
 import {ModalDirective} from "ng2-bootstrap";
 import {UIChart} from "primeng/components/chart/chart";
+import * as FileSaver from "file-saver";
+import {Message} from 'primeng/primeng';
 
 @Component({
   selector: 'home-page',
@@ -16,26 +18,28 @@ export class HomeComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
   @ViewChild('chart') public chart: UIChart;
 
+  dirty : boolean = false;
+
   user: User;
   displayCalendar: boolean = false;
-
+  msgs: Message[] = [];
   chosenMonth: number = (new Date()).getMonth();
   chosenYear: number = (new Date()).getFullYear();
 
-  years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
+  years = [];
   months = [
-    {value: 0, name: 'ינואר'},
-    {value: 1, name: 'פברואר'},
-    {value: 2, name: 'מרץ'},
-    {value: 3, name: 'אפריל'},
-    {value: 4, name: 'מאי'},
-    {value: 5, name: 'יוני'},
-    {value: 6, name: 'יולי'},
-    {value: 7, name: 'אוגוסט'},
-    {value: 8, name: 'ספטמבר'},
-    {value: 9, name: 'אוקטובר'},
-    {value: 10, name: 'נובמבר'},
-    {value: 11, name: 'דצמבר'}
+    {value: 0, label: 'ינואר'},
+    {value: 1, label: 'פברואר'},
+    {value: 2, label: 'מרץ'},
+    {value: 3, label: 'אפריל'},
+    {value: 4, label: 'מאי'},
+    {value: 5, label: 'יוני'},
+    {value: 6, label: 'יולי'},
+    {value: 7, label: 'אוגוסט'},
+    {value: 8, label: 'ספטמבר'},
+    {value: 9, label: 'אוקטובר'},
+    {value: 10, label: 'נובמבר'},
+    {value: 11, label: 'דצמבר'}
   ];
 
   rows: Array<any> = [];
@@ -72,6 +76,8 @@ export class HomeComponent implements OnInit {
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private userService: UserService) {
+    for(let i = this.chosenYear - 5; i < this.chosenYear + 5; i++)
+      this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
     this.user = this.authenticationService.user;
     console.log(this.user);
@@ -79,7 +85,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.initTableData();
-    this.initChartData();
   }
 
   initTableData(): void {
@@ -111,8 +116,7 @@ export class HomeComponent implements OnInit {
       index++;
     }
     this.onChangeTable(this.config);
-    //this.initChartData();
-   //this.chart.refresh();
+    setTimeout(this.initChartData(), 100);
   }
 
   initChartData(): void{
@@ -140,6 +144,11 @@ export class HomeComponent implements OnInit {
           borderColor: '#1E88E5',
           data: data
         }]};
+
+    setTimeout(() => {
+      if(this.chart)
+        this.chart.refresh();
+    }, 100);
   }
 
   updateUserShifts() {
@@ -240,6 +249,8 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
+    this.filteredSortedData = [];
+    this.dirty = true;
     let filteredData = this.changeFilter(this.data, this.config);
     let sortedData = this.changeSort(filteredData, this.config);
     Object.assign(this.filteredSortedData,sortedData);
@@ -276,6 +287,7 @@ export class HomeComponent implements OnInit {
 
   saveData(): void {
     console.log('updating user data');
+    this.dirty = false;
     this.userService.update(this.user);
   }
 
@@ -334,8 +346,22 @@ export class HomeComponent implements OnInit {
     console.log(this.modalDate);
   }
 
-  update(chart){
-    this.initChartData();
-    chart.refresh();
+  exportToCsv(){
+    if(this.dirty) {
+      this.msgs.push({severity: 'info', summary: '', detail: 'אנא שמור לפני ההורדה'})
+      return;
+    }
+
+    const items = this.data;
+    const replacer = (key, value) => value === null ? '' : value ;// specify how you want to handle null values here
+    const header = Object.keys(items[0]);
+    let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+    csv.unshift(header.join(','));
+    let csv1 = csv.join('\r\n');
+
+    console.log(csv1);
+
+    var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
+    FileSaver.saveAs(blob,'דיווחי שעות '+ this.months[this.chosenMonth].label + '/' + this.chosenYear +'.csv');
   }
 }

@@ -5,19 +5,11 @@
       style="border-width:0" width="500" height="600" frameborder="0" scrolling="no"></iframe>
   </div>
 
-  <div class="col-md-4" *ngIf="showDailyHoursChart">
-    <p-chart #chart type="bar" [data]="chartData" width="100%" height="100%"></p-chart>
-    <button type="button" pButton (click)="update(chart)"></button>
-  </div>
   <div [ngClass]="{'col-md-12': !displayCalendar && !showDailyHoursChart,
                    'col-md-8': displayCalendar || showDailyHoursChart}">
     <div class="shifts-buttons-area">
-      <select name="month" id="month" [(ngModel)]="chosenMonth" size="1" (change)="initTableData()">
-        <option *ngFor="let month of months" [ngValue]="month.value">{{month.name}}</option>
-      </select>
-      <select name="year" id="year" [(ngModel)]="chosenYear" size="1" (change)="initTableData()">
-        <option *ngFor="let year of years" [ngValue]="year">{{year}}</option>
-      </select>
+      <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months" (onChange)="initTableData()"></p-dropdown>
+      <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" size="1" [options]="years" (onChange)="initTableData()"></p-dropdown>
       <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
         class="glyphicon glyphicon-plus"></span></button>
       <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top" tooltip="הצג/הסתר לוח שנה"><span
@@ -26,7 +18,10 @@
         class="glyphicon glyphicon-equalizer"></span></button>
       <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
         class="glyphicon glyphicon-floppy-save"></span></button>
+      <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">
+        <span class="glyphicon glyphicon-download-alt"></span></button>
     </div>
+    <p-growl [value]="msgs"></p-growl>
     <div class="panel panel-primary">
       <div class="panel-heading">רשימת דיווחי שעות</div>
       <div class="panel-body">
@@ -59,6 +54,11 @@
       </div>
     </div>
   </div>
+
+  <div class="col-md-4" *ngIf="showDailyHoursChart">
+    <p-chart #chart type="bar" [data]="chartData" width="100%" height="100%"></p-chart>
+  </div>
+
 </div>
 
 <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
