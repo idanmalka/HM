@@ -5,6 +5,9 @@ import {User} from "../../models/user";
 import {UserService} from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
 import {ModalDirective} from "ng2-bootstrap";
+import {UIChart} from "primeng/components/chart/chart";
+import * as FileSaver from "file-saver";
+import {Message} from 'primeng/primeng';
 
 @Component({
   selector: 'home-page',
@@ -13,26 +16,33 @@ import {ModalDirective} from "ng2-bootstrap";
 })
 export class HomeComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
+  @ViewChild('chart') public chart: UIChart;
+
+  dirty : boolean = false;
+
   user: User;
+  userShiftsStackSave: Array<Shift[]> = [];
   displayCalendar: boolean = false;
+  msgs: Message[] = [];
   chosenMonth: number = (new Date()).getMonth();
   chosenYear: number = (new Date()).getFullYear();
 
-  years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
+  years = [];
   months = [
-    {value: 0, name: 'ינואר'},
-    {value: 1, name: 'פברואר'},
-    {value: 2, name: 'מרץ'},
-    {value: 3, name: 'אפריל'},
-    {value: 4, name: 'מאי'},
-    {value: 5, name: 'יוני'},
-    {value: 6, name: 'יולי'},
-    {value: 7, name: 'אוגוסט'},
-    {value: 8, name: 'ספטמבר'},
-    {value: 9, name: 'אוקטובר'},
-    {value: 10, name: 'נובמבר'},
-    {value: 11, name: 'דצמבר'}
+    {value: 0, label: 'ינואר'},
+    {value: 1, label: 'פברואר'},
+    {value: 2, label: 'מרץ'},
+    {value: 3, label: 'אפריל'},
+    {value: 4, label: 'מאי'},
+    {value: 5, label: 'יוני'},
+    {value: 6, label: 'יולי'},
+    {value: 7, label: 'אוגוסט'},
+    {value: 8, label: 'ספטמבר'},
+    {value: 9, label: 'אוקטובר'},
+    {value: 10, label: 'נובמבר'},
+    {value: 11, label: 'דצמבר'}
   ];
+
   rows: Array<any> = [];
   columns: Array<any> = [
     {title: 'תאריך', name: 'date', sort: "desc"},
@@ -47,23 +57,28 @@ export class HomeComponent implements OnInit {
   numPages: number = 1;
   length: number = 0;
   checkedRow: number;
-  modalStartHour: Date;
-  modalEndHour: Date;
-  modalDate: Date;
-  modalComment: string;
-
   config: any = {
     filtering: {filterString: ""},
     paging: true,
     sorting: {columns: this.columns},
     className: ['table-striped', 'table-bordered']
   };
-
   data: Array<any> = [];
+
+  modalStartHour: Date;
+  modalEndHour: Date;
+  modalDate: Date;
+  modalComment: string;
+
+  showDailyHoursChart: boolean = false;
+  chartData: any;
+  filteredSortedData = [];
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private userService: UserService) {
+    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
+      this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
     this.user = this.authenticationService.user;
     console.log(this.user);
@@ -102,9 +117,43 @@ export class HomeComponent implements OnInit {
       index++;
     }
     this.onChangeTable(this.config);
+    setTimeout(this.initChartData(), 100);
+  }
+
+  initChartData(): void{
+    let data = [];
+    let chartLabels = [];
+    let lastDayOfMonth = (new Date(this.chosenYear,this.chosenMonth+1,0)).getDate();
+    for(let i = 1; i <= lastDayOfMonth; i++){
+      chartLabels.push(i.toString());
+      for(let row of this.filteredSortedData){
+        if (+row.date.split("/")[0] === i) {
+          let totalArr = row.totalHours.split(":");
+          let sum = +totalArr[0] + (+totalArr[1])/60;
+          data.push(sum);
+        }
+      }
+      if(data.length < i)
+        data.push(0);
+    }
+    this.chartData = {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: 'התפלגות שעות לימים',
+          backgroundColor: '#42A5F5',
+          borderColor: '#1E88E5',
+          data: data
+        }]};
+
+    setTimeout(() => {
+      if(this.chart)
+        this.chart.refresh();
+    }, 100);
   }
 
   updateUserShifts() {
+    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
@@ -202,16 +251,11 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
-    // if (config.filtering) {
-    //   Object.assign(this.config.filtering, config.filtering);
-    // }
-    //
-    // if (config.sorting) {
-    //   Object.assign(this.config.sorting, config.sorting);
-    // }
-
+    this.filteredSortedData = [];
+    this.dirty = true;
     let filteredData = this.changeFilter(this.data, this.config);
     let sortedData = this.changeSort(filteredData, this.config);
+    Object.assign(this.filteredSortedData,sortedData);
     this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
     this.length = sortedData.length;
   }
@@ -227,7 +271,13 @@ export class HomeComponent implements OnInit {
   }
 
   toggleCalendar(): void {
+    this.showDailyHoursChart = false;
     this.displayCalendar = !this.displayCalendar;
+  }
+
+  toggleDailyHoursChart(): void {
+    this.displayCalendar = false;
+    this.showDailyHoursChart = !this.showDailyHoursChart;
   }
 
   addShift(): void {
@@ -239,6 +289,7 @@ export class HomeComponent implements OnInit {
 
   saveData(): void {
     console.log('updating user data');
+    this.dirty = false;
     this.userService.update(this.user);
   }
 
@@ -287,6 +338,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
+    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
     this.user.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -297,4 +349,32 @@ export class HomeComponent implements OnInit {
     console.log(this.modalDate);
   }
 
+  exportToCsv(){
+    if(this.dirty) {
+      this.msgs.push({severity: 'info', summary: '', detail: 'אנא שמור לפני ההורדה'})
+      return;
+    }
+
+    const items = this.data;
+    const replacer = (key, value) => value === null ? '' : value ;// specify how you want to handle null values here
+    const header = Object.keys(items[0]);
+    let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+    csv.unshift(header.join(','));
+    let csv1 = csv.join('\r\n');
+
+    console.log(csv1);
+
+    var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
+    FileSaver.saveAs(blob,'דיווחי שעות '+ this.months[this.chosenMonth].label + '/' + this.chosenYear +'.csv');
+  }
+
+  undoShiftChange(){
+    if (this.userShiftsStackSave.length > 0) {
+      console.log('poping');
+      this.user.shifts = [];
+        Object.assign(this.user.shifts, this.userShiftsStackSave.pop());
+      this.initTableData();
+    }
+    console.log('not poping');
+  }
 }
