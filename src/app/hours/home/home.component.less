@@ -1,8 +1,8 @@
-.container-fluid {
-  background: #e7e7e7;
-  padding: 15px;
-  border-radius: 20px;
-}
+//.container-fluid {
+//  background: #e7e7e7;
+//  padding: 15px;
+//  border-radius: 20px;
+//}
 
 tbody {
   max-height: 100%;
@@ -39,7 +39,17 @@ ng-table {
   width: auto;
   height: auto;
   left: 25px;
-  top: 3px;
+  top: -2px;
+
+  p-dropdown{
+    position: relative;
+    top: 10px;
+
+    /deep/ label,
+    /deep/ li{
+      text-align: right;
+    }
+  }
 }
 
 .clickable {

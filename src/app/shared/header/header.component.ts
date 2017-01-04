@@ -16,11 +16,10 @@ export class HeaderComponent implements OnInit{
   constructor(private userService: UserService,
               private authenticationService : AuthenticationService,
               private router: Router){
-
+    this.authenticationService.validate();
   }
 
-  ngOnInit() : void {
-    this.authenticationService.validate();
+  ngOnInit(): void{
     this.user = this.authenticationService.user;
   }
 
