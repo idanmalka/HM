@@ -16,6 +16,9 @@
         class="glyphicon glyphicon-calendar"></span></button>
       <button class="btn btn-default" (click)="toggleDailyHoursChart()" tooltipPlacement="top" tooltip="הצג/הסתר טבלת שעות חודשית"><span
         class="glyphicon glyphicon-equalizer"></span></button>
+      <button [disabled]="!(userShiftsStackSave && userShiftsStackSave.length > 0)" class="btn btn-warning" (click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
+        <span class="fa fa-undo" aria-hidden="true"></span>
+      </button>
       <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
         class="glyphicon glyphicon-floppy-save"></span></button>
       <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">

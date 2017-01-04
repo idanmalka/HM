@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   dirty : boolean = false;
 
   user: User;
+  userShiftsStackSave: Array<Shift[]> = [];
   displayCalendar: boolean = false;
   msgs: Message[] = [];
   chosenMonth: number = (new Date()).getMonth();
@@ -152,6 +153,7 @@ export class HomeComponent implements OnInit {
   }
 
   updateUserShifts() {
+    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
@@ -336,6 +338,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
+    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
     this.user.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -363,5 +366,15 @@ export class HomeComponent implements OnInit {
 
     var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
     FileSaver.saveAs(blob,'דיווחי שעות '+ this.months[this.chosenMonth].label + '/' + this.chosenYear +'.csv');
+  }
+
+  undoShiftChange(){
+    if (this.userShiftsStackSave.length > 0) {
+      console.log('poping');
+      this.user.shifts = [];
+        Object.assign(this.user.shifts, this.userShiftsStackSave.pop());
+      this.initTableData();
+    }
+    console.log('not poping');
   }
 }
