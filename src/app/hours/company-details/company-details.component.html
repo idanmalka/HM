@@ -1,82 +1,87 @@
 <div class="container">
-    <h2>פרטי חברה</h2>
-    <br>
-    <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
-        <div class="row" *ngIf="model.isManager">
-        <div class="col-md-5 ">
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaNumber.valid }">
-                <label for="visaNumber">מספר ויזה</label>
-                <input type="number" class="form-control" name="visaNumber" [(ngModel)]="company.visa.visaNumber"
-                       #visaNumber="ngModel"
-                       required />
-                <div *ngIf="f.submitted && !visaNumber.valid" class="help-block">אנא הכנס מספר ויזה</div>
-            </div>
-            <div class="form-group" >
-                <label>תאריך תפוגה</label><br>
-              <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months" (onChange)="setExpParameter('month')"></p-dropdown>
-              <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" [options]="years" (onChange)="setExpParameter('year')"></p-dropdown>
-            </div>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }">
-                <label for="visaCVV">ספרות אימות</label>
-                <input type="number" class="form-control" name="visaCVV" [(ngModel)]="company.visa.cvv"
-                       #visaCVV="ngModel"
-                       required />
-                <div *ngIf="f.submitted && !visaCVV.valid" class="help-block">אנא הכנס ספרות אימות</div>
-            </div>
-            <div class="form-group">
-                <button [disabled]="loading" class="btn btn-primary">עדכן</button>
-                <img *ngIf="loading"
-                     src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-            </div>
+  <h2>פרטי חברה</h2>
+  <br>
+  <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
+    <div class="row" *ngIf="model.isManager">
+      <div class="col-md-5 ">
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaNumber.valid }">
+          <label for="visaNumber">מספר ויזה</label>
+          <input type="number" class="form-control" name="visaNumber" [(ngModel)]="company.visa.visaNumber"
+                 #visaNumber="ngModel"
+                 required/>
+          <div *ngIf="f.submitted && !visaNumber.valid" class="help-block">אנא הכנס מספר ויזה</div>
         </div>
-            <div class="col-md-offset-2 col-md-5">
-                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyName.valid }">
-                    <label for="companyName">שם החברה</label>
-                    <input type="text" class="form-control" name="companyName" [(ngModel)]="company.name"
-                           #companyName="ngModel"
-                           required />
-                    <div *ngIf="f.submitted && !companyName.valid" class="help-block">אנא הכנס את כתובת החברה</div>
-                </div>
-                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyAddress.valid }">
-                    <label for="companyAddress">כתובת החברה</label>
-                    <input type="text" class="form-control" name="companyAddress" [(ngModel)]="company.address"
-                           #companyAddress="ngModel"
-                           required />
-                    <div *ngIf="f.submitted && !companyAddress.valid" class="help-block">אנא הכנס את כתובת החברה</div>
-                </div>
-                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyField.valid }">
-                    <label for="companyField">תחום עיסוק חברה</label>
-                    <input type="text" class="form-control" name="companyField" [(ngModel)]="company.field"
-                           #companyField="ngModel"
-                           required />
-                    <div *ngIf="f.submitted && !companyField.valid" class="help-block">אנא הכנס את תחום עיסוק החברה</div>
-                </div>
-            </div>
+        <div class="form-group">
+          <label>תאריך תפוגה</label><br>
+          <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
+                      (onChange)="setExpParameter('month')"></p-dropdown>
+          <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" [options]="years"
+                      (onChange)="setExpParameter('year')"></p-dropdown>
         </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }">
+          <label for="visaCVV">ספרות אימות</label>
+          <input type="number" class="form-control" name="visaCVV" [(ngModel)]="company.visa.cvv"
+                 #visaCVV="ngModel"
+                 required/>
+          <div *ngIf="f.submitted && !visaCVV.valid" class="help-block">אנא הכנס ספרות אימות</div>
+        </div>
+        <div class="form-group">
+          <button [disabled]="loading" class="btn btn-primary">עדכן</button>
+          <img *ngIf="loading"
+               src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+        </div>
+      </div>
+      <div class="col-md-offset-2 col-md-5">
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyName.valid }">
+          <label for="companyName">שם החברה</label>
+          <input type="text" class="form-control" name="companyName" [(ngModel)]="company.name"
+                 #companyName="ngModel"
+                 required/>
+          <div *ngIf="f.submitted && !companyName.valid" class="help-block">אנא הכנס את כתובת החברה</div>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyAddress.valid }">
+          <label for="companyAddress">כתובת החברה</label>
+          <input type="text" class="form-control" name="companyAddress" [(ngModel)]="company.address"
+                 #companyAddress="ngModel"
+                 required/>
+          <div *ngIf="f.submitted && !companyAddress.valid" class="help-block">אנא הכנס את כתובת החברה</div>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyField.valid }">
+          <label for="companyField">תחום עיסוק חברה</label>
+          <input type="text" class="form-control" name="companyField" [(ngModel)]="company.field"
+                 #companyField="ngModel"
+                 required/>
+          <div *ngIf="f.submitted && !companyField.valid" class="help-block">אנא הכנס את תחום עיסוק החברה</div>
+        </div>
+      </div>
+    </div>
 
-</form>
+  </form>
   <div class="row" *ngIf="!model.isManager">
     <div class="col-md-offset-7 col-md-5">
-      <div >
+      <div>
         <label for="companyName">שם החברה</label>
-        <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyName" [ngModel]="model.company.name"
+        <input [disabled]="!model.isManager" type="text" class="form-control" name="companyName"
+               [ngModel]="company.name"
                #companyName="ngModel"
         />
       </div>
-      <div >
+      <div>
         <label for="companyAddress">כתובת החברה</label>
-        <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyAddress" [(ngModel)]="model.company.address"
+        <input [disabled]="!model.isManager" type="text" class="form-control" name="companyAddress"
+               [(ngModel)]="company.address"
                #companyAddress="ngModel"
         />
       </div>
-      <div >
+      <div>
         <label for="companyField">תחום עיסוק חברה</label>
-        <input [disabled] = "!model.isManager" type="text" class="form-control" name="companyField" [(ngModel)]="model.company.field"
+        <input [disabled]="!model.isManager" type="text" class="form-control" name="companyField"
+               [(ngModel)]="company.field"
                #companyField="ngModel"
         />
       </div>
     </div>
   </div>
   <br>
-<users-table [editable]="false"></users-table>
+  <users-table [editable]="false"></users-table>
 </div>

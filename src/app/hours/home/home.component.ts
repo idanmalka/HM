@@ -19,9 +19,9 @@ export class HomeComponent implements OnInit {
   @ViewChild('chart') public chart: UIChart;
 
   dirty : boolean = false;
-
+  editableUser: User = new User();
   user: User;
-  userShiftsStackSave: Array<Shift[]> = [];
+  editableUserShiftsStackSave: Array<Shift[]> = [];
   displayCalendar: boolean = false;
   msgs: Message[] = [];
   chosenMonth: number = (new Date()).getMonth();
@@ -80,8 +80,12 @@ export class HomeComponent implements OnInit {
     for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
-    this.user = this.authenticationService.user;
-    console.log(this.user);
+    this.editableUser = this.authenticationService.user;
+    if (this.editableUser.isAdmin === true) {
+      this.user = this.editableUser;
+      this.editableUser = new User();
+    }
+    console.log(this.user? this.user : this.editableUser);
   }
 
   ngOnInit() {
@@ -91,7 +95,7 @@ export class HomeComponent implements OnInit {
   initTableData(): void {
     this.data = [];
     let index = 0;
-    for (let shift of this.user.shifts) {
+    for (let shift of this.editableUser.shifts) {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
       let date = new Date(shift.date);
@@ -153,18 +157,18 @@ export class HomeComponent implements OnInit {
   }
 
   updateUserShifts() {
-    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
+    this.editableUserShiftsStackSave.push(Object.assign({},this.editableUser.shifts));
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
 
     if (this.checkedRow > -1) {
-      this.user.shifts[this.checkedRow].start = start;
-      this.user.shifts[this.checkedRow].end = end;
-      this.user.shifts[this.checkedRow].date = date;
-      this.user.shifts[this.checkedRow].comment = this.modalComment;
+      this.editableUser.shifts[this.checkedRow].start = start;
+      this.editableUser.shifts[this.checkedRow].end = end;
+      this.editableUser.shifts[this.checkedRow].date = date;
+      this.editableUser.shifts[this.checkedRow].comment = this.modalComment;
     } else {
-      this.user.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
+      this.editableUser.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
     }
   }
 
@@ -263,10 +267,10 @@ export class HomeComponent implements OnInit {
   onCellClick(data: any): any {
     console.log(data);
     this.checkedRow = data.row.index;
-    this.updateModal(this.user.shifts[this.checkedRow].start,
-      this.user.shifts[this.checkedRow].end,
-      this.user.shifts[this.checkedRow].date,
-      this.user.shifts[this.checkedRow].comment);
+    this.updateModal(this.editableUser.shifts[this.checkedRow].start,
+      this.editableUser.shifts[this.checkedRow].end,
+      this.editableUser.shifts[this.checkedRow].date,
+      this.editableUser.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
 
@@ -288,9 +292,9 @@ export class HomeComponent implements OnInit {
   }
 
   saveData(): void {
-    console.log('updating user data');
+    console.log('updating editableUser data');
     this.dirty = false;
-    this.userService.update(this.user);
+    this.userService.update(this.editableUser);
   }
 
   updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {
@@ -338,8 +342,8 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
-    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
-    this.user.shifts.splice(this.checkedRow, 1);
+    this.editableUserShiftsStackSave.push(Object.assign({},this.editableUser.shifts));
+    this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
   }
@@ -369,10 +373,10 @@ export class HomeComponent implements OnInit {
   }
 
   undoShiftChange(){
-    if (this.userShiftsStackSave.length > 0) {
+    if (this.editableUserShiftsStackSave.length > 0) {
       console.log('poping');
-      this.user.shifts = [];
-        Object.assign(this.user.shifts, this.userShiftsStackSave.pop());
+      this.editableUser.shifts = [];
+      Object.assign(this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
       this.initTableData();
     }
     console.log('not poping');
