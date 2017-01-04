@@ -49,7 +49,6 @@ export class UsersTableComponent implements OnInit {
     className: ['table-striped', 'table-bordered']
   };
   data: Array<any> = [];
-  deletedUsers: Array<User> = [];
 
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService) {
@@ -235,12 +234,9 @@ export class UsersTableComponent implements OnInit {
   }
 
   deleteUser() {
-    console.log('clicked delete user');
-    this.deletedUsers.push(this.company.employees[this.checkedRow]);
     this.company.employees.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
-    console.log(this.deletedUsers);
   }
 
   onCellClick(data: any): any {
@@ -273,7 +269,7 @@ export class UsersTableComponent implements OnInit {
 
   saveData(): void {
     console.log('updating user data');
-    this.companyService.updateCompanyUsers(this.company, this.deletedUsers);
+    this.companyService.updateCompanyUsers(this.company.employees);
   }
 
 

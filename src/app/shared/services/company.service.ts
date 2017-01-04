@@ -5,7 +5,6 @@ import { Company } from '../../models/company';
 
 @Injectable()
 export class CompanyService {
-  company : Company ;
   constructor(private http: Http) { }
 
   create(company: any) {
@@ -15,17 +14,15 @@ export class CompanyService {
   }
 
   update(updatedCompany: Company) {
-    let company = JSON.parse(localStorage['currentCompany']);
-    Object.assign(company,updatedCompany);
-    localStorage.setItem('currentCompany',JSON.stringify(company));
+    localStorage.setItem('currentCompany',JSON.stringify(updatedCompany));
     return this.http.put('/api/companies/'+updatedCompany.id, updatedCompany, this.jwt()).map((response: Response) => response.json());
   }
 
-  updateCompanyUsers(updatedCompany: Company , deletedUsers: Array<any>) {
-    let company = JSON.parse(localStorage['currentCompany']);
-    Object.assign(company,updatedCompany);
+  updateCompanyUsers(companyUsers: Array<any>) {
+    let company = JSON.parse(localStorage.getItem('currentCompany'));
+    company.employees = companyUsers;
     localStorage.setItem('currentCompany',JSON.stringify(company));
-  return this.http.put('/api/companyUsers/'+updatedCompany.id, { UpdatedCompany :updatedCompany, DeletedUsers: deletedUsers } ,this.jwt()).map((response: Response) => response.json());
+    return this.http.put('/api/companyUsers', companyUsers ,this.jwt()).map((response: Response) => response.json() );
   }
 
   getById(id: number) {

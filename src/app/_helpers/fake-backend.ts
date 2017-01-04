@@ -211,26 +211,38 @@ export let fakeBackendProvider = {
         }
 
         // update company users
-        if (connection.request.url.match(/\/api\/companyUsers\/\d+$/) && connection.request.method === RequestMethod.Put) {
+        if (connection.request.url.endsWith('/api/companyUsers') && connection.request.method === RequestMethod.Put) {
 
           // get new company object from post body
-          let obj = JSON.parse(connection.request.getBody());
+          let companyUsers = JSON.parse(connection.request.getBody());
 
           // find company by id in users array
-          let urlParts = connection.request.url.split('/');
-          let id = parseInt(urlParts[urlParts.length - 1]);
-          for (let i = 0; i < companies.length; i++) {
-            let company = companies[i];
-            if (company.id === id) {
-              // delete company
-              companies.splice(i, 1);
-              // insert new company data
-              companies.push(obj.UpdatedCompany);
-              localStorage.setItem('companies', JSON.stringify(companies));
-              //להוסיף מחיקת יוזרים
+          let companyId = companyUsers[0].companyId;
+
+         // delete all users of updated company
+          for ( let i = 0 ; i<users.length ; i++ )
+            if (users[i].companyId === companyId)
+            {
+              users.splice(i,1);
+              i--;
+            }
+          
+          // adding company users to users array
+          for ( let i =0 ; i< companyUsers.length ; i++)
+          {
+          companyUsers[i].id = users.length + 1;
+          users.push(companyUsers[i]);
+          }
+
+          // update company users in companies array
+         for (let i = 0; i < companies.length; i++) 
+            if (companies[i].id === companyId) {
+              companies[i].employees = companyUsers;
               break;
             }
-          }
+          
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem('companies', JSON.stringify(companies));
 
           // respond 200 OK
           connection.mockRespond(new Response(new ResponseOptions({status: 200})));
