@@ -19,11 +19,30 @@ export class RegisterComponent {
   company : Company = new Company();
   loading = false;
 
-  constructor(
-    private router: Router,
-    private companyService: CompanyService,
-    private userService: UserService,
-    private alertService: AlertService) { }
+  years = [];
+  months = [
+    {value: 0, label: 'ינואר'},
+    {value: 1, label: 'פברואר'},
+    {value: 2, label: 'מרץ'},
+    {value: 3, label: 'אפריל'},
+    {value: 4, label: 'מאי'},
+    {value: 5, label: 'יוני'},
+    {value: 6, label: 'יולי'},
+    {value: 7, label: 'אוגוסט'},
+    {value: 8, label: 'ספטמבר'},
+    {value: 9, label: 'אוקטובר'},
+    {value: 10, label: 'נובמבר'},
+    {value: 11, label: 'דצמבר'}
+  ];
+  chosenMonth: number = (new Date()).getMonth();
+  chosenYear: number = (new Date()).getFullYear();
+
+  constructor(private router: Router, private companyService: CompanyService, private userService: UserService, private alertService: AlertService) {
+    this.company.visa.expirationDate = new Date();
+    this.company.visa.expirationDate.setDate(1);
+    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
+      this.years.push({value: i, label: i});
+  }
 
   register() {
     this.loading = true;
@@ -46,16 +65,18 @@ export class RegisterComponent {
           this.alertService.error(error);
           this.loading = false;
         });
+  }
 
-    // this.userService.create(this.user)
-    //   .subscribe(
-    //     data => {
-    //       this.alertService.success('Registration successful', true);
-    //       this.router.navigate(['/login']);
-    //     },
-    //     error => {
-    //       this.alertService.error(error);
-    //       this.loading = false;
-    //     });
+  setExpParameter(param: string){
+    switch(param){
+      case 'month':
+        this.company.visa.expirationDate.setMonth(this.chosenMonth);
+        break;
+      case 'year':
+        this.company.visa.expirationDate.setFullYear(this.chosenYear);
+        break;
+    }
+
+    console.log(this.company.visa.expirationDate);
   }
 }

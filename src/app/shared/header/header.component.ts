@@ -1,4 +1,4 @@
-import  { Component, OnInit } from "@angular/core";
+import  { Component } from "@angular/core";
 import {Router} from "@angular/router";
 import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../../models/user";
@@ -10,16 +10,12 @@ import {UserService} from "../services/user.service";
   styleUrls: ["header.component.less"]
 })
 
-export class HeaderComponent implements OnInit{
+export class HeaderComponent{
   private user : User;
 
   constructor(private userService: UserService,
               private authenticationService : AuthenticationService,
               private router: Router){
-
-  }
-
-  ngOnInit() : void {
     this.authenticationService.validate();
     this.user = this.authenticationService.user;
   }

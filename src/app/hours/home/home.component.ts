@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private userService: UserService) {
-    for(let i = this.chosenYear - 5; i < this.chosenYear + 5; i++)
+    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
     this.user = this.authenticationService.user;
