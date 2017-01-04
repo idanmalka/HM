@@ -210,6 +210,44 @@ export let fakeBackendProvider = {
           connection.mockRespond(new Response(new ResponseOptions({status: 200})));
         }
 
+        // update company users
+        if (connection.request.url.endsWith('/api/companyUsers') && connection.request.method === RequestMethod.Put) {
+
+          // get new company object from post body
+          let companyUsers = JSON.parse(connection.request.getBody());
+
+          // find company by id in users array
+          let companyId = companyUsers[0].companyId;
+
+         // delete all users of updated company
+          for ( let i = 0 ; i<users.length ; i++ )
+            if (users[i].companyId === companyId)
+            {
+              users.splice(i,1);
+              i--;
+            }
+          
+          // adding company users to users array
+          for ( let i =0 ; i< companyUsers.length ; i++)
+          {
+          companyUsers[i].id = users.length + 1;
+          users.push(companyUsers[i]);
+          }
+
+          // update company users in companies array
+         for (let i = 0; i < companies.length; i++) 
+            if (companies[i].id === companyId) {
+              companies[i].employees = companyUsers;
+              break;
+            }
+          
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem('companies', JSON.stringify(companies));
+
+          // respond 200 OK
+          connection.mockRespond(new Response(new ResponseOptions({status: 200})));
+        }
+
         // get company by id
         if (connection.request.url.match(/\/api\/companies\/\d+$/) && connection.request.method === RequestMethod.Get) {
           // check for fake auth token in header and return company if valid, this security is implemented server side in a real application
