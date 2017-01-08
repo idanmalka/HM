@@ -115,6 +115,11 @@ export let fakeBackendProvider = {
             }
           }
 
+          let companyIndex = companies.findIndex(c => c.id === newUser.companyId);
+          let userIndex = companies[companyIndex].employees.findIndex(u => u.id === newUser.id);
+          companies[companyIndex].employees.splice(userIndex,1);
+          companies[companyIndex].employees.push(newUser);
+
           // respond 200 OK
           connection.mockRespond(new Response(new ResponseOptions({status: 200})));
         }
@@ -173,7 +178,7 @@ export let fakeBackendProvider = {
           newUser.companyId = newCompany.id;
           newCompany.employees.push(newUser);
 
-          // save new company         
+          // save new company
           companies.push(newCompany);
           localStorage.setItem('companies', JSON.stringify(companies));
           // save new user
@@ -226,7 +231,7 @@ export let fakeBackendProvider = {
               users.splice(i,1);
               i--;
             }
-          
+
           // adding company users to users array
           for ( let i =0 ; i< companyUsers.length ; i++)
           {
@@ -235,12 +240,12 @@ export let fakeBackendProvider = {
           }
 
           // update company users in companies array
-         for (let i = 0; i < companies.length; i++) 
+         for (let i = 0; i < companies.length; i++)
             if (companies[i].id === companyId) {
               companies[i].employees = companyUsers;
               break;
             }
-          
+
           localStorage.setItem('users', JSON.stringify(users));
           localStorage.setItem('companies', JSON.stringify(companies));
 
@@ -268,6 +273,11 @@ export let fakeBackendProvider = {
           }
         }
 
+        // get companies
+        if (connection.request.url.match('/api/companies') && connection.request.method === RequestMethod.Get) {
+            connection.mockRespond(new Response(new ResponseOptions({status: 200, body: companies})));
+
+        }
 
 
       }, 500);

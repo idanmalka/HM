@@ -11,6 +11,10 @@
                    'col-md-8': displayCalendar,
                    'col-md-6': showDailyHoursChart}">
     <div class="shifts-buttons-area">
+      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1" [options]="dropdownCompanies"
+                  (onChange)="setEditCompany()"></p-dropdown>
+      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser" size="1" [options]="companyUsers"
+                  (onChange)="setEditableUser()"></p-dropdown>
       <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
                   (onChange)="initTableData()"></p-dropdown>
       <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" size="1" [options]="years"

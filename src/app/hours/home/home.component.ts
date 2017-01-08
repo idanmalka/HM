@@ -8,6 +8,9 @@ import {ModalDirective} from "ng2-bootstrap";
 import {UIChart} from "primeng/components/chart/chart";
 import * as FileSaver from "file-saver";
 import {Message} from 'primeng/primeng';
+import {Company} from "../../models/company";
+import {CompanyService} from "../../shared/services/company.service";
+import {Response} from "@angular/http";
 
 @Component({
   selector: 'home-page',
@@ -17,6 +20,12 @@ import {Message} from 'primeng/primeng';
 export class HomeComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
   @ViewChild('chart') public chart: UIChart;
+
+  companies;
+  dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
+  companyUsers = [{label: 'בחר משתמש', value: new User()}];
+  chosenCompany;
+  chosenCompanyUser;
 
   dirty : boolean = false;
   editableUser: User = new User();
@@ -76,11 +85,12 @@ export class HomeComponent implements OnInit {
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
-              private userService: UserService) {
+              private userService: UserService,
+              private companyService: CompanyService) {
     for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
-    this.editableUser = this.authenticationService.user;
+    this.user = this.editableUser = this.authenticationService.user;
     if (this.editableUser.isAdmin === true) {
       this.user = this.editableUser;
       this.editableUser = new User();
@@ -89,6 +99,14 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.companyService.getAll().subscribe((data: Response) => {
+      this.companies = data;
+      for(let company of this.companies){
+        this.dropdownCompanies.push({label:company.name, value: company});
+      }
+      console.log(this.companies);
+    });
+
     this.initTableData();
   }
 
@@ -380,5 +398,17 @@ export class HomeComponent implements OnInit {
       this.initTableData();
     }
     console.log('not poping');
+  }
+
+  setEditCompany(): void {
+    this.companyUsers = [];
+    this.companyUsers.push({label: 'בחר משתמש', value: new User()});
+    for(let user of this.chosenCompany.employees)
+      this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
+  }
+
+  setEditableUser(): void {
+    this.editableUser = Object.assign({},this.chosenCompanyUser);
+    this.initTableData();
   }
 }
