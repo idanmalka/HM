@@ -109,6 +109,7 @@ export class HomeComponent implements OnInit {
       });
 
     this.initTableData();
+    this.dirty = false;
   }
 
   initTableData(): void {
@@ -377,18 +378,20 @@ export class HomeComponent implements OnInit {
       this.msgs.push({severity: 'info', summary: '', detail: 'אנא שמור לפני ההורדה'})
       return;
     }
+    if (this.data.length > 0) {
+      const items = this.data;
+      const replacer = (key, value) => value === null ? '' : value;// specify how you want to handle null values here
+      const header = Object.keys(items[0]);
+      let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+      csv.unshift(header.join(','));
+      let csv1 = csv.join('\r\n');
 
-    const items = this.data;
-    const replacer = (key, value) => value === null ? '' : value ;// specify how you want to handle null values here
-    const header = Object.keys(items[0]);
-    let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
-    csv.unshift(header.join(','));
-    let csv1 = csv.join('\r\n');
+      console.log(csv1);
 
-    console.log(csv1);
+      var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
+      FileSaver.saveAs(blob, 'דיווחי שעות ' + this.months[this.chosenMonth].label + '/' + this.chosenYear + '.csv');
+    } else this.msgs.push({severity: 'info', summary: '', detail: 'אין דיווחים לשמירה'})
 
-    var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
-    FileSaver.saveAs(blob,'דיווחי שעות '+ this.months[this.chosenMonth].label + '/' + this.chosenYear +'.csv');
   }
 
   undoShiftChange(){
@@ -398,7 +401,7 @@ export class HomeComponent implements OnInit {
       Object.assign(this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
       this.initTableData();
     }
-    console.log('not poping');
+    else console.log('not poping');
   }
 
   setEditCompany(): void {
@@ -406,10 +409,15 @@ export class HomeComponent implements OnInit {
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
     for(let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
+    this.editableUser = Object.assign({},this.chosenCompanyUser);
+    this.initTableData();
+    this.dirty = false;
   }
 
   setEditableUser(): void {
     this.editableUser = Object.assign({},this.chosenCompanyUser);
+    this.editableUserShiftsStackSave = [];
     this.initTableData();
+    this.dirty = false;
   }
 }
