@@ -119,6 +119,7 @@ export let fakeBackendProvider = {
           let userIndex = companies[companyIndex].employees.findIndex(u => u.id === newUser.id);
           companies[companyIndex].employees.splice(userIndex,1);
           companies[companyIndex].employees.push(newUser);
+          localStorage.setItem('companies',JSON.stringify(companies));
 
           // respond 200 OK
           connection.mockRespond(new Response(new ResponseOptions({status: 200})));

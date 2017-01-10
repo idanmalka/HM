@@ -2,6 +2,11 @@
   <div class="panel-heading">רשימת עובדי החברה</div>
   <div class="panel-body">
     <div *ngIf="user.isManager && editable" class="buttons-area">
+
+        <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
+                    [options]="dropdownCompanies"
+                    (onChange)="initTableData()"></p-dropdown>
+
       <button class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span
         class="glyphicon glyphicon-plus"></span></button>
       <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
@@ -56,21 +61,21 @@
                                     #email="ngModel"
                                     required/>
                             <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס דוא"ל</div>
-                    </div> 
+                    </div>
                     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }">
                             <label for="phone">מספר טלפון</label>
                             <input type="text" class="form-control" name="phone" [(ngModel)]="modalPhone"
                                     #phone="ngModel"
                                     required/>
                             <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון</div>
-                    </div>     
+                    </div>
                     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !userAddress.valid }">
                             <label for="userAddress">כתובת</label>
                             <input type="text" class="form-control" name="userAddress" [(ngModel)]="modalAddress"
                                     #userAddress="ngModel"
                                     required/>
                             <div *ngIf="f.submitted && !userAddress.valid" class="help-block">אנא הכנס כתובת</div>
-                    </div>       
+                    </div>
                     <div class="form-group">
                             <label for="department">שם מחלקה</label>
                             <input type="text" class="form-control" name="department" [(ngModel)]="modalDepartment" #department="ngModel"

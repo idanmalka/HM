@@ -1,12 +1,15 @@
 <div class="container">
   <h2>פרטי חברה</h2>
+  <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
+              [options]="dropdownCompanies"
+              (onChange)="setEditCompany()"></p-dropdown>
   <br>
   <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
-    <div class="row" *ngIf="model.isManager">
+    <div class="row" *ngIf="user.isManager">
       <div class="col-md-5 ">
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaNumber.valid }">
           <label for="visaNumber">מספר ויזה</label>
-          <input type="number" class="form-control" name="visaNumber" [(ngModel)]="company.visa.visaNumber"
+          <input id="visaNumber" type="number" class="form-control" name="visaNumber" [(ngModel)]="editableCompany.visa.visaNumber"
                  #visaNumber="ngModel"
                  required/>
           <div *ngIf="f.submitted && !visaNumber.valid" class="help-block">אנא הכנס מספר ויזה</div>
@@ -20,7 +23,7 @@
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }">
           <label for="visaCVV">ספרות אימות</label>
-          <input type="number" class="form-control" name="visaCVV" [(ngModel)]="company.visa.cvv"
+          <input id="visaCVV" type="number" class="form-control" name="visaCVV" [(ngModel)]="editableCompany.visa.cvv"
                  #visaCVV="ngModel"
                  required/>
           <div *ngIf="f.submitted && !visaCVV.valid" class="help-block">אנא הכנס ספרות אימות</div>
@@ -32,56 +35,56 @@
         </div>
       </div>
       <div class="col-md-offset-2 col-md-5">
-        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyName.valid }">
-          <label for="companyName">שם החברה</label>
-          <input type="text" class="form-control" name="companyName" [(ngModel)]="company.name"
-                 #companyName="ngModel"
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !editableCompanyName.valid }">
+          <label for="editableCompanyName">שם החברה</label>
+          <input type="text" class="form-control" name="editableCompanyName" [(ngModel)]="editableCompany.name"
+                 #editableCompanyName="ngModel"
                  required/>
-          <div *ngIf="f.submitted && !companyName.valid" class="help-block">אנא הכנס את כתובת החברה</div>
+          <div *ngIf="f.submitted && !editableCompanyName.valid" class="help-block">אנא הכנס את כתובת החברה</div>
         </div>
-        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyAddress.valid }">
-          <label for="companyAddress">כתובת החברה</label>
-          <input type="text" class="form-control" name="companyAddress" [(ngModel)]="company.address"
-                 #companyAddress="ngModel"
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !editableCompanyAddress.valid }">
+          <label for="editableCompanyAddress">כתובת החברה</label>
+          <input id="editableCompanyAddress" type="text" class="form-control" name="editableCompanyAddress" [(ngModel)]="editableCompany.address"
+                 #editableCompanyAddress="ngModel"
                  required/>
-          <div *ngIf="f.submitted && !companyAddress.valid" class="help-block">אנא הכנס את כתובת החברה</div>
+          <div *ngIf="f.submitted && !editableCompanyAddress.valid" class="help-block">אנא הכנס את כתובת החברה</div>
         </div>
-        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyField.valid }">
-          <label for="companyField">תחום עיסוק חברה</label>
-          <input type="text" class="form-control" name="companyField" [(ngModel)]="company.field"
-                 #companyField="ngModel"
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !editableCompanyField.valid }">
+          <label for="editableCompanyField">תחום עיסוק חברה</label>
+          <input id="editableCompanyField" type="text" class="form-control" name="editableCompanyField" [(ngModel)]="editableCompany.field"
+                 #editableCompanyField="ngModel"
                  required/>
-          <div *ngIf="f.submitted && !companyField.valid" class="help-block">אנא הכנס את תחום עיסוק החברה</div>
+          <div *ngIf="f.submitted && !editableCompanyField.valid" class="help-block">אנא הכנס את תחום עיסוק החברה</div>
         </div>
       </div>
     </div>
 
   </form>
-  <div class="row" *ngIf="!model.isManager">
+  <div class="row" *ngIf="!user.isManager">
     <div class="col-md-offset-7 col-md-5">
       <div>
-        <label for="companyName">שם החברה</label>
-        <input [disabled]="!model.isManager" type="text" class="form-control" name="companyName"
-               [ngModel]="company.name"
-               #companyName="ngModel"
+        <label for="editableCompanyName">שם החברה</label>
+        <input id="editableCompanyName" [disabled]="!user.isManager" type="text" class="form-control" name="editableCompanyName"
+               [ngModel]="editableCompany.name"
+               #editableCompanyName="ngModel"
         />
       </div>
       <div>
-        <label for="companyAddress">כתובת החברה</label>
-        <input [disabled]="!model.isManager" type="text" class="form-control" name="companyAddress"
-               [(ngModel)]="company.address"
-               #companyAddress="ngModel"
+        <label for="editableCompanyAddress">כתובת החברה</label>
+        <input [disabled]="!user.isManager" type="text" class="form-control" name="editableCompanyAddress"
+               [(ngModel)]="editableCompany.address"
+               #editableCompanyAddress="ngModel"
         />
       </div>
       <div>
-        <label for="companyField">תחום עיסוק חברה</label>
-        <input [disabled]="!model.isManager" type="text" class="form-control" name="companyField"
-               [(ngModel)]="company.field"
-               #companyField="ngModel"
+        <label for="editableCompanyField">תחום עיסוק חברה</label>
+        <input [disabled]="!user.isManager" type="text" class="form-control" name="editableCompanyField"
+               [(ngModel)]="editableCompany.field"
+               #editableCompanyField="ngModel"
         />
       </div>
     </div>
   </div>
   <br>
-  <users-table [editable]="false"></users-table>
+  <users-table *ngIf="!user.isAdmin" [editable]="false"></users-table>
 </div>

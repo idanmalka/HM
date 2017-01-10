@@ -11,9 +11,11 @@
                    'col-md-8': displayCalendar,
                    'col-md-6': showDailyHoursChart}">
     <div class="shifts-buttons-area">
-      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1" [options]="dropdownCompanies"
+      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1"
+                  [options]="dropdownCompanies"
                   (onChange)="setEditCompany()"></p-dropdown>
-      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser" size="1" [options]="companyUsers"
+      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser" size="1"
+                  [options]="companyUsers"
                   (onChange)="setEditableUser()"></p-dropdown>
       <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
                   (onChange)="initTableData()"></p-dropdown>
@@ -67,9 +69,9 @@
                     nextText="&lsaquo;" previousText="&rsaquo;" lastText="&laquo;" firstText="&raquo;">
         </pagination>
       </div>
+    </div>
   </div>
 </div>
-
 <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
      aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -123,7 +125,8 @@
           <div class="row">
             <div class="form-group col-sm-offset-2 col-sm-8">
               <label>הערות</label>
-              <input type="text" class="form-control" name="modalComment" [(ngModel)]="modalComment" #comment="ngModel"
+              <input type="text" class="form-control" name="modalComment" [(ngModel)]="modalComment"
+                     #comment="ngModel"
               />
             </div>
           </div>
@@ -136,3 +139,4 @@
     </div>
   </div>
 </div>
+

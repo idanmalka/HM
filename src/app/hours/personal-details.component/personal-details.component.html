@@ -1,5 +1,13 @@
 <div class="container">
     <h2>פרטים אישיים</h2>
+    <div *ngIf="user.isAdmin">
+      <p-dropdown dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1"
+                  [options]="dropdownCompanies"
+                  (onChange)="setEditCompany()"></p-dropdown>
+      <p-dropdown dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser" size="1"
+                  [options]="companyUsers"
+                  (onChange)="setEditableUser()"></p-dropdown>
+    </div>
     <br>
     <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
         <div class="row">
@@ -7,57 +15,57 @@
         <div class="col-md-5">
                 <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
                         <label for="email">דוא"ל</label>
-                        <input type="email" class="form-control" name="email" [(ngModel)]="model.email"
+                        <input id="email" type="email" class="form-control" name="email" [(ngModel)]="editableUser.email"
                                 #email="ngModel"
                                 required/>
                         <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס דוא"ל</div>
-                </div> 
+                </div>
                 <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }">
                         <label for="phone">מספר טלפון</label>
-                        <input type="text" class="form-control" name="phone" [(ngModel)]="model.phone"
+                        <input id="phone" type="text" class="form-control" name="phone" [(ngModel)]="editableUser.phone"
                                 #phone="ngModel"
                                 required/>
                         <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון</div>
-                </div>     
+                </div>
                 <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !userAddress.valid }">
                         <label for="userAddress">כתובת</label>
-                        <input type="text" class="form-control" name="userAddress" [(ngModel)]="model.address"
+                        <input id="userAddress" type="text" class="form-control" name="userAddress" [(ngModel)]="editableUser.address"
                                 #userAddress="ngModel"
                                 required/>
                         <div *ngIf="f.submitted && !userAddress.valid" class="help-block">אנא הכנס כתובת</div>
-                </div>       
+                </div>
                 <div class="form-group">
                         <label for="department">שם מחלקה</label>
-                        <input disabled type="text" class="form-control" name="department" [ngModel]="model.department" #department="ngModel"
+                        <input id="department" disabled type="text" class="form-control" name="department" [ngModel]="editableUser.department" #department="ngModel"
                                 />
                 </div>
                 <div class="form-group">
                         <label for="role">שם תפקיד</label>
-                        <input disabled type="text" class="form-control" name="role" [ngModel]="model.role" #role="ngModel"
+                        <input disabled id="role" type="text" class="form-control" name="role" [ngModel]="editableUser.role" #role="ngModel"
                                 />
                 </div>
         </div>
         <div class="col-md-offset-2 col-md-5">
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
             <label for="firstName">שם פרטי</label>
-            <input type="text" class="form-control" name="firstName" [(ngModel)]="model.firstName" #firstName="ngModel"
+            <input id="firstName" type="text" class="form-control" name="firstName" [(ngModel)]="editableUser.firstName" #firstName="ngModel"
                     required/>
             <div *ngIf="f.submitted && !firstName.valid" class="help-block">אנא הכנס שם פרטי</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
             <label for="lastName">שם משפחה</label>
-            <input type="text" class="form-control" name="lastName" [(ngModel)]="model.lastName" #lastName="ngModel"
+            <input id="lastName" type="text" class="form-control" name="lastName" [(ngModel)]="editableUser.lastName" #lastName="ngModel"
                     required/>
             <div *ngIf="f.submitted && !lastName.valid" class="help-block">אנא הכנס שם משפחה</div>
             </div>
             <div class="form-group">
             <label for="username">שם משתמש</label>
-            <input disabled type="text" class="form-control" name="username" [ngModel]="model.username" #username="ngModel"
+            <input disabled id="username" type="text" class="form-control" name="username" [ngModel]="editableUser.username" #username="ngModel"
                     />
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
             <label for="password">סיסמא</label>
-            <input type="password" class="form-control" name="password" [(ngModel)]="model.password" #password="ngModel"
+            <input id="password" type="password" class="form-control" name="password" [(ngModel)]="editableUser.password" #password="ngModel"
                     required/>
             <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
             </div>
@@ -72,5 +80,5 @@
 
 </form>
 
-</div> 
+</div>
 

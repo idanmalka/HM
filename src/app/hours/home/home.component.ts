@@ -99,13 +99,14 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.companyService.getAll().subscribe((data: Response) => {
-      this.companies = data;
-      for(let company of this.companies){
-        this.dropdownCompanies.push({label:company.name, value: company});
-      }
-      console.log(this.companies);
-    });
+    if(this.user.isAdmin)
+      this.companyService.getAll().subscribe((data: Response) => {
+       this.companies = data;
+       for(let company of this.companies){
+          this.dropdownCompanies.push({label:company.name, value: company});
+        }
+       console.log(this.companies);
+      });
 
     this.initTableData();
   }

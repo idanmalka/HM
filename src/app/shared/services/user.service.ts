@@ -22,8 +22,8 @@ export class UserService {
 
   update(updatedUser: User) {
     let user = JSON.parse(localStorage['currentUser']);
-    Object.assign(user,updatedUser);
-    localStorage.setItem('currentUser',JSON.stringify(user));
+    if (user.id === updatedUser.id)
+      localStorage.setItem('currentUser',JSON.stringify(updatedUser));
     return this.http.put('/api/users/'+updatedUser.id, updatedUser, this.jwt()).map((response: Response) => response.json());
   }
 

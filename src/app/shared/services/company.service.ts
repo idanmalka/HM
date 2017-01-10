@@ -15,15 +15,19 @@ export class CompanyService {
   }
 
   update(updatedCompany: Company) {
-    localStorage.setItem('currentCompany', JSON.stringify(updatedCompany));
+    let company = JSON.parse(localStorage.getItem('currentCompany'));
+    if (company.id === updatedCompany.id)
+      localStorage.setItem('currentCompany', JSON.stringify(updatedCompany));
     return this.http.put('/api/companies/' + updatedCompany.id, updatedCompany, this.jwt()).map((response: Response) => response.json());
   }
 
-  updateCompanyUsers(companyUsers: Array<any>) {
+  updateCompanyUsers(updatedCompany: Company) {
     let company = JSON.parse(localStorage.getItem('currentCompany'));
-    company.employees = companyUsers;
-    localStorage.setItem('currentCompany', JSON.stringify(company));
-    return this.http.put('/api/companyUsers', companyUsers, this.jwt()).map((response: Response) => response.json());
+    if (company.id === updatedCompany.id) {
+      company.employees = updatedCompany.employees;
+      localStorage.setItem('currentCompany', JSON.stringify(company));
+    }
+    return this.http.put('/api/companyUsers', updatedCompany.employees, this.jwt()).map((response: Response) => response.json());
   }
 
   getById(id: number) {

@@ -4,6 +4,7 @@ import {User} from "../../models/user";
 import {AuthenticationService} from "../../shared/services/authentication.service";
 import { CompanyService } from '../../shared/services/company.service';
 import {ModalDirective} from "ng2-bootstrap";
+import {Response} from "@angular/http";
 
 @Component({
   selector: 'users-table',
@@ -13,8 +14,11 @@ import {ModalDirective} from "ng2-bootstrap";
 export class UsersTableComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
   @Input() editable: boolean = false;
+
   user: User;
-  company: Company;
+  editableCompany: Company = new Company();
+  companies;
+  dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
 
   rows: Array<any> = [];
   columns: Array<any> = [
@@ -57,14 +61,22 @@ export class UsersTableComponent implements OnInit {
   ngOnInit(): void {
     this.length = this.data.length || 0;
     this.user = this.authService.user;
-    this.company = this.authService.company;
+    this.editableCompany = this.authService.company;
+    if(this.user.isAdmin)
+      this.companyService.getAll().subscribe((data: Response) => {
+        this.companies = data;
+        for(let company of this.companies){
+          this.dropdownCompanies.push({label:company.name, value: company});
+        }
+        console.log(this.companies);
+      });
     this.initTableData();
   }
 
   initTableData(): void {
     this.data = [];
     let index = 0;
-    for (let user of this.company.employees) {
+    for (let user of this.editableCompany.employees) {
       let firstName = user.firstName;
       let lastName = user.lastName;
       let department = user.department;
@@ -178,7 +190,7 @@ export class UsersTableComponent implements OnInit {
     this.checkedRow = -1;
     this.updateModal();
     this.showChildModal();
-   
+
   }
 
   updateModal(UserName="", Password = "", FirstName = "", LastName = "", Email = "" , Phone = "" , Address = "" , Department = "" , Role="") {
@@ -216,25 +228,25 @@ export class UsersTableComponent implements OnInit {
       let Role = this.modalRole;
 
       if (this.checkedRow > -1) {
-        this.company.employees[this.checkedRow].username = UserName;
-        this.company.employees[this.checkedRow].password = Password;
-        this.company.employees[this.checkedRow].firstName = FirstName;
-        this.company.employees[this.checkedRow].lastName = LastName;
-        this.company.employees[this.checkedRow].email = Email;
-        this.company.employees[this.checkedRow].phone = Phone;
-        this.company.employees[this.checkedRow].address = Address;
-        this.company.employees[this.checkedRow].department = Department;
-        this.company.employees[this.checkedRow].role = Role;
+        this.editableCompany.employees[this.checkedRow].username = UserName;
+        this.editableCompany.employees[this.checkedRow].password = Password;
+        this.editableCompany.employees[this.checkedRow].firstName = FirstName;
+        this.editableCompany.employees[this.checkedRow].lastName = LastName;
+        this.editableCompany.employees[this.checkedRow].email = Email;
+        this.editableCompany.employees[this.checkedRow].phone = Phone;
+        this.editableCompany.employees[this.checkedRow].address = Address;
+        this.editableCompany.employees[this.checkedRow].department = Department;
+        this.editableCompany.employees[this.checkedRow].role = Role;
       } else {
-        this.company.employees.push({id: -1 , username: UserName, password: Password, firstName: FirstName, 
+        this.editableCompany.employees.push({id: -1 , username: UserName, password: Password, firstName: FirstName,
                                     lastName: LastName , email: Email , phone : Phone , address: Address,
                                     department: Department , role: Role , isManager: false , isAdmin : false ,
-                                    companyId : this.user.companyId , shifts: [] } );
+                                    companyId : this.editableCompany.employees[0].companyId , shifts: [] } );
       }
   }
 
   deleteUser() {
-    this.company.employees.splice(this.checkedRow, 1);
+    this.editableCompany.employees.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
   }
@@ -246,15 +258,15 @@ export class UsersTableComponent implements OnInit {
     console.log(data);
     this.checkedRow = data.row.index;
     this.updateModal(
-        this.company.employees[this.checkedRow].username,
-        this.company.employees[this.checkedRow].password,
-        this.company.employees[this.checkedRow].firstName,
-        this.company.employees[this.checkedRow].lastName,
-        this.company.employees[this.checkedRow].email,
-        this.company.employees[this.checkedRow].phone,
-        this.company.employees[this.checkedRow].address,
-        this.company.employees[this.checkedRow].department,
-        this.company.employees[this.checkedRow].role );
+        this.editableCompany.employees[this.checkedRow].username,
+        this.editableCompany.employees[this.checkedRow].password,
+        this.editableCompany.employees[this.checkedRow].firstName,
+        this.editableCompany.employees[this.checkedRow].lastName,
+        this.editableCompany.employees[this.checkedRow].email,
+        this.editableCompany.employees[this.checkedRow].phone,
+        this.editableCompany.employees[this.checkedRow].address,
+        this.editableCompany.employees[this.checkedRow].department,
+        this.editableCompany.employees[this.checkedRow].role );
     this.showChildModal();
   }
 
@@ -269,8 +281,11 @@ export class UsersTableComponent implements OnInit {
 
   saveData(): void {
     console.log('updating user data');
-    this.companyService.updateCompanyUsers(this.company.employees);
+    this.companyService.updateCompanyUsers(this.editableCompany);
   }
 
+  setEditCompany(): void {
+    this.initTableData();
+  }
 
 }
