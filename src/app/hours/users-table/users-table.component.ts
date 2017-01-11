@@ -2,10 +2,13 @@ import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import {Company} from "../../models/company";
 import {User} from "../../models/user";
 import {AuthenticationService} from "../../shared/services/authentication.service";
-import {CompanyService} from '../../shared/services/company.service';
+import { UserService } from '../../shared/services/user.service';
+import { CompanyService } from '../../shared/services/company.service';
 import {ModalDirective} from "ng2-bootstrap";
 import {Response} from "@angular/http";
 import * as FileSaver from "file-saver";
+import { FormGroup } from '@angular/forms';
+
 
 @Component({
   selector: 'users-table',
@@ -47,6 +50,7 @@ export class UsersTableComponent implements OnInit {
   modalAddress: string;
   modalDepartment: string;
   modalRole: string;
+  modalExistUserNameFlag :boolean = false;
 
   config: any = {
     filtering: {filterString: ""},
@@ -57,7 +61,8 @@ export class UsersTableComponent implements OnInit {
   data: Array<any> = [];
 
   constructor(private authService: AuthenticationService,
-              private companyService: CompanyService) {
+              private companyService: CompanyService,
+              private userService: UserService) {
   }
 
   ngOnInit(): void {
@@ -200,21 +205,38 @@ export class UsersTableComponent implements OnInit {
     this.modalRole = Role;
   }
 
-  confirmUser() {
-    this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
+  confirmUser(modalForm :FormGroup) {
+    if (modalForm.valid) {
+      this.editableCompanyEmployeesStackSave.push(jQuery.extend(true, {}, this.editableCompany.employees));
+      this.updateDataFromModal();
+    }
+      // ON EDIT THIS IS NOT SAVED AS NEW OBJECT, WHY?????
 
 
-    // ON EDIT THIS IS NOT SAVED AS NEW OBJECT, WHY?????
-
-
-    console.log('clicked confirm user');
-    this.updateDataFromModal();
-    this.hideChildModal();
+    // console.log('clicked confirm user');
+    // this.updateDataFromModal();
+    // this.hideChildModal();
   }
 
   updateDataFromModal(): void {
-    this.updateUsersData();
-    this.initTableData();
+    if (this.checkedRow < 0) {
+          this.userService.isUserNameExist(this.modalUserName)
+            .subscribe(
+              data => {
+                this.updateUsersData();
+                this.initTableData();
+                this.hideChildModal();
+              },
+              error => {
+                this.modalExistUserNameFlag = true;
+              });
+            }
+    else {
+          this.updateUsersData();
+          this.initTableData();
+          this.hideChildModal();
+}
+
   }
 
   updateUsersData(): void {
@@ -261,6 +283,7 @@ export class UsersTableComponent implements OnInit {
 
     console.log(data);
     this.checkedRow = data.row.index;
+    this.modalExistUserNameFlag = false;
     this.updateModal(
       this.editableCompany.employees[this.checkedRow].username,
       this.editableCompany.employees[this.checkedRow].password,

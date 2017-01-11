@@ -96,6 +96,7 @@
                             #date='ngModel' name="date" requierd (ngModelChange)="print($event)"></datepicker>
               </div>
               <div *ngIf="f.submitted && !date.valid" class="help-block">אנא הכנס תאריך דיווח</div>
+              <div *ngIf="isExistShiftInChosenDay()" class="help-block">אנא בחר יום אחר, לא ניתן להזין שתי משמרות באותו יום</div>
             </div>
             <div class="col-sm-4">
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !modalStart.valid }" dir="ltr">

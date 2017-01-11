@@ -68,10 +68,10 @@
             <div class="col-md-5">
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
                 <label for="email">דוא"ל</label>
-                <input id="email" type="email" class="form-control" name="email" [(ngModel)]="modalEmail"
+                <input id="email" type="email" class="form-control" name="email" [(ngModel)]="modalEmail" pattern="[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*"
                        #email="ngModel"
                        required/>
-                <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס דוא"ל</div>
+                <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס כתובת דוא"ל תקינה</div>
               </div>
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }">
                 <label for="phone">מספר טלפון</label>
@@ -120,6 +120,7 @@
                        [(ngModel)]="modalUserName" #username="ngModel"
                        required/>
                 <div *ngIf="f.submitted && !username.valid" class="help-block">אנא הכנס שם משתמש</div>
+                <div *ngIf="f.submitted && modalExistUserNameFlag" class="help-block">שם משתמש קיים במערכת, אנא בחר שם משתמש אחר  </div>
               </div>
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
                 <label for="password">סיסמא</label>
@@ -131,8 +132,9 @@
             </div>
           </div>
           <div class="form-group">
-            <button class="btn btn-primary" (click)="confirmUser()">אישור</button>
+            <button class="btn btn-primary" (click)="confirmUser(f.form)">אישור</button>
             <button *ngIf="checkedRow !== -1 " class="btn btn-danger" (click)="deleteUser()">הסר עובד</button>
+            <span *ngIf="!f.valid && f.submitted" class="animate-if">נא בדוק תקינות קלט הטופס</span>
           </div>
         </form>
       </div>

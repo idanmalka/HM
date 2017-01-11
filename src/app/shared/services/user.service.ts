@@ -38,6 +38,11 @@ export class UserService {
     if (user && user.token) return user;
   }
 
+  isUserNameExist(username : string){
+    return this.http.post('/api/userNameExist', username, this.jwt()).map((response: Response) => response.json());
+  }
+
+
   // private helper methods
 
   private jwt() {

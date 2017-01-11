@@ -75,12 +75,13 @@ export class HomeComponent implements OnInit {
 
   modalStartHour: Date;
   modalEndHour: Date;
-  modalDate: Date;
+  modalDate: Date ;
   modalComment: string;
 
   showDailyHoursChart: boolean = false;
   chartData: any;
   filteredSortedData = [];
+  shiftsPerDay: boolean[] = [];
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
@@ -106,6 +107,7 @@ export class HomeComponent implements OnInit {
        console.log(this.companies);
       });
 
+    this.modalDate = new Date();
     this.initTableData();
     this.dirty = false;
   }
@@ -113,6 +115,9 @@ export class HomeComponent implements OnInit {
   initTableData(): void {
     this.data = [];
     let index = 0;
+     for (let i=0 ; i<32 ; i++)
+       this.shiftsPerDay[i] = false;
+
     for (let shift of this.editableUser.shifts) {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
@@ -126,6 +131,9 @@ export class HomeComponent implements OnInit {
         let diff = new Date(Math.abs(end.getTime() - start.getTime()));
         let totalHoursStr = (diff.getHours() - 2) + ":" + diff.getMinutes();
         let comment = shift.comment;
+
+        let currentDate = date.getDate();
+        this.shiftsPerDay[currentDate] = true;
 
         this.data.push({
           index: index,
@@ -344,10 +352,14 @@ export class HomeComponent implements OnInit {
   }
 
   confirmShift(): boolean {
+    if (!this.isExistShiftInChosenDay())
+    {
     console.log("submitted");
     this.updateDataFromModal();
     this.hideChildModal();
     return false;
+    }
+    return true;
   }
 
   updateDataFromModal(): void {
@@ -416,4 +428,15 @@ export class HomeComponent implements OnInit {
     this.initTableData();
     this.dirty = false;
   }
+
+  isExistShiftInChosenDay() : boolean{
+
+
+      let currentDate = this.modalDate.getDate();
+      return this.shiftsPerDay[currentDate].valueOf() ;
+
+
+
+  }
+
 }
