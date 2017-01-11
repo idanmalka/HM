@@ -201,7 +201,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   confirmUser() {
-    this.editableCompanyEmployeesStackSave.push(Object.assign({},this.editableCompany.employees));
+    this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
 
 
     // ON EDIT THIS IS NOT SAVED AS NEW OBJECT, WHY?????
@@ -249,7 +249,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   deleteUser() {
-    this.editableCompanyEmployeesStackSave.push(Object.assign({},this.editableCompany.employees));
+    this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
     this.editableCompany.employees.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -315,7 +315,7 @@ export class UsersTableComponent implements OnInit {
     if (this.editableCompanyEmployeesStackSave.length > 0) {
       console.log('poping');
       this.editableCompany.employees = [];
-      Object.assign(this.editableCompany.employees, this.editableCompanyEmployeesStackSave.pop());
+      jQuery.extend(true,this.editableCompany.employees, this.editableCompanyEmployeesStackSave.pop());
       this.initTableData();
     }
     else console.log('not poping');

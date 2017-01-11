@@ -175,7 +175,7 @@ export class HomeComponent implements OnInit {
   }
 
   updateUserShifts() {
-    this.editableUserShiftsStackSave.push(Object.assign({},this.editableUser.shifts));
+    this.editableUserShiftsStackSave.push(jQuery.extend(true,{},this.editableUser.shifts));
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
@@ -360,7 +360,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
-    this.editableUserShiftsStackSave.push(Object.assign({},this.editableUser.shifts));
+    this.editableUserShiftsStackSave.push(jQuery.extend(true,{},this.editableUser.shifts));
     this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -396,7 +396,7 @@ export class HomeComponent implements OnInit {
     if (this.editableUserShiftsStackSave.length > 0) {
       console.log('poping');
       this.editableUser.shifts = [];
-      Object.assign(this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
+      jQuery.extend(true,this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
       this.initTableData();
     }
     else console.log('not poping');
