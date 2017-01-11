@@ -14,7 +14,7 @@
       <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1"
                   [options]="dropdownCompanies"
                   (onChange)="setEditCompany()"></p-dropdown>
-      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser" size="1"
+      <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="editableUser" size="1"
                   [options]="companyUsers"
                   (onChange)="setEditableUser()"></p-dropdown>
       <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"

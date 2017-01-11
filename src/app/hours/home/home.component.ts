@@ -25,7 +25,6 @@ export class HomeComponent implements OnInit {
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
   companyUsers = [{label: 'בחר משתמש', value: new User()}];
   chosenCompany;
-  chosenCompanyUser;
 
   dirty : boolean = false;
   editableUser: User = new User();
@@ -91,10 +90,9 @@ export class HomeComponent implements OnInit {
       this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
     this.user = this.editableUser = this.authenticationService.user;
-    if (this.editableUser.isAdmin === true) {
-      this.user = this.editableUser;
+    if (this.editableUser.isAdmin === true)
       this.editableUser = new User();
-    }
+
     console.log(this.user? this.user : this.editableUser);
   }
 
@@ -102,9 +100,9 @@ export class HomeComponent implements OnInit {
     if(this.user.isAdmin)
       this.companyService.getAll().subscribe((data: Response) => {
        this.companies = data;
-       for(let company of this.companies){
+       for(let company of this.companies)
           this.dropdownCompanies.push({label:company.name, value: company});
-        }
+
        console.log(this.companies);
       });
 
@@ -409,13 +407,11 @@ export class HomeComponent implements OnInit {
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
     for(let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
-    this.editableUser = Object.assign({},this.chosenCompanyUser);
     this.initTableData();
     this.dirty = false;
   }
 
   setEditableUser(): void {
-    this.editableUser = Object.assign({},this.chosenCompanyUser);
     this.editableUserShiftsStackSave = [];
     this.initTableData();
     this.dirty = false;
