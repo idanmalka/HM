@@ -1,6 +1,6 @@
 <div class="container">
   <h2>פרטי חברה</h2>
-  <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
+  <p-dropdown *ngIf="user.isAdmin" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
               [options]="dropdownCompanies"
               (onChange)="setEditCompany()"></p-dropdown>
   <br>
@@ -16,9 +16,9 @@
         </div>
         <div class="form-group">
           <label>תאריך תפוגה</label><br>
-          <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
+          <p-dropdown name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
                       (onChange)="setExpParameter('month')"></p-dropdown>
-          <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" [options]="years"
+          <p-dropdown name="year" id="year" [(ngModel)]="chosenYear" [options]="years"
                       (onChange)="setExpParameter('year')"></p-dropdown>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }">

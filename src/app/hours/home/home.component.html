@@ -25,16 +25,14 @@
             <header>
               <p-toolbar>
                 <div class="ui-toolbar-group-right">
-                  <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
+                  <p-dropdown name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
                               (onChange)="initTableData()"></p-dropdown>
-                  <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" size="1" [options]="years"
+                  <p-dropdown name="year" id="year" [(ngModel)]="chosenYear" [options]="years"
                               (onChange)="initTableData()"></p-dropdown>
-                  <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany"
-                              [options]="dropdownCompanies"
-                              (onChange)="setEditCompany()"></p-dropdown>
-                  <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="editableUser"
-                              [options]="companyUsers"
-                              (onChange)="setEditableUser()"></p-dropdown>
+                  <p-dropdown name="companies" id="companies" [(ngModel)]="chosenCompany" [options]="dropdownCompanies"
+                              (onChange)="setEditCompany()" *ngIf="user.isAdmin"></p-dropdown>
+                  <p-dropdown name="users" id="users" [(ngModel)]="editableUser" [options]="companyUsers"
+                              (onChange)="setEditableUser()" *ngIf="user.isAdmin"></p-dropdown>
                 </div>
                 <div class="ui-toolbar-group-left">
                   <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
