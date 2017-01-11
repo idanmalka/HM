@@ -35,7 +35,7 @@ ng-table {
   height: 480px;
 }
 
-.buttons-area {
+.export-button {
   position: absolute;
   width: auto;
   height: auto;
@@ -49,5 +49,25 @@ ng-table {
 
 #filter-container {
   float: right;
+  margin: 10px 0 10px 0;
+}
+
+p-toolbar {
   margin-bottom: 10px;
+
+  p-dropdown {
+    text-align: right;
+
+    /deep/ label,
+    /deep/ li {
+      text-align: right;
+    }
+  }
+}
+
+@media(max-width: 320px){
+  .panel-body{
+    padding-right: 0;
+    padding-left: 0;
+  }
 }

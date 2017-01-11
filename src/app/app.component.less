@@ -12,3 +12,11 @@ alert{
   left: 50%;
   transform: translateX(-50%);
 }
+
+@media(max-width: 320px){
+  /deep/ .container-fluid,
+  /deep/ .col-md-12{
+    padding-right: 0;
+    padding-left: 0;
+  }
+}

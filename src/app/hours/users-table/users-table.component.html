@@ -1,12 +1,19 @@
 <div class="panel panel-primary">
   <div class="panel-heading">רשימת עובדי החברה</div>
   <div class="panel-body">
-    <div class="buttons-area">
-      <span *ngIf="user.isManager && editable">
-        <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="editableCompany"
+    <div class="export-button">
+        <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור רשימה">
+            <span class="glyphicon glyphicon-download-alt"></span>
+        </button>
+    </div>
+    <p-toolbar *ngIf="user.isManager && editable">
+      <div *ngIf="user.isAdmin" class="ui-toolbar-group-right">
+        <p-dropdown name="companies" id="companies" [(ngModel)]="editableCompany"
                     size="1"
                     [options]="dropdownCompanies"
                     (onChange)="setEditCompany()"></p-dropdown>
+      </div>
+      <div class="ui-toolbar-group-left">
         <button class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span
           class="glyphicon glyphicon-plus"></span></button>
         <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
@@ -15,14 +22,9 @@
                 class="btn btn-warning"
                 (click)="undoListChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
           <span class="fa fa-undo" aria-hidden="true"></span>
-      </button>
-      </span>
-      <span>
-        <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור רשימה">
-            <span class="glyphicon glyphicon-download-alt"></span>
         </button>
-      </span>
-    </div>
+      </div>
+    </p-toolbar>
     <div id="filter-container" class="col-md-2">
       <input *ngIf="config.filtering" placeholder="סינון"
              [ngTableFiltering]="config.filtering"
