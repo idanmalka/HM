@@ -11,6 +11,7 @@ import {Message} from 'primeng/primeng';
 import {Company} from "../../models/company";
 import {CompanyService} from "../../shared/services/company.service";
 import {Response} from "@angular/http";
+import {DataTable} from "primeng/components/datatable/datatable";
 
 @Component({
   selector: 'home-page',
@@ -26,7 +27,7 @@ export class HomeComponent implements OnInit {
   companyUsers = [{label: 'בחר משתמש', value: new User()}];
   chosenCompany;
 
-  dirty : boolean = false;
+  dirty: boolean = false;
   editableUser: User = new User();
   user: User;
   editableUserShiftsStackSave: Array<Shift[]> = [];
@@ -51,62 +52,47 @@ export class HomeComponent implements OnInit {
     {value: 11, label: 'דצמבר'}
   ];
 
-  rows: Array<any> = [];
   columns: Array<any> = [
-    {title: 'תאריך', name: 'date', sort: "desc"},
-    {title: 'שעת התחלה', name: 'startHour', sort:''},
-    {title: 'שעת סיום', name: 'endHour', sort:''},
-    {title: 'סה"כ שעות', name: 'totalHours', sort: ''},
-    {title: 'הערות', name: 'comment', sort: ''}
+    {header: 'תאריך', field: 'date'},
+    {header: 'שעת התחלה', field: 'startHour'},
+    {header: 'שעת סיום', field: 'endHour'},
+    {header: 'סה"כ שעות', field: 'totalHours'},
+    {header: 'הערות', field: 'comment'}
   ];
-  page: number = 1;
-  itemsPerPage: number = 10;
-  maxSize: number = 5;
-  numPages: number = 1;
-  length: number = 0;
+
   checkedRow: number;
-  config: any = {
-    filtering: {filterString: ""},
-    paging: true,
-    sorting: {columns: this.columns},
-    className: ['table-striped', 'table-bordered']
-  };
   data: Array<any> = [];
 
   modalStartHour: Date;
   modalEndHour: Date;
-  modalDate: Date ;
+  modalDate: Date;
   modalComment: string;
 
   showDailyHoursChart: boolean = false;
   chartData: any;
-  filteredSortedData = [];
   shiftsPerDay: boolean[] = [];
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private userService: UserService,
-              private companyService: CompanyService) {
-    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
+              private companyService: CompanyService) { }
+
+  ngOnInit() {
+    for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
-    this.length = this.data.length || 0;
     this.user = this.editableUser = this.authenticationService.user;
     if (this.editableUser.isAdmin === true)
       this.editableUser = new User();
 
-    console.log(this.user? this.user : this.editableUser);
-  }
-
-  ngOnInit() {
-    if(this.user.isAdmin)
+    if (this.user.isAdmin)
       this.companyService.getAll().subscribe((data: Response) => {
-       this.companies = data;
-       for(let company of this.companies)
-          this.dropdownCompanies.push({label:company.name, value: company});
+        this.companies = data;
+        for (let company of this.companies)
+          this.dropdownCompanies.push({label: company.name, value: company});
 
-       console.log(this.companies);
+        console.log(this.companies);
       });
-
+    console.log(this.user ? this.user : this.editableUser);
     this.modalDate = new Date();
     this.initTableData();
     this.dirty = false;
@@ -115,8 +101,8 @@ export class HomeComponent implements OnInit {
   initTableData(): void {
     this.data = [];
     let index = 0;
-     for (let i=0 ; i<32 ; i++)
-       this.shiftsPerDay[i] = false;
+    for (let i = 0; i < 32; i++)
+      this.shiftsPerDay[i] = false;
 
     for (let shift of this.editableUser.shifts) {
       let start = new Date(shift.start);
@@ -146,24 +132,23 @@ export class HomeComponent implements OnInit {
       }
       index++;
     }
-    this.onChangeTable(this.config);
     setTimeout(this.initChartData(), 100);
   }
 
-  initChartData(): void{
+  initChartData(): void {
     let data = [];
     let chartLabels = [];
-    let lastDayOfMonth = (new Date(this.chosenYear,this.chosenMonth+1,0)).getDate();
-    for(let i = 1; i <= lastDayOfMonth; i++){
+    let lastDayOfMonth = (new Date(this.chosenYear, this.chosenMonth + 1, 0)).getDate();
+    for (let i = 1; i <= lastDayOfMonth; i++) {
       chartLabels.push(i.toString());
-      for(let row of this.filteredSortedData){
+      for (let row of this.data) {
         if (+row.date.split("/")[0] === i) {
           let totalArr = row.totalHours.split(":");
-          let sum = +totalArr[0] + (+totalArr[1])/60;
+          let sum = +totalArr[0] + (+totalArr[1]) / 60;
           data.push(sum);
         }
       }
-      if(data.length < i)
+      if (data.length < i)
         data.push(0);
     }
     this.chartData = {
@@ -174,16 +159,18 @@ export class HomeComponent implements OnInit {
           backgroundColor: '#42A5F5',
           borderColor: '#1E88E5',
           data: data
-        }]};
+        }]
+    };
 
     setTimeout(() => {
-      if(this.chart)
+      if (this.chart)
         this.chart.refresh();
     }, 100);
   }
 
   updateUserShifts() {
-    this.editableUserShiftsStackSave.push(jQuery.extend(true,{},this.editableUser.shifts));
+    this.dirty = true;
+    this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
@@ -198,101 +185,39 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  changePage(page: any, data: Array<any> = this.data): Array<any> {
-    let start = (page.page - 1) * page.itemsPerPage;
-    let end = page.itemsPerPage > -1 ? (start + page.itemsPerPage) : data.length;
-    return data.slice(start, end);
-  }
+  changeSort($event): any {
 
-  changeSort(data: any, config: any): any {
-    if (!config.sorting) {
-      return data;
-    }
+    console.log($event);
 
-    let columns = this.config.sorting.columns || [];
-    let columnName: string = void 0;
-    let sort: string = void 0;
+    let columnName: string = $event.field;
+    let sort: number = $event.order;
+    let data = this.data || [];
 
-    for (let i = 0; i < columns.length; i++) {
-      if (columns[i].sort !== '' && columns[i].sort !== false) {
-        columnName = columns[i].name;
-        sort = columns[i].sort;
-      }
-    }
-
-    if (!columnName) {
-      return data;
-    }
-
-    //simple sorting
     return data.sort((previous: any, current: any) => {
       if (columnName !== "date") {
-        if (previous[columnName] > current[columnName]) {
-          return sort === 'desc' ? -1 : 1;
-        } else if (previous[columnName] < current[columnName]) {
-          return sort === 'asc' ? -1 : 1;
-        }
+        if (+(previous[columnName].split(":")[0]) > +(current[columnName].split(":")[0]))
+          return sort === -1 ? -1 : 1;
+        if (+(previous[columnName].split(":")[0]) < +(current[columnName].split(":")[0]))
+          return sort === 1 ? -1 : 1;
+        if (+(previous[columnName].split(":")[1]) > +(current[columnName].split(":")[1]))
+          return sort === -1 ? -1 : 1;
+        if (+(previous[columnName].split(":")[1]) < +(current[columnName].split(":")[1]))
+          return sort === 1 ? -1 : 1;
         return 0;
       } else {
         if (+(previous[columnName].split("/")[0]) > +(current[columnName].split("/")[0])) {
-          return sort === 'desc' ? -1 : 1;
+          return sort === -1 ? -1 : 1;
         } else if (+(previous[columnName].split("/")[0]) < +(current[columnName].split("/")[0])) {
-          return sort === 'asc' ? -1 : 1;
+          return sort === 1 ? -1 : 1;
         }
         return 0;
       }
     });
   }
 
-  changeFilter(data: any, config: any): any {
-    let filteredData: Array<any> = data;
-    this.columns.forEach((column: any) => {
-      if (column.filtering) {
-        filteredData = filteredData.filter((item: any) => {
-          return item[column.name].match(column.filtering.filterString);
-        });
-      }
-    });
-
-    if (!config.filtering) {
-      return filteredData;
-    }
-
-    if (config.filtering.columnName) {
-      return filteredData.filter((item: any) =>
-        item[config.filtering.columnName].match(this.config.filtering.filterString));
-    }
-
-    let tempArray: Array<any> = [];
-    filteredData.forEach((item: any) => {
-      let flag = false;
-      this.columns.forEach((column: any) => {
-        if (item[column.name].toString().match(this.config.filtering.filterString)) {
-          flag = true;
-        }
-      });
-      if (flag) {
-        tempArray.push(item);
-      }
-    });
-    filteredData = tempArray;
-
-    return filteredData;
-  }
-
-  onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
-    this.filteredSortedData = [];
-    this.dirty = true;
-    let filteredData = this.changeFilter(this.data, this.config);
-    let sortedData = this.changeSort(filteredData, this.config);
-    Object.assign(this.filteredSortedData,sortedData);
-    this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
-    this.length = sortedData.length;
-  }
-
-  onCellClick(data: any): any {
+  onRowClick(data: any): any {
     console.log(data);
-    this.checkedRow = data.row.index;
+    this.checkedRow = data.data.index;
     this.updateModal(this.editableUser.shifts[this.checkedRow].start,
       this.editableUser.shifts[this.checkedRow].end,
       this.editableUser.shifts[this.checkedRow].date,
@@ -352,12 +277,11 @@ export class HomeComponent implements OnInit {
   }
 
   confirmShift(): boolean {
-    if (!this.isExistShiftInChosenDay())
-    {
-    console.log("submitted");
-    this.updateDataFromModal();
-    this.hideChildModal();
-    return false;
+    if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
+      console.log("submitted");             ///
+      this.updateDataFromModal();
+      this.hideChildModal();
+      return false;
     }
     return true;
   }
@@ -372,7 +296,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
-    this.editableUserShiftsStackSave.push(jQuery.extend(true,{},this.editableUser.shifts));
+    this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
     this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -383,8 +307,8 @@ export class HomeComponent implements OnInit {
     console.log(this.modalDate);
   }
 
-  exportToCsv(){
-    if(this.dirty) {
+  exportToCsv() {
+    if (this.dirty) {
       this.msgs.push({severity: 'info', summary: '', detail: 'אנא שמור לפני ההורדה'})
       return;
     }
@@ -404,11 +328,11 @@ export class HomeComponent implements OnInit {
 
   }
 
-  undoShiftChange(){
+  undoShiftChange() {
     if (this.editableUserShiftsStackSave.length > 0) {
       console.log('poping');
       this.editableUser.shifts = [];
-      jQuery.extend(true,this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
+      jQuery.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
       this.initTableData();
     }
     else console.log('not poping');
@@ -417,7 +341,7 @@ export class HomeComponent implements OnInit {
   setEditCompany(): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
-    for(let user of this.chosenCompany.employees)
+    for (let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
     this.initTableData();
     this.dirty = false;
@@ -429,12 +353,11 @@ export class HomeComponent implements OnInit {
     this.dirty = false;
   }
 
-  isExistShiftInChosenDay() : boolean{
+  isExistShiftInChosenDay(): boolean {
+    // return false;
 
-
-      let currentDate = this.modalDate.getDate();
-      return this.shiftsPerDay[currentDate].valueOf() ;
-
+    let currentDate = this.modalDate.getDate();
+    return this.shiftsPerDay[currentDate].valueOf();
 
 
   }

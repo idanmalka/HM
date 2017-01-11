@@ -10,99 +10,60 @@
   <div [ngClass]="{'col-md-12': !displayCalendar && !showDailyHoursChart,
                    'col-md-8': displayCalendar,
                    'col-md-6': showDailyHoursChart}">
-    <!--<div class="shifts-buttons-area">-->
-      <!--<p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1"-->
-                  <!--[options]="dropdownCompanies"-->
-                  <!--(onChange)="setEditCompany()"></p-dropdown>-->
-      <!--<p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="editableUser" size="1"-->
-                  <!--[options]="companyUsers"-->
-                  <!--(onChange)="setEditableUser()"></p-dropdown>-->
-      <!--<p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"-->
-                  <!--(onChange)="initTableData()"></p-dropdown>-->
-      <!--<p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" size="1" [options]="years"-->
-                  <!--(onChange)="initTableData()"></p-dropdown>-->
-      <!--<button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span-->
-        <!--class="glyphicon glyphicon-plus"></span></button>-->
-      <!--<button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top"-->
-              <!--tooltip="הצג/הסתר לוח שנה"><span-->
-        <!--class="glyphicon glyphicon-calendar"></span></button>-->
-      <!--<button class="btn btn-default" (click)="toggleDailyHoursChart()" tooltipPlacement="top"-->
-              <!--tooltip="הצג/הסתר טבלת שעות חודשית"><span-->
-        <!--class="glyphicon glyphicon-equalizer"></span></button>-->
-      <!--<button [disabled]="!(editableUserShiftsStackSave && editableUserShiftsStackSave.length > 0)"-->
-              <!--class="btn btn-warning"-->
-              <!--(click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">-->
-        <!--<span class="fa fa-undo" aria-hidden="true"></span>-->
-      <!--</button>-->
-      <!--<button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span-->
-        <!--class="glyphicon glyphicon-floppy-save"></span></button>-->
-      <!--<button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">-->
-        <!--<span class="glyphicon glyphicon-download-alt"></span></button>-->
-    <!--</div>-->
     <p-growl [value]="msgs"></p-growl>
     <div class="panel panel-primary">
       <div class="panel-heading">רשימת דיווחי שעות</div>
       <div class="panel-body">
-        <p-toolbar>
-          <div class="ui-toolbar-group-right">
-            <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1"
-                        [options]="dropdownCompanies"
-                        (onChange)="setEditCompany()"></p-dropdown>
-            <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="editableUser" size="1"
-                        [options]="companyUsers"
-                        (onChange)="setEditableUser()"></p-dropdown>
-            <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
-                        (onChange)="initTableData()"></p-dropdown>
-            <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" size="1" [options]="years"
-                        (onChange)="initTableData()"></p-dropdown>
+        <div id="row">
+          <div class="col-xs-12 col-sm-offset-8 col-sm-4 col-md-offset-9 col-md-3">
+            <input id="filter-container" #gb type="text" class="form-control" placeholder="סינון">
           </div>
-          <div class="ui-toolbar-group-left">
-            <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
-              class="glyphicon glyphicon-plus"></span></button>
-            <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top"
-                    tooltip="הצג/הסתר לוח שנה"><span
-              class="glyphicon glyphicon-calendar"></span></button>
-            <button class="btn btn-default" (click)="toggleDailyHoursChart()" tooltipPlacement="top"
-                    tooltip="הצג/הסתר טבלת שעות חודשית"><span
-              class="glyphicon glyphicon-equalizer"></span></button>
-            <button [disabled]="!(editableUserShiftsStackSave && editableUserShiftsStackSave.length > 0)"
-                    class="btn btn-warning"
-                    (click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
-              <span class="fa fa-undo" aria-hidden="true"></span>
-            </button>
-            <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
-              class="glyphicon glyphicon-floppy-save"></span></button>
-            <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">
-              <span class="glyphicon glyphicon-download-alt"></span></button>
-          </div>
-        </p-toolbar>
-        <div id="filter-container" class="col-md-2">
-          <input *ngIf="config.filtering" placeholder="סינון"
-                 [ngTableFiltering]="config.filtering"
-                 class="form-control"
-                 (tableChanged)="onChangeTable(config)"/>
         </div>
-
-        <ng-table [config]="config"
-                  (tableChanged)="onChangeTable(config)"
-                  (cellClicked)="onCellClick($event)"
-                  [rows]="rows" [columns]="columns">
-        </ng-table>
+        <div class="col-xs-12">
+          <p-dataTable [value]="data" [rows]="10" [paginator]="true" [globalFilter]="gb" #dt [responsive]="true"
+                       selectionMode="single" (onRowSelect)="onRowClick($event)">
+            <header>
+              <p-toolbar>
+                <div class="ui-toolbar-group-right">
+                  <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
+                              (onChange)="initTableData()"></p-dropdown>
+                  <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" size="1" [options]="years"
+                              (onChange)="initTableData()"></p-dropdown>
+                  <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany"
+                              [options]="dropdownCompanies"
+                              (onChange)="setEditCompany()"></p-dropdown>
+                  <p-dropdown *ngIf="user.isAdmin" dir="ltr" name="users" id="users" [(ngModel)]="editableUser"
+                              [options]="companyUsers"
+                              (onChange)="setEditableUser()"></p-dropdown>
+                </div>
+                <div class="ui-toolbar-group-left">
+                  <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
+                    class="glyphicon glyphicon-plus"></span></button>
+                  <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top"
+                          tooltip="הצג/הסתר לוח שנה"><span
+                    class="glyphicon glyphicon-calendar"></span></button>
+                  <button class="btn btn-default" (click)="toggleDailyHoursChart()" tooltipPlacement="top"
+                          tooltip="הצג/הסתר טבלת שעות חודשית"><span
+                    class="glyphicon glyphicon-equalizer"></span></button>
+                  <button [disabled]="!(editableUserShiftsStackSave && editableUserShiftsStackSave.length > 0)"
+                          class="btn btn-warning"
+                          (click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
+                    <span class="fa fa-undo" aria-hidden="true"></span>
+                  </button>
+                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
+                    class="glyphicon glyphicon-floppy-save"></span></button>
+                  <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">
+                    <span class="glyphicon glyphicon-download-alt"></span></button>
+                </div>
+              </p-toolbar>
+            </header>
+            <p-column *ngFor="let col of columns" [field]="col.field" [header]="col.header"
+                      [sortable]="col.field !== 'comment'? 'custom' : false" (sortFunction)="changeSort($event)"
+            ></p-column>
+          </p-dataTable>
+        </div>
       </div>
-      <div class="panel-footer">
-        <pagination *ngIf="config.paging"
-                    class="pagination-sm"
-                    [(ngModel)]="page"
-                    [totalItems]="length"
-                    [itemsPerPage]="itemsPerPage"
-                    [maxSize]="maxSize"
-                    [boundaryLinks]="true"
-                    [rotate]="false"
-                    (pageChanged)="onChangeTable(config, $event)"
-                    (numPages)="numPages = $event"
-                    nextText="&lsaquo;" previousText="&rsaquo;" lastText="&laquo;" firstText="&raquo;">
-        </pagination>
-      </div>
+      <div class="panel-footer"></div>
     </div>
   </div>
 </div>
