@@ -66,7 +66,7 @@
               <p-dropdown *ngIf="user.isAdmin && editable" name="companies" id="companies" [(ngModel)]="editableCompany"
                           size="1"
                           [options]="dropdownCompanies"
-                          (onChange)="setEditCompany()"></p-dropdown>
+                          (onChange)="setEditCompany()" [style]="{width : '126px'}"></p-dropdown>
             </div>
           </p-toolbar>
 

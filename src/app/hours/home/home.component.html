@@ -29,10 +29,10 @@
                               (onChange)="initTableData()"></p-dropdown>
                   <p-dropdown name="year" id="year" [(ngModel)]="chosenYear" [options]="years"
                               (onChange)="initTableData()"></p-dropdown>
-                  <p-dropdown name="companies" id="companies" [(ngModel)]="chosenCompany" [options]="dropdownCompanies"
-                              (onChange)="setEditCompany()" *ngIf="user.isAdmin"></p-dropdown>
-                  <p-dropdown name="users" id="users" [(ngModel)]="editableUser" [options]="companyUsers"
-                              (onChange)="setEditableUser()" *ngIf="user.isAdmin"></p-dropdown>
+                  <p-dropdown *ngIf="user.isAdmin" class="admin-dropdown" name="companies" id="companies" [(ngModel)]="chosenCompany" [options]="dropdownCompanies"
+                              (onChange)="setEditCompany()" [style]="{width : '126px'}"></p-dropdown>
+                  <p-dropdown *ngIf="user.isAdmin" class="admin-dropdown" name="users" id="users" [(ngModel)]="editableUser" [options]="companyUsers"
+                              (onChange)="setEditableUser()" [style]="{width : '126px'}"></p-dropdown>
                 </div>
                 <div class="ui-toolbar-group-left">
                   <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
