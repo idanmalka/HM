@@ -6,6 +6,7 @@ import {CompanyService} from '../../shared/services/company.service';
 import {User} from "../../models/user";
 import {Company} from "../../models/company";
 import {AuthenticationService} from "../../shared/services/authentication.service";
+import {Response} from "@angular/http";
 
 @Component({
   selector: 'company-details',
@@ -14,9 +15,12 @@ import {AuthenticationService} from "../../shared/services/authentication.servic
 })
 
 export class CompanyDetailsComponent implements OnInit {
-  model: User;
-  company: Company;
+  user: User;
+  editableCompany: Company;
   loading = false;
+
+  companies;
+  dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
 
   years = [];
   months = [
@@ -39,23 +43,33 @@ export class CompanyDetailsComponent implements OnInit {
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService,
               private alertService: AlertService) {
-    this.model = this.authService.user;
-    this.company = this.authService.company;
-    this.company.visa.expirationDate = new Date(this.company.visa.expirationDate);
-    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
-      this.years.push({value: i, label: i});
   }
 
   ngOnInit(): void {
-    console.log(this.model);
-    console.log(this.company);
-    this.chosenMonth = this.company.visa.expirationDate.getMonth();
-    this.chosenYear = this.company.visa.expirationDate.getFullYear();
+    this.user = this.authService.user;
+    this.editableCompany = this.authService.company;
+    this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
+
+    if(this.user.isAdmin)
+      this.companyService.getAll().subscribe((data: Response) => {
+        this.companies = data;
+        for(let company of this.companies){
+          this.dropdownCompanies.push({label:company.name, value: company});
+        }
+        console.log(this.companies);
+      });
+
+    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
+      this.years.push({value: i, label: i});
+    console.log(this.user);
+    console.log(this.editableCompany);
+    this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
+    this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
   }
 
   update() {
     this.loading = true;
-    this.companyService.update(this.company)
+    this.companyService.update(this.editableCompany)
       .subscribe(
         data => {
           this.alertService.success('Update successful', true);
@@ -70,11 +84,17 @@ export class CompanyDetailsComponent implements OnInit {
   setExpParameter(param: string) {
     switch (param) {
       case 'month':
-        this.company.visa.expirationDate.setMonth(this.chosenMonth);
+        this.editableCompany.visa.expirationDate.setMonth(this.chosenMonth);
         break;
       case 'year':
-        this.company.visa.expirationDate.setFullYear(this.chosenYear);
+        this.editableCompany.visa.expirationDate.setFullYear(this.chosenYear);
         break;
     }
+  }
+
+  setEditCompany(): void {
+    this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
+    this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
+    this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
   }
 }

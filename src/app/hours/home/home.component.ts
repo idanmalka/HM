@@ -8,6 +8,9 @@ import {ModalDirective} from "ng2-bootstrap";
 import {UIChart} from "primeng/components/chart/chart";
 import * as FileSaver from "file-saver";
 import {Message} from 'primeng/primeng';
+import {Company} from "../../models/company";
+import {CompanyService} from "../../shared/services/company.service";
+import {Response} from "@angular/http";
 
 @Component({
   selector: 'home-page',
@@ -18,10 +21,15 @@ export class HomeComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
   @ViewChild('chart') public chart: UIChart;
 
-  dirty : boolean = false;
+  companies;
+  dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
+  companyUsers = [{label: 'בחר משתמש', value: new User()}];
+  chosenCompany;
 
+  dirty : boolean = false;
+  editableUser: User = new User();
   user: User;
-  userShiftsStackSave: Array<Shift[]> = [];
+  editableUserShiftsStackSave: Array<Shift[]> = [];
   displayCalendar: boolean = false;
   msgs: Message[] = [];
   chosenMonth: number = (new Date()).getMonth();
@@ -76,22 +84,36 @@ export class HomeComponent implements OnInit {
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
-              private userService: UserService) {
+              private userService: UserService,
+              private companyService: CompanyService) {
     for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
     this.length = this.data.length || 0;
-    this.user = this.authenticationService.user;
-    console.log(this.user);
+    this.user = this.editableUser = this.authenticationService.user;
+    if (this.editableUser.isAdmin === true)
+      this.editableUser = new User();
+
+    console.log(this.user? this.user : this.editableUser);
   }
 
   ngOnInit() {
+    if(this.user.isAdmin)
+      this.companyService.getAll().subscribe((data: Response) => {
+       this.companies = data;
+       for(let company of this.companies)
+          this.dropdownCompanies.push({label:company.name, value: company});
+
+       console.log(this.companies);
+      });
+
     this.initTableData();
+    this.dirty = false;
   }
 
   initTableData(): void {
     this.data = [];
     let index = 0;
-    for (let shift of this.user.shifts) {
+    for (let shift of this.editableUser.shifts) {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
       let date = new Date(shift.date);
@@ -153,18 +175,18 @@ export class HomeComponent implements OnInit {
   }
 
   updateUserShifts() {
-    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
+    this.editableUserShiftsStackSave.push(jQuery.extend(true,{},this.editableUser.shifts));
     let start = new Date(this.modalStartHour);
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
 
     if (this.checkedRow > -1) {
-      this.user.shifts[this.checkedRow].start = start;
-      this.user.shifts[this.checkedRow].end = end;
-      this.user.shifts[this.checkedRow].date = date;
-      this.user.shifts[this.checkedRow].comment = this.modalComment;
+      this.editableUser.shifts[this.checkedRow].start = start;
+      this.editableUser.shifts[this.checkedRow].end = end;
+      this.editableUser.shifts[this.checkedRow].date = date;
+      this.editableUser.shifts[this.checkedRow].comment = this.modalComment;
     } else {
-      this.user.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
+      this.editableUser.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
     }
   }
 
@@ -263,10 +285,10 @@ export class HomeComponent implements OnInit {
   onCellClick(data: any): any {
     console.log(data);
     this.checkedRow = data.row.index;
-    this.updateModal(this.user.shifts[this.checkedRow].start,
-      this.user.shifts[this.checkedRow].end,
-      this.user.shifts[this.checkedRow].date,
-      this.user.shifts[this.checkedRow].comment);
+    this.updateModal(this.editableUser.shifts[this.checkedRow].start,
+      this.editableUser.shifts[this.checkedRow].end,
+      this.editableUser.shifts[this.checkedRow].date,
+      this.editableUser.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
 
@@ -288,9 +310,9 @@ export class HomeComponent implements OnInit {
   }
 
   saveData(): void {
-    console.log('updating user data');
+    console.log('updating editableUser data');
     this.dirty = false;
-    this.userService.update(this.user);
+    this.userService.update(this.editableUser);
   }
 
   updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {
@@ -338,8 +360,8 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
-    this.userShiftsStackSave.push(Object.assign({},this.user.shifts));
-    this.user.shifts.splice(this.checkedRow, 1);
+    this.editableUserShiftsStackSave.push(jQuery.extend(true,{},this.editableUser.shifts));
+    this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
   }
@@ -354,27 +376,44 @@ export class HomeComponent implements OnInit {
       this.msgs.push({severity: 'info', summary: '', detail: 'אנא שמור לפני ההורדה'})
       return;
     }
+    if (this.data.length > 0) {
+      const items = this.data;
+      const replacer = (key, value) => value === null ? '' : value;// specify how you want to handle null values here
+      const header = Object.keys(items[0]);
+      let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+      csv.unshift(header.join(','));
+      let csv1 = csv.join('\r\n');
 
-    const items = this.data;
-    const replacer = (key, value) => value === null ? '' : value ;// specify how you want to handle null values here
-    const header = Object.keys(items[0]);
-    let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
-    csv.unshift(header.join(','));
-    let csv1 = csv.join('\r\n');
+      console.log(csv1);
 
-    console.log(csv1);
+      var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
+      FileSaver.saveAs(blob, 'דיווחי שעות ' + this.months[this.chosenMonth].label + '/' + this.chosenYear + '.csv');
+    } else this.msgs.push({severity: 'info', summary: '', detail: 'אין דיווחים לשמירה'})
 
-    var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
-    FileSaver.saveAs(blob,'דיווחי שעות '+ this.months[this.chosenMonth].label + '/' + this.chosenYear +'.csv');
   }
 
   undoShiftChange(){
-    if (this.userShiftsStackSave.length > 0) {
+    if (this.editableUserShiftsStackSave.length > 0) {
       console.log('poping');
-      this.user.shifts = [];
-        Object.assign(this.user.shifts, this.userShiftsStackSave.pop());
+      this.editableUser.shifts = [];
+      jQuery.extend(true,this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
       this.initTableData();
     }
-    console.log('not poping');
+    else console.log('not poping');
+  }
+
+  setEditCompany(): void {
+    this.companyUsers = [];
+    this.companyUsers.push({label: 'בחר משתמש', value: new User()});
+    for(let user of this.chosenCompany.employees)
+      this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
+    this.initTableData();
+    this.dirty = false;
+  }
+
+  setEditableUser(): void {
+    this.editableUserShiftsStackSave = [];
+    this.initTableData();
+    this.dirty = false;
   }
 }

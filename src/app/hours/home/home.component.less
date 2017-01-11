@@ -41,12 +41,13 @@ ng-table {
   left: 25px;
   top: -2px;
 
-  p-dropdown{
+  p-dropdown {
     position: relative;
     top: 10px;
+    left: 5px;
 
     /deep/ label,
-    /deep/ li{
+    /deep/ li {
       text-align: right;
     }
   }
@@ -71,7 +72,7 @@ ng-table {
   }
 }
 
-#month, #year {
+#month, #year, #companies, #users {
   margin-left: 5px;
 }
 
@@ -82,4 +83,10 @@ ng-table {
 #filter-container {
   float: right;
   margin-bottom: 10px;
+}
+
+p-growl {
+  /deep/ .ui-growl{
+    top: 60px;
+  }
 }
