@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit,ViewChild} from '@angular/core';
 
 import {AlertService} from '../../shared/services/alert.service';
 import {UserService} from '../../shared/services/user.service';
@@ -7,6 +7,8 @@ import {User} from "../../models/user";
 import {Company} from "../../models/company";
 import {AuthenticationService} from "../../shared/services/authentication.service";
 import {Response} from "@angular/http";
+import {UIChart} from "primeng/components/chart/chart";
+
 
 @Component({
   selector: 'company-details',
@@ -15,6 +17,7 @@ import {Response} from "@angular/http";
 })
 
 export class CompanyDetailsComponent implements OnInit {
+  @ViewChild('chart') public chart: UIChart;
   user: User;
   editableCompany: Company;
   loading = false;
@@ -39,6 +42,7 @@ export class CompanyDetailsComponent implements OnInit {
   ];
   chosenMonth: number = (new Date()).getMonth();
   chosenYear: number = (new Date()).getFullYear();
+  chartData: any;
 
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService,
@@ -48,6 +52,8 @@ export class CompanyDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
+    console.log("check adir");
+    console.log(this.editableCompany);
     this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
 
     if(this.user.isAdmin)
@@ -65,6 +71,8 @@ export class CompanyDetailsComponent implements OnInit {
     console.log(this.editableCompany);
     this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
     this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
+    // this.initChartData();
+    setTimeout(this.initChartData(), 100);  
   }
 
   update() {
@@ -96,5 +104,58 @@ export class CompanyDetailsComponent implements OnInit {
     this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
     this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
     this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
+  }
+
+ initChartData(): void {
+    let data = [];
+    let backgroundColors =[];
+    let chartLabels = [];
+    let currentDate = new Date();
+    let localUser = new User();
+    console.log("today day :");
+    console.log(currentDate.getDate());
+
+    for ( let i=0; i<this.editableCompany.employees.length ; i++ ){
+    // for (let employee of this.editableCompany.employees) {
+      localUser = this.editableCompany.employees[i];
+      chartLabels.push(localUser.firstName + " " + localUser.lastName);
+      let totalSum = 0;
+      for(let j=0; j<localUser.shifts.length ; j++)
+      // for (let shift of localUser.shifts)
+      {   
+        let date = new Date(localUser.shifts[j].date);
+        let localMonth = date.getMonth();
+        let localYear = date.getFullYear();
+        if ( localMonth === currentDate.getMonth() && localYear === currentDate.getFullYear())
+        {
+            let start = new Date(localUser.shifts[j].start);
+            let end = new Date(localUser.shifts[j].end);
+            let diff = new Date(Math.abs(end.getTime() - start.getTime()));
+
+            let sum = diff.getHours() - 2 + (diff.getMinutes()) / 60; 
+            totalSum+= sum;       
+        }
+      }
+      data.push(totalSum);
+    }
+
+for (let i = 0; i < this.editableCompany.employees.length; i++) 
+    backgroundColors.push('#' + Math.floor(Math.random() * 16777215).toString(16));
+
+    this.chartData = {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: 'פילוח שעות לפי עובדים',
+          backgroundColor: backgroundColors ,
+          borderColor: '#1E88E5',
+          data: data
+        }]
+    };
+
+    setTimeout(() => {
+      if (this.chart)
+        this.chart.refresh();
+    }, 100);
   }
 }
