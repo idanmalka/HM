@@ -205,22 +205,27 @@ export class UsersTableComponent implements OnInit {
 
   updateDataFromModal(): void {
     if (this.checkedRow < 0) {
-          this.userService.isUserNameExist(this.modalUserName)
-            .subscribe(
-              data => {
-                this.updateUsersData();
-                this.initTableData();
-                this.hideChildModal();
-              },
-              error => {
-                this.modalExistUserNameFlag = true;
-              });
+          if (this.isUserNameExistInLocalTable())
+              this.modalExistUserNameFlag = true;
+          else {
+              this.userService.isUserNameExist(this.modalUserName)
+                .subscribe(
+                  data => {
+                    this.updateUsersData();
+                    this.initTableData();
+                    this.hideChildModal();
+                  },
+                  error => {
+                    this.modalExistUserNameFlag = true;
+                  });
+          }
+
             }
     else {
           this.updateUsersData();
           this.initTableData();
           this.hideChildModal();
-}
+      }
 
   }
 
@@ -255,6 +260,13 @@ export class UsersTableComponent implements OnInit {
     }
   }
 
+  isUserNameExistInLocalTable():boolean{
+    if (this.modalUserName === '') return false;
+    for (let user of this.editableCompany.employees)
+      if (user.username === this.modalUserName)
+        return true;
+    return false;
+  }
   deleteUser() {
     this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
     this.editableCompany.employees.splice(this.checkedRow, 1);

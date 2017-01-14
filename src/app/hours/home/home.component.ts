@@ -175,13 +175,23 @@ export class HomeComponent implements OnInit {
     let end = new Date(this.modalEndHour);
     let date = new Date(this.modalDate);
 
-    if (this.checkedRow > -1) {
+    if (this.checkedRow > -1 ) {
       this.editableUser.shifts[this.checkedRow].start = start;
       this.editableUser.shifts[this.checkedRow].end = end;
       this.editableUser.shifts[this.checkedRow].date = date;
       this.editableUser.shifts[this.checkedRow].comment = this.modalComment;
     } else {
-      this.editableUser.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
+      if (this.isExistShiftInChosenDay()){
+          for (let shift of this.editableUser.shifts)
+                if ( shift.date.getDate()=== date.getDate()) {
+                  shift.start = start;
+                  shift.end = end;
+                  shift.date = date;
+                  shift.comment = this.modalComment;
+                  break;
+                }
+      }
+      else this.editableUser.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
     }
   }
 
@@ -277,13 +287,11 @@ export class HomeComponent implements OnInit {
   }
 
   confirmShift(): boolean {
-    if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
-      console.log("submitted");             ///
+    // if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
+      console.log("submitted");             
       this.updateDataFromModal();
       this.hideChildModal();
       return false;
-    }
-    return true;
   }
 
   updateDataFromModal(): void {

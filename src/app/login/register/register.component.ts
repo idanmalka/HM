@@ -18,6 +18,7 @@ export class RegisterComponent {
   model: User = new User();
   company : Company = new Company();
   loading = false;
+  ExistUserNameFlag :boolean = false;
 
   years = [];
   months = [
@@ -45,26 +46,34 @@ export class RegisterComponent {
   }
 
   register() {
-    this.loading = true;
-    this.model.department = "הנהלה";
-    this.model.role = "מנהל כללי";
-    this.model.isAdmin = false;
-    this.model.isManager = true;
-    this.model.shifts = [];
-    this.model.companyId = 0;
-    this.company.employees = [];
-    console.log(this.company);
 
-    this.companyService.create({company: this.company, user: this.model })
-      .subscribe(
-        data => {
-          this.alertService.success('Registration Company successful', true);
-          this.router.navigate(['/login']);
-        },
-        error => {
-          this.alertService.error(error);
-          this.loading = false;
-        });
+  this.userService.isUserNameExist(this.model.username)
+    .subscribe(
+      data => {
+              this.loading = true;
+              this.model.department = "הנהלה";
+              this.model.role = "מנהל כללי";
+              this.model.isAdmin = false;
+              this.model.isManager = true;
+              this.model.shifts = [];
+              this.model.companyId = 0;
+              this.company.employees = [];
+              console.log(this.company);
+
+              this.companyService.create({company: this.company, user: this.model })
+                .subscribe(
+                  data => {
+                    this.alertService.success('Registration Company successful', true);
+                    this.router.navigate(['/login']);
+                  },
+                  error => {
+                    this.alertService.error(error);
+                    this.loading = false;
+                  });
+      },
+      error => {
+        this.ExistUserNameFlag = true;
+      });
   }
 
   setExpParameter(param: string){

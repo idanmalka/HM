@@ -112,16 +112,16 @@
                 <label for="email">דוא"ל</label>
                 <input id="email" type="email" class="form-control" name="email" [(ngModel)]="modalEmail"
                        pattern="[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*"
-                       #email="ngModel"
+                       #email="ngModel" tooltip= "כתובת דואר אלקטרוני לדוגמא : abc@gmail.com"
                        required/>
                 <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס כתובת דוא"ל תקינה</div>
               </div>
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }">
                 <label for="phone">מספר טלפון</label>
                 <input id="phone" type="text" class="form-control" name="phone" [(ngModel)]="modalPhone"
-                       #phone="ngModel"
+                       #phone="ngModel" pattern = "[0-9]{10}" tooltip="מספר טלפון תקין בעל 10 ספרות לדוגמא: 0501234567"
                        required/>
-                <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון</div>
+                <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון תקין</div>
               </div>
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !userAddress.valid }">
                 <label for="userAddress">כתובת</label>
@@ -178,7 +178,7 @@
           </div>
           <div class="form-group">
             <button class="btn btn-primary" (click)="confirmUser(f.form)">אישור</button>
-            <button *ngIf="checkedRow !== -1 " class="btn btn-danger" (click)="deleteUser()">הסר עובד</button>
+            <button *ngIf="checkedRow !== -1 && modalRole !=='מנהל כללי' " class="btn btn-danger" (click)="deleteUser()">הסר עובד</button>
             <span *ngIf="!f.valid && f.submitted" class="animate-if">נא בדוק תקינות קלט הטופס</span>
           </div>
         </form>
