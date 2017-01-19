@@ -24,6 +24,18 @@ export class UserService {
     let user = JSON.parse(localStorage['currentUser']);
     if (user.id === updatedUser.id)
       localStorage.setItem('currentUser',JSON.stringify(updatedUser));
+//
+    let company = JSON.parse(localStorage.getItem('currentCompany'));
+    if (company.id === updatedUser.companyId) {
+      for ( let i=0; i < company.employees.length; i++)
+        if (company.employees[i].id === user.id ) 
+        {
+          company.employees[i] = updatedUser;
+          break;
+        }
+      localStorage.setItem('currentCompany', JSON.stringify(company));
+    }
+    //
     return this.http.put('/api/users/'+updatedUser.id, updatedUser, this.jwt()).map((response: Response) => response.json());
   }
 

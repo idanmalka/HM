@@ -52,8 +52,6 @@ export class CompanyDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
-    console.log("check adir");
-    console.log(this.editableCompany);
     this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
 
     if(this.user.isAdmin)
@@ -139,23 +137,35 @@ export class CompanyDetailsComponent implements OnInit {
       data.push(totalSum);
     }
 
-for (let i = 0; i < this.editableCompany.employees.length; i++) 
-    backgroundColors.push('#' + Math.floor(Math.random() * 16777215).toString(16));
+    for (let i = 0; i < this.editableCompany.employees.length; ) 
+    {
+      //generate random color
+      let str = '#' + Math.floor(Math.random() * 16777215).toString(16);
+      // validation check - is real color?
+      let isOk  = /^#[0-9A-F]{6}$/i.test(str) ;
+      if (isOk === true)
+      {
+        backgroundColors.push(str);
+        i++;
+      }
+    }
 
-    this.chartData = {
-      labels: chartLabels,
-      datasets: [
-        {
-          label: 'פילוח שעות לפי עובדים',
-          backgroundColor: backgroundColors ,
-          borderColor: '#1E88E5',
-          data: data
-        }]
-    };
 
-    setTimeout(() => {
-      if (this.chart)
-        this.chart.refresh();
-    }, 100);
-  }
+
+        this.chartData = {
+          labels: chartLabels,
+          datasets: [
+            {
+              label: 'פילוח שעות לפי עובדים',
+              backgroundColor: backgroundColors ,
+              borderColor: '#1E88E5',
+              data: data
+            }]
+        };
+
+        setTimeout(() => {
+          if (this.chart)
+            this.chart.refresh();
+        }, 100);
+      }
 }
