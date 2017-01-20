@@ -87,9 +87,22 @@
   </div>
   <br>
   <users-table *ngIf="!user.isAdmin && !user.isManager" [editable]="false"></users-table>
-  
-  <div class="col-md-offset-3 col-md-6">
+
+  <div [ngClass]="{'col-md-offset-2 col-md-4': user.isAdmin,
+                   'col-md-offset-3 col-md-5': !user.isAdmin}">
     <h2 *ngIf="user.isManager" >פילוח שעות לחודש נוכחי לפי עובדים</h2>
+  <p-dropdown *ngIf="user.isAdmin" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
+              [options]="dropdownCompanies"
+              (onChange)="setEditCompany()"></p-dropdown>
     <p-chart *ngIf="user.isManager" #chart type="pie" [data]="chartData"></p-chart>
   </div>
+
+  <div [ngClass]="{'col-md-offset-1 col-md-4': user.isAdmin,
+                   'col-md-5': !user.isAdmin}">
+    <h2 *ngIf="user.isAdmin" >מעקב עובדים בחברות</h2>
+    <br>
+    <br>
+    <p-chart *ngIf="user.isAdmin" #chart2 type="doughnut" [data]="chartData2"></p-chart>
+   </div>
+
 </div>
