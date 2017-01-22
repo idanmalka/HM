@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit,ViewChild} from '@angular/core';
 
 import {AlertService} from '../../shared/services/alert.service';
 import {UserService} from '../../shared/services/user.service';
@@ -7,6 +7,8 @@ import {User} from "../../models/user";
 import {Company} from "../../models/company";
 import {AuthenticationService} from "../../shared/services/authentication.service";
 import {Response} from "@angular/http";
+import {UIChart} from "primeng/components/chart/chart";
+
 
 @Component({
   selector: 'company-details',
@@ -15,6 +17,10 @@ import {Response} from "@angular/http";
 })
 
 export class CompanyDetailsComponent implements OnInit {
+  @ViewChild('chart') public chart: UIChart;
+  @ViewChild('chart2') public chart2: UIChart;
+////
+
   user: User;
   editableCompany: Company;
   loading = false;
@@ -39,6 +45,10 @@ export class CompanyDetailsComponent implements OnInit {
   ];
   chosenMonth: number = (new Date()).getMonth();
   chosenYear: number = (new Date()).getFullYear();
+  chartData: any;
+  chartData2: any;
+  data2 = [];
+  chartLabels2 = [];
 
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService,
@@ -55,8 +65,11 @@ export class CompanyDetailsComponent implements OnInit {
         this.companies = data;
         for(let company of this.companies){
           this.dropdownCompanies.push({label:company.name, value: company});
+          this.chartLabels2.push(company.name);
+          this.data2.push(company.employees.length);    
         }
         console.log(this.companies);
+        setTimeout(this.initChartData2(), 100);
       });
 
     for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
@@ -65,6 +78,8 @@ export class CompanyDetailsComponent implements OnInit {
     console.log(this.editableCompany);
     this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
     this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
+    if (this.user.isManager===true && this.user.isAdmin===false)
+      setTimeout(this.initChartData(), 100);       
   }
 
   update() {
@@ -96,5 +111,124 @@ export class CompanyDetailsComponent implements OnInit {
     this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
     this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
     this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
+    setTimeout(this.initChartData(), 100);
   }
+
+ initChartData_old(): void {
+    let data = [];
+    let backgroundColors =[];
+    let chartLabels = [];
+    let currentDate = new Date();
+    let localUser = new User();
+    console.log("today day :");
+    console.log(currentDate.getDate());
+
+    for ( let i=0; i<this.editableCompany.employees.length ; i++ ){
+    // for (let employee of this.editableCompany.employees) {
+      localUser = this.editableCompany.employees[i];
+      chartLabels.push(localUser.firstName + " " + localUser.lastName);
+      let totalSum = 0;
+      for(let j=0; j<localUser.shifts.length ; j++)
+      // for (let shift of localUser.shifts)
+      {   
+        let date = new Date(localUser.shifts[j].date);
+        let localMonth = date.getMonth();
+        let localYear = date.getFullYear();
+        if ( localMonth === currentDate.getMonth() && localYear === currentDate.getFullYear())
+        {
+            let start = new Date(localUser.shifts[j].start);
+            let end = new Date(localUser.shifts[j].end);
+            let diff = new Date(Math.abs(end.getTime() - start.getTime()));
+
+            let sum = diff.getHours() - 2 + (diff.getMinutes()) / 60; 
+            totalSum+= sum;       
+        }
+      }
+      data.push(totalSum);
+    }
+
+    for (let i = 0; i < this.editableCompany.employees.length; ) 
+    {
+      //generate random color
+      let str = '#' + Math.floor(Math.random() * 16777215).toString(16);
+      // validation check - is real color?
+      let isOk  = /^#[0-9A-F]{6}$/i.test(str) ;
+      if (isOk === true)
+      {
+        backgroundColors.push(str);
+        i++;
+      }
+    }
+
+
+
+        this.chartData = {
+          labels: chartLabels,
+          datasets: [
+            {
+              label: 'פילוח שעות לפי עובדים',
+              backgroundColor: backgroundColors ,
+              borderColor: '#1E88E5',
+              data: data
+            }]
+        };
+
+        // setTimeout(() => {
+        //   if (this.chart)
+        //     this.chart.refresh();
+        // }, 100);
+      }
+
+initChartData() : void{
+  this.initChartData_old();
+  
+  setTimeout(() => {
+  if (this.chart)
+    this.chart.refresh();
+    }, 100);
 }
+
+ initChartData2(): void {
+    let backgroundColors =[];
+
+    for (let i = 0; i < this.chartLabels2.length; ) 
+    {
+      //generate random color
+      let str = '#' + Math.floor(Math.random() * 16777215).toString(16);
+      // validation check - is real color?
+      let isOk  = /^#[0-9A-F]{6}$/i.test(str) ;
+      if (isOk === true)
+      {
+        backgroundColors.push(str);
+        i++;
+      }
+    }
+
+        this.chartData2 = {
+          labels: this.chartLabels2,
+          datasets: [
+            {
+              label: 'מעקב משתמשים לחברות',
+              backgroundColor: backgroundColors ,
+              borderColor: '#1E88E5',
+              data: this.data2
+            }]
+        };
+
+        this.initChartData_old();
+        
+        setTimeout(() => {
+          if (this.chart && this.chart2)
+          {
+            this.chart.refresh();
+            this.chart2.refresh();
+          }
+        }, 100);
+      }
+
+
+
+}
+
+
+

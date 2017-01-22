@@ -94,6 +94,23 @@ export let fakeBackendProvider = {
           connection.mockRespond(new Response(new ResponseOptions({status: 200})));
         }
 
+        // isUserNameExist checking
+        if (connection.request.url.endsWith('/api/userNameExist') && connection.request.method === RequestMethod.Post) {
+          // get new user object from post body
+          let username = connection.request.getBody();
+
+          // validation
+          let duplicateUser = users.filter(user => {
+            return user.username === username;
+          }).length;
+          if (duplicateUser) {
+            return connection.mockError(new Error('Username "' + username + '" is already taken'));
+          }
+
+          // respond 200 OK
+          connection.mockRespond(new Response(new ResponseOptions({status: 200})));
+        }
+
         // update user
         if (connection.request.url.match(/\/api\/users\/\d+$/) && connection.request.method === RequestMethod.Put) {
 

@@ -1,10 +1,10 @@
 <div class="container">
     <h2>פרטים אישיים</h2>
     <div *ngIf="user.isAdmin">
-      <p-dropdown dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany" size="1"
+      <p-dropdown dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany"
                   [options]="dropdownCompanies"
                   (onChange)="setEditCompany()"></p-dropdown>
-      <p-dropdown dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser" size="1"
+      <p-dropdown dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser"
                   [options]="companyUsers"
                   (onChange)="setEditableUser()"></p-dropdown>
     </div>

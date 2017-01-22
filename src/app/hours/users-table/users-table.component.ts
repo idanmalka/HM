@@ -2,10 +2,13 @@ import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import {Company} from "../../models/company";
 import {User} from "../../models/user";
 import {AuthenticationService} from "../../shared/services/authentication.service";
-import {CompanyService} from '../../shared/services/company.service';
+import { UserService } from '../../shared/services/user.service';
+import { CompanyService } from '../../shared/services/company.service';
 import {ModalDirective} from "ng2-bootstrap";
 import {Response} from "@angular/http";
 import * as FileSaver from "file-saver";
+import { FormGroup } from '@angular/forms';
+
 
 @Component({
   selector: 'users-table',
@@ -22,20 +25,15 @@ export class UsersTableComponent implements OnInit {
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
   editableCompanyEmployeesStackSave: Array<User[]> = [];
 
-  rows: Array<any> = [];
+  // rows: Array<any> = [];
   columns: Array<any> = [
-    {title: 'שם משפחה', name: 'lastName', sort: 'asc'},
-    {title: 'שם פרטי', name: 'firstName', sort: ''},
-    {title: 'מחלקה', name: 'department', sort: ''},
-    {title: 'תפקיד', name: 'role', sort: ''},
-    {title: 'דוא"ל', name: 'email', sort: ''},
-    {title: 'טלפון', name: 'phone', sort: ''}
+    {header: 'שם משפחה', field: 'lastName'},
+    {header: 'שם פרטי', field: 'firstName'},
+    {header: 'מחלקה', field: 'department'},
+    {header: 'תפקיד', field: 'role'},
+    {header: 'דוא"ל', field: 'email'},
+    {header: 'טלפון', field: 'phone'}
   ];
-  page: number = 1;
-  itemsPerPage: number = 10;
-  maxSize: number = 5;
-  numPages: number = 1;
-  length: number = 0;
   checkedRow: number;
 
   modalUserName: string;
@@ -47,21 +45,16 @@ export class UsersTableComponent implements OnInit {
   modalAddress: string;
   modalDepartment: string;
   modalRole: string;
+  modalExistUserNameFlag :boolean = false;
 
-  config: any = {
-    filtering: {filterString: ""},
-    paging: true,
-    sorting: {columns: this.columns},
-    className: ['table-striped', 'table-bordered']
-  };
   data: Array<any> = [];
 
   constructor(private authService: AuthenticationService,
-              private companyService: CompanyService) {
+              private companyService: CompanyService,
+              private userService: UserService) {
   }
 
   ngOnInit(): void {
-    this.length = this.data.length || 0;
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
     if (this.user.isAdmin)
@@ -96,89 +89,89 @@ export class UsersTableComponent implements OnInit {
         index: index++
       });
     }
-    this.onChangeTable(this.config);
+    //this.onChangeTable(this.config);
   }
 
-  changePage(page: any, data: Array<any> = this.data): Array<any> {
-    let start = (page.page - 1) * page.itemsPerPage;
-    let end = page.itemsPerPage > -1 ? (start + page.itemsPerPage) : data.length;
-    return data.slice(start, end);
-  }
-
-  changeSort(data: any, config: any): any {
-    if (!config.sorting) {
-      return data;
-    }
-
-    let columns = this.config.sorting.columns || [];
-    let columnName: string = void 0;
-    let sort: string = void 0;
-
-    for (let i = 0; i < columns.length; i++) {
-      if (columns[i].sort !== '' && columns[i].sort !== false) {
-        columnName = columns[i].name;
-        sort = columns[i].sort;
-      }
-    }
-
-    if (!columnName) {
-      return data;
-    }
-
-    //simple sorting
-    return data.sort((previous: any, current: any) => {
-      if (previous[columnName] > current[columnName]) {
-        return sort === 'desc' ? -1 : 1;
-      } else if (previous[columnName] < current[columnName]) {
-        return sort === 'asc' ? -1 : 1;
-      }
-      return 0;
-    });
-  }
-
-  changeFilter(data: any, config: any): any {
-    let filteredData: Array<any> = data;
-    this.columns.forEach((column: any) => {
-      if (column.filtering) {
-        filteredData = filteredData.filter((item: any) => {
-          return item[column.name].match(column.filtering.filterString);
-        });
-      }
-    });
-
-    if (!config.filtering) {
-      return filteredData;
-    }
-
-    if (config.filtering.columnName) {
-      return filteredData.filter((item: any) =>
-        item[config.filtering.columnName].match(this.config.filtering.filterString));
-    }
-
-    let tempArray: Array<any> = [];
-    filteredData.forEach((item: any) => {
-      let flag = false;
-      this.columns.forEach((column: any) => {
-        if (item[column.name].toString().match(this.config.filtering.filterString)) {
-          flag = true;
-        }
-      });
-      if (flag) {
-        tempArray.push(item);
-      }
-    });
-    filteredData = tempArray;
-
-    return filteredData;
-  }
-
-  onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
-
-    let filteredData = this.changeFilter(this.data, this.config);
-    let sortedData = this.changeSort(filteredData, this.config);
-    this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
-    this.length = sortedData.length;
-  }
+  // changePage(page: any, data: Array<any> = this.data): Array<any> {
+  //   let start = (page.page - 1) * page.itemsPerPage;
+  //   let end = page.itemsPerPage > -1 ? (start + page.itemsPerPage) : data.length;
+  //   return data.slice(start, end);
+  // }
+  //
+  // changeSort(data: any, config: any): any {
+  //   if (!config.sorting) {
+  //     return data;
+  //   }
+  //
+  //   let columns = this.config.sorting.columns || [];
+  //   let columnName: string = void 0;
+  //   let sort: string = void 0;
+  //
+  //   for (let i = 0; i < columns.length; i++) {
+  //     if (columns[i].sort !== '' && columns[i].sort !== false) {
+  //       columnName = columns[i].name;
+  //       sort = columns[i].sort;
+  //     }
+  //   }
+  //
+  //   if (!columnName) {
+  //     return data;
+  //   }
+  //
+  //   //simple sorting
+  //   return data.sort((previous: any, current: any) => {
+  //     if (previous[columnName] > current[columnName]) {
+  //       return sort === 'desc' ? -1 : 1;
+  //     } else if (previous[columnName] < current[columnName]) {
+  //       return sort === 'asc' ? -1 : 1;
+  //     }
+  //     return 0;
+  //   });
+  // }
+  //
+  // changeFilter(data: any, config: any): any {
+  //   let filteredData: Array<any> = data;
+  //   this.columns.forEach((column: any) => {
+  //     if (column.filtering) {
+  //       filteredData = filteredData.filter((item: any) => {
+  //         return item[column.name].match(column.filtering.filterString);
+  //       });
+  //     }
+  //   });
+  //
+  //   if (!config.filtering) {
+  //     return filteredData;
+  //   }
+  //
+  //   if (config.filtering.columnName) {
+  //     return filteredData.filter((item: any) =>
+  //       item[config.filtering.columnName].match(this.config.filtering.filterString));
+  //   }
+  //
+  //   let tempArray: Array<any> = [];
+  //   filteredData.forEach((item: any) => {
+  //     let flag = false;
+  //     this.columns.forEach((column: any) => {
+  //       if (item[column.name].toString().match(this.config.filtering.filterString)) {
+  //         flag = true;
+  //       }
+  //     });
+  //     if (flag) {
+  //       tempArray.push(item);
+  //     }
+  //   });
+  //   filteredData = tempArray;
+  //
+  //   return filteredData;
+  // }
+  //
+  // onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
+  //
+  //   let filteredData = this.changeFilter(this.data, this.config);
+  //   let sortedData = this.changeSort(filteredData, this.config);
+  //   this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
+  //   this.length = sortedData.length;
+  // }
 
   addUser() {
     console.log("clicked add user");
@@ -200,21 +193,40 @@ export class UsersTableComponent implements OnInit {
     this.modalRole = Role;
   }
 
-  confirmUser() {
-    this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
-
-
-    // ON EDIT THIS IS NOT SAVED AS NEW OBJECT, WHY?????
-
-
-    console.log('clicked confirm user');
-    this.updateDataFromModal();
-    this.hideChildModal();
+  confirmUser(modalForm :FormGroup) {
+    if (modalForm.valid) {
+      this.editableCompanyEmployeesStackSave.push(jQuery.extend(true, {}, this.editableCompany.employees));
+      this.updateDataFromModal();
+    }
+    // console.log('clicked confirm user');
+    // this.updateDataFromModal();
+    // this.hideChildModal();
   }
 
   updateDataFromModal(): void {
-    this.updateUsersData();
-    this.initTableData();
+    if (this.checkedRow < 0) {
+          if (this.isUserNameExistInLocalTable())
+              this.modalExistUserNameFlag = true;
+          else {
+              this.userService.isUserNameExist(this.modalUserName)
+                .subscribe(
+                  data => {
+                    this.updateUsersData();
+                    this.initTableData();
+                    this.hideChildModal();
+                  },
+                  error => {
+                    this.modalExistUserNameFlag = true;
+                  });
+          }
+
+            }
+    else {
+          this.updateUsersData();
+          this.initTableData();
+          this.hideChildModal();
+      }
+
   }
 
   updateUsersData(): void {
@@ -248,6 +260,13 @@ export class UsersTableComponent implements OnInit {
     }
   }
 
+  isUserNameExistInLocalTable():boolean{
+    if (this.modalUserName === '') return false;
+    for (let user of this.editableCompany.employees)
+      if (user.username === this.modalUserName)
+        return true;
+    return false;
+  }
   deleteUser() {
     this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
     this.editableCompany.employees.splice(this.checkedRow, 1);
@@ -260,7 +279,8 @@ export class UsersTableComponent implements OnInit {
       return;
 
     console.log(data);
-    this.checkedRow = data.row.index;
+    this.checkedRow = data.data.index;
+    this.modalExistUserNameFlag = false;
     this.updateModal(
       this.editableCompany.employees[this.checkedRow].username,
       this.editableCompany.employees[this.checkedRow].password,

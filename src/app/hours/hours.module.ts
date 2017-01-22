@@ -8,6 +8,7 @@ import { EmployeesManagingComponent } from "./employees-managing/employees-manag
 import { CompanyDetailsComponent } from "./company-details/company-details.component";
 import { PersonalDetailsComponent } from "./personal-details.component/personal-details.component";
 import { UsersTableComponent } from "./users-table/users-table.component";
+import { ToolbarModule, DataTableModule } from 'primeng/primeng';
 
 
 @NgModule({
@@ -20,6 +21,8 @@ import { UsersTableComponent } from "./users-table/users-table.component";
   ],
   providers: [ AuthGuard ],
   imports: [
+    DataTableModule,
+    ToolbarModule,
     TooltipModule,
     SharedModule,
     RouterModule.forChild([
