@@ -1,41 +1,6 @@
 <div class="panel panel-primary">
   <div class="panel-heading">רשימת עובדי החברה</div>
   <div class="panel-body">
-    <!--<div class="export-button">-->
-    <!--<button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור רשימה">-->
-    <!--<span class="glyphicon glyphicon-download-alt"></span>-->
-    <!--</button>-->
-    <!--</div>-->
-    <!--<p-toolbar *ngIf="user.isManager && editable">-->
-    <!--<div *ngIf="user.isAdmin" class="ui-toolbar-group-right">-->
-    <!--<p-dropdown name="companies" id="companies" [(ngModel)]="editableCompany"-->
-    <!--size="1"-->
-    <!--[options]="dropdownCompanies"-->
-    <!--(onChange)="setEditCompany()"></p-dropdown>-->
-    <!--</div>-->
-    <!--<div class="ui-toolbar-group-left">-->
-    <!--<button class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span-->
-    <!--class="glyphicon glyphicon-plus"></span></button>-->
-    <!--<button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span-->
-    <!--class="glyphicon glyphicon-floppy-save"></span></button>-->
-    <!--<button [disabled]="!(editableCompanyEmployeesStackSave && editableCompanyEmployeesStackSave.length > 0)"-->
-    <!--class="btn btn-warning"-->
-    <!--(click)="undoListChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">-->
-    <!--<span class="fa fa-undo" aria-hidden="true"></span>-->
-    <!--</button>-->
-    <!--</div>-->
-    <!--</p-toolbar>-->
-    <!--<div id="filter-container" class="col-md-2">-->
-    <!--<input *ngIf="config.filtering" placeholder="סינון"-->
-    <!--[ngTableFiltering]="config.filtering"-->
-    <!--class="form-control"-->
-    <!--(tableChanged)="onChangeTable(config)"/>-->
-    <!--</div>-->
-    <!--<ng-table [config]="config"-->
-    <!--(tableChanged)="onChangeTable(config)"-->
-    <!--(cellClicked)="onCellClick($event)"-->
-    <!--[rows]="rows" [columns]="columns">-->
-    <!--</ng-table>-->
     <div id="row">
       <div class="col-xs-12 col-sm-offset-8 col-sm-4 col-md-offset-9 col-md-3">
         <input id="filter-container" #gb type="text" class="form-control" placeholder="סינון">
@@ -78,18 +43,6 @@
     </div>
   </div>
   <div class="panel-footer">
-    <!--<pagination *ngIf="config.paging"-->
-    <!--class="pagination-sm"-->
-    <!--[(ngModel)]="page"-->
-    <!--[totalItems]="length"-->
-    <!--[itemsPerPage]="itemsPerPage"-->
-    <!--[maxSize]="maxSize"-->
-    <!--[boundaryLinks]="true"-->
-    <!--[rotate]="false"-->
-    <!--(pageChanged)="onChangeTable(config, $event)"-->
-    <!--(numPages)="numPages = $event"-->
-    <!--nextText="&lsaquo;" previousText="&rsaquo;" lastText="&laquo;" firstText="&raquo;">-->
-    <!--</pagination>-->
   </div>
 </div>
 

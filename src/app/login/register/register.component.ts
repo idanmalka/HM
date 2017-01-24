@@ -46,7 +46,7 @@ export class RegisterComponent {
   }
 
   register() {
-
+  this.ExistUserNameFlag = false;
   this.userService.isUserNameExist(this.model.username)
     .subscribe(
       data => {
