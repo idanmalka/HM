@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
   companyUsers = [{label: 'בחר משתמש', value: new User()}];
   chosenCompany;
+  visaExpirationDate;
 
   dirty: boolean = false;
   editableUser: User = new User();
@@ -171,9 +172,9 @@ export class HomeComponent implements OnInit {
   updateUserShifts() {
     this.dirty = true;
     this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
-    let start = new Date(this.modalStartHour);
-    let end = new Date(this.modalEndHour);
-    let date = new Date(this.modalDate);
+    let start = new Date(this.modalStartHour).toISOString();
+    let end = new Date(this.modalEndHour).toISOString();
+    let date = new Date(this.modalDate).toISOString();
 
     if (this.checkedRow > -1 ) {
       this.editableUser.shifts[this.checkedRow].start = start;
@@ -183,7 +184,7 @@ export class HomeComponent implements OnInit {
     } else {
       if (this.isExistShiftInChosenDay()){
           for (let shift of this.editableUser.shifts)
-                if ( shift.date.getDate()=== date.getDate()) {
+                if ( shift.date === date) {
                   shift.start = start;
                   shift.end = end;
                   shift.date = date;
@@ -227,11 +228,11 @@ export class HomeComponent implements OnInit {
 
   onRowClick(data: any): any {
     console.log(data);
+    let start: Date = new Date(this.editableUser.shifts[this.checkedRow].start);
+    let end: Date = new Date(this.editableUser.shifts[this.checkedRow].end);
+    let date: Date = new Date(this.editableUser.shifts[this.checkedRow].date);
     this.checkedRow = data.data.index;
-    this.updateModal(this.editableUser.shifts[this.checkedRow].start,
-      this.editableUser.shifts[this.checkedRow].end,
-      this.editableUser.shifts[this.checkedRow].date,
-      this.editableUser.shifts[this.checkedRow].comment);
+    this.updateModal(start, end, date, this.editableUser.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
 
@@ -288,7 +289,7 @@ export class HomeComponent implements OnInit {
 
   confirmShift(): boolean {
     // if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
-      console.log("submitted");             
+      console.log("submitted");
       this.updateDataFromModal();
       this.hideChildModal();
       return false;

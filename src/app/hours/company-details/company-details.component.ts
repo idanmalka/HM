@@ -24,6 +24,7 @@ export class CompanyDetailsComponent implements OnInit {
   user: User;
   editableCompany: Company;
   loading = false;
+  visaExpirationDate : Date;
 
   companies;
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
@@ -58,7 +59,7 @@ export class CompanyDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
-    this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
+    this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
 
     if(this.user.isAdmin)
       this.companyService.getAll().subscribe((data: Response) => {
@@ -66,7 +67,7 @@ export class CompanyDetailsComponent implements OnInit {
         for(let company of this.companies){
           this.dropdownCompanies.push({label:company.name, value: company});
           this.chartLabels2.push(company.name);
-          this.data2.push(company.employees.length);    
+          this.data2.push(company.employees.length);
         }
         console.log(this.companies);
         setTimeout(this.initChartData2(), 100);
@@ -76,14 +77,15 @@ export class CompanyDetailsComponent implements OnInit {
       this.years.push({value: i, label: i});
     console.log(this.user);
     console.log(this.editableCompany);
-    this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
-    this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
+    this.chosenMonth = this.visaExpirationDate.getMonth();
+    this.chosenYear = this.visaExpirationDate.getFullYear();
     if (this.user.isManager===true && this.user.isAdmin===false)
-      setTimeout(this.initChartData(), 100);       
+      setTimeout(this.initChartData(), 100);
   }
 
   update() {
     this.loading = true;
+    this.editableCompany.visa.expirationDate = this.visaExpirationDate.toISOString();
     this.companyService.update(this.editableCompany)
       .subscribe(
         data => {
@@ -99,18 +101,18 @@ export class CompanyDetailsComponent implements OnInit {
   setExpParameter(param: string) {
     switch (param) {
       case 'month':
-        this.editableCompany.visa.expirationDate.setMonth(this.chosenMonth);
+        this.visaExpirationDate.setMonth(this.chosenMonth);
         break;
       case 'year':
-        this.editableCompany.visa.expirationDate.setFullYear(this.chosenYear);
+        this.visaExpirationDate.setFullYear(this.chosenYear);
         break;
     }
   }
 
   setEditCompany(): void {
-    this.editableCompany.visa.expirationDate = new Date(this.editableCompany.visa.expirationDate);
-    this.chosenMonth = this.editableCompany.visa.expirationDate.getMonth();
-    this.chosenYear = this.editableCompany.visa.expirationDate.getFullYear();
+    this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
+    this.chosenMonth = this.visaExpirationDate.getMonth();
+    this.chosenYear = this.visaExpirationDate.getFullYear();
     setTimeout(this.initChartData(), 100);
   }
 
@@ -130,7 +132,7 @@ export class CompanyDetailsComponent implements OnInit {
       let totalSum = 0;
       for(let j=0; j<localUser.shifts.length ; j++)
       // for (let shift of localUser.shifts)
-      {   
+      {
         let date = new Date(localUser.shifts[j].date);
         let localMonth = date.getMonth();
         let localYear = date.getFullYear();
@@ -140,14 +142,14 @@ export class CompanyDetailsComponent implements OnInit {
             let end = new Date(localUser.shifts[j].end);
             let diff = new Date(Math.abs(end.getTime() - start.getTime()));
 
-            let sum = diff.getHours() - 2 + (diff.getMinutes()) / 60; 
-            totalSum+= sum;       
+            let sum = diff.getHours() - 2 + (diff.getMinutes()) / 60;
+            totalSum+= sum;
         }
       }
       data.push(totalSum);
     }
 
-    for (let i = 0; i < this.editableCompany.employees.length; ) 
+    for (let i = 0; i < this.editableCompany.employees.length; )
     {
       //generate random color
       let str = '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -181,7 +183,7 @@ export class CompanyDetailsComponent implements OnInit {
 
 initChartData() : void{
   this.initChartData_old();
-  
+
   setTimeout(() => {
   if (this.chart)
     this.chart.refresh();
@@ -191,7 +193,7 @@ initChartData() : void{
  initChartData2(): void {
     let backgroundColors =[];
 
-    for (let i = 0; i < this.chartLabels2.length; ) 
+    for (let i = 0; i < this.chartLabels2.length; )
     {
       //generate random color
       let str = '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -216,7 +218,7 @@ initChartData() : void{
         };
 
         this.initChartData_old();
-        
+
         setTimeout(() => {
           if (this.chart && this.chart2)
           {

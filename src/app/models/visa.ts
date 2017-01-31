@@ -1,5 +1,5 @@
 export class Visa {
   visaNumber: string = "";
-  expirationDate: Date = new Date();
+  expirationDate: string = "";
   cvv: string = "";
 }

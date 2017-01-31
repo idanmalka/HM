@@ -19,6 +19,7 @@ export class RegisterComponent {
   company : Company = new Company();
   loading = false;
   ExistUserNameFlag :boolean = false;
+  visaExpirationDate : Date;
 
   years = [];
   months = [
@@ -39,8 +40,8 @@ export class RegisterComponent {
   chosenYear: number = (new Date()).getFullYear();
 
   constructor(private router: Router, private companyService: CompanyService, private userService: UserService, private alertService: AlertService) {
-    this.company.visa.expirationDate = new Date();
-    this.company.visa.expirationDate.setDate(1);
+    this.visaExpirationDate = new Date();
+    this.visaExpirationDate.setDate(1);
     for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
   }
@@ -58,6 +59,7 @@ export class RegisterComponent {
               this.model.shifts = [];
               this.model.companyId = 0;
               this.company.employees = [];
+              this.company.visa.expirationDate = this.visaExpirationDate.toISOString();
               console.log(this.company);
 
               this.companyService.create({company: this.company, user: this.model })
@@ -79,13 +81,13 @@ export class RegisterComponent {
   setExpParameter(param: string){
     switch(param){
       case 'month':
-        this.company.visa.expirationDate.setMonth(this.chosenMonth);
+        this.visaExpirationDate.setMonth(this.chosenMonth);
         break;
       case 'year':
-        this.company.visa.expirationDate.setFullYear(this.chosenYear);
+        this.visaExpirationDate.setFullYear(this.chosenYear);
         break;
     }
 
-    console.log(this.company.visa.expirationDate);
+    console.log(this.visaExpirationDate);
   }
 }
