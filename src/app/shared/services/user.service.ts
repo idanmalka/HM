@@ -48,15 +48,15 @@ export class UserService {
     return this.http.delete(this.baseUrl+'/api/users/' + id, this.jwt()).map((response: Response) => response.json());
   }
 
+  deleteMultiple(ids: Array<number>) {
+    return this.http.put(this.baseUrl+'/api/users/multiple', ids, this.jwt()).map((response: Response) => response.json());
+  }
+
   getCurrentUser(){
     if (localStorage.getItem(this.baseUrl+"currentUser") === null)
       return;
     let user = JSON.parse(localStorage['currentUser']);
     if (user && user.token) return user;
-  }
-
-  isUserNameExist(username : string){
-    return this.http.post(this.baseUrl+'/api/userNameExist/', username, this.jwt()).map((response: Response) => response.json());
   }
 
 

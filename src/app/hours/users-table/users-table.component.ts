@@ -2,13 +2,18 @@ import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import {Company} from "../../models/company";
 import {User} from "../../models/user";
 import {AuthenticationService} from "../../shared/services/authentication.service";
-import { UserService } from '../../shared/services/user.service';
-import { CompanyService } from '../../shared/services/company.service';
+import {UserService} from '../../shared/services/user.service';
+import {CompanyService} from '../../shared/services/company.service';
 import {ModalDirective} from "ng2-bootstrap";
 import {Response} from "@angular/http";
 import * as FileSaver from "file-saver";
-import { FormGroup } from '@angular/forms';
+import {FormGroup} from '@angular/forms';
 
+enum CRUD{
+  'CREATE',
+  'UPDATE',
+  'DELETE'
+}
 
 @Component({
   selector: 'users-table',
@@ -23,9 +28,9 @@ export class UsersTableComponent implements OnInit {
   editableCompany: Company = new Company();
   companies;
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
-  editableCompanyEmployeesStackSave: Array<User[]> = [];
+  editableCompanyEmployeesStackSave: Array<{ users: User[], state: CRUD }> = [];
+  deletedUsersArray: Array<number> = [];
 
-  // rows: Array<any> = [];
   columns: Array<any> = [
     {header: 'שם משפחה', field: 'lastName'},
     {header: 'שם פרטי', field: 'firstName'},
@@ -45,7 +50,7 @@ export class UsersTableComponent implements OnInit {
   modalAddress: string;
   modalDepartment: string;
   modalRole: string;
-  modalExistUserNameFlag :boolean = false;
+  modalExistUserNameFlag: boolean = false;
 
   data: Array<any> = [];
 
@@ -89,89 +94,8 @@ export class UsersTableComponent implements OnInit {
         index: index++
       });
     }
-    //this.onChangeTable(this.config);
   }
 
-  // changePage(page: any, data: Array<any> = this.data): Array<any> {
-  //   let start = (page.page - 1) * page.itemsPerPage;
-  //   let end = page.itemsPerPage > -1 ? (start + page.itemsPerPage) : data.length;
-  //   return data.slice(start, end);
-  // }
-  //
-  // changeSort(data: any, config: any): any {
-  //   if (!config.sorting) {
-  //     return data;
-  //   }
-  //
-  //   let columns = this.config.sorting.columns || [];
-  //   let columnName: string = void 0;
-  //   let sort: string = void 0;
-  //
-  //   for (let i = 0; i < columns.length; i++) {
-  //     if (columns[i].sort !== '' && columns[i].sort !== false) {
-  //       columnName = columns[i].name;
-  //       sort = columns[i].sort;
-  //     }
-  //   }
-  //
-  //   if (!columnName) {
-  //     return data;
-  //   }
-  //
-  //   //simple sorting
-  //   return data.sort((previous: any, current: any) => {
-  //     if (previous[columnName] > current[columnName]) {
-  //       return sort === 'desc' ? -1 : 1;
-  //     } else if (previous[columnName] < current[columnName]) {
-  //       return sort === 'asc' ? -1 : 1;
-  //     }
-  //     return 0;
-  //   });
-  // }
-  //
-  // changeFilter(data: any, config: any): any {
-  //   let filteredData: Array<any> = data;
-  //   this.columns.forEach((column: any) => {
-  //     if (column.filtering) {
-  //       filteredData = filteredData.filter((item: any) => {
-  //         return item[column.name].match(column.filtering.filterString);
-  //       });
-  //     }
-  //   });
-  //
-  //   if (!config.filtering) {
-  //     return filteredData;
-  //   }
-  //
-  //   if (config.filtering.columnName) {
-  //     return filteredData.filter((item: any) =>
-  //       item[config.filtering.columnName].match(this.config.filtering.filterString));
-  //   }
-  //
-  //   let tempArray: Array<any> = [];
-  //   filteredData.forEach((item: any) => {
-  //     let flag = false;
-  //     this.columns.forEach((column: any) => {
-  //       if (item[column.name].toString().match(this.config.filtering.filterString)) {
-  //         flag = true;
-  //       }
-  //     });
-  //     if (flag) {
-  //       tempArray.push(item);
-  //     }
-  //   });
-  //   filteredData = tempArray;
-  //
-  //   return filteredData;
-  // }
-  //
-  // onChangeTable(config: any, page: any = {page: this.page, itemsPerPage: this.itemsPerPage}): any {
-  //
-  //   let filteredData = this.changeFilter(this.data, this.config);
-  //   let sortedData = this.changeSort(filteredData, this.config);
-  //   this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
-  //   this.length = sortedData.length;
-  // }
 
   addUser() {
     console.log("clicked add user");
@@ -193,39 +117,28 @@ export class UsersTableComponent implements OnInit {
     this.modalRole = Role;
   }
 
-  confirmUser(modalForm :FormGroup) {
+  confirmUser(modalForm: FormGroup) {
     if (modalForm.valid) {
-      this.editableCompanyEmployeesStackSave.push(jQuery.extend(true, {}, this.editableCompany.employees));
+      this.editableCompanyEmployeesStackSave.push(
+        {
+          users: jQuery.extend(true, {}, this.editableCompany.employees),
+          state: CRUD.UPDATE
+        });
       this.updateDataFromModal();
     }
-    // console.log('clicked confirm user');
-    // this.updateDataFromModal();
-    // this.hideChildModal();
   }
 
   updateDataFromModal(): void {
-    if (this.checkedRow < 0) {
-          if (this.isUserNameExistInLocalTable())
-              this.modalExistUserNameFlag = true;
-          else {
-              this.userService.isUserNameExist(this.modalUserName)
-                .subscribe(
-                  data => {
-                    this.updateUsersData();
-                    this.initTableData();
-                    this.hideChildModal();
-                  },
-                  error => {
-                    this.modalExistUserNameFlag = true;
-                  });
-          }
 
-            }
-    else {
-          this.updateUsersData();
-          this.initTableData();
-          this.hideChildModal();
+    if (this.checkedRow < 0)
+      if (this.isUserNameExistInLocalTable()) {
+        this.modalExistUserNameFlag = true;
+        return;
       }
+
+    this.updateUsersData();
+    this.initTableData();
+    this.hideChildModal();
 
   }
 
@@ -260,15 +173,21 @@ export class UsersTableComponent implements OnInit {
     }
   }
 
-  isUserNameExistInLocalTable():boolean{
+  isUserNameExistInLocalTable(): boolean {
     if (this.modalUserName === '') return false;
     for (let user of this.editableCompany.employees)
       if (user.username === this.modalUserName)
         return true;
     return false;
   }
+
   deleteUser() {
-    this.editableCompanyEmployeesStackSave.push(jQuery.extend(true,{},this.editableCompany.employees));
+    this.deletedUsersArray.push(this.editableCompany.employees[this.checkedRow].id);
+    this.editableCompanyEmployeesStackSave.push(
+        {
+          users: jQuery.extend(true, {},
+          this.editableCompany.employees), state: CRUD.DELETE
+        });
     this.editableCompany.employees.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -305,6 +224,7 @@ export class UsersTableComponent implements OnInit {
 
   saveData(): void {
     console.log('updating user data');
+    this.userService.deleteMultiple(this.deletedUsersArray);
     this.companyService.updateCompanyUsers(this.editableCompany);
   }
 
@@ -331,11 +251,17 @@ export class UsersTableComponent implements OnInit {
     FileSaver.saveAs(blob, 'רשימת עובדים - ' + this.editableCompany.name + '.csv');
   }
 
-  undoListChange(){
+  undoListChange() {
     if (this.editableCompanyEmployeesStackSave.length > 0) {
       console.log('poping');
       this.editableCompany.employees = [];
-      jQuery.extend(true,this.editableCompany.employees, this.editableCompanyEmployeesStackSave.pop());
+      let stackTop = this.editableCompanyEmployeesStackSave.pop();
+
+      jQuery.extend(true, this.editableCompany.employees, stackTop.users);
+
+      if (stackTop.state === CRUD.DELETE)
+        this.deletedUsersArray.pop();
+
       this.initTableData();
     }
     else console.log('not poping');
