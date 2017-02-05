@@ -3,6 +3,12 @@ import {Http, Headers, RequestOptions, Response} from '@angular/http';
 import { GatewayConfig } from '../../app.config';
 
 import {Company} from '../../models/company';
+import {User} from "../../models/user";
+
+class CompanyManagement{
+  company: Company;
+  user: User;
+}
 
 @Injectable()
 export class CompanyService {
@@ -12,10 +18,8 @@ export class CompanyService {
     this.baseUrl = `http://${gatewayConfig.ip}:${gatewayConfig.port}`;
   }
 
-  create(company: any) {
-    //return this.http.post('/api/companies', company, this.jwt()).map((response: Response) => response.json());
-    return this.http.post(this.baseUrl+'/api/companies', company, this.jwt()).map((response: Response) => response.json());
-
+  create(companyManagement: CompanyManagement) {
+    return this.http.post(this.baseUrl+'/api/companies', companyManagement, this.jwt()).map((response: Response) => response.json());
   }
 
   update(updatedCompany: Company) {
@@ -47,11 +51,11 @@ export class CompanyService {
 
   private jwt() {
     // create authorization header with jwt token
-    let currentCompany = JSON.parse(localStorage.getItem('currentCompany'));
-    if (currentCompany && currentCompany.token) {
-      let headers = new Headers({'Authorization': 'Bearer ' + currentCompany.token});
-      return new RequestOptions({headers: headers});
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
+    if (currentUser && currentToken) {
+      let headers = new Headers({ 'Authorization': 'Bearer ' + currentToken });
+      return new RequestOptions({ headers: headers });
     }
   }
-
 }

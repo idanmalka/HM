@@ -12,6 +12,7 @@ import {Company} from "../../models/company";
 import {CompanyService} from "../../shared/services/company.service";
 import {Response} from "@angular/http";
 import {DataTable} from "primeng/components/datatable/datatable";
+import {AlertService} from "../../shared/services/alert.service";
 
 @Component({
   selector: 'home-page',
@@ -74,7 +75,7 @@ export class HomeComponent implements OnInit {
   shiftsPerDay: boolean[] = [];
 
   constructor(private authenticationService: AuthenticationService,
-              private router: Router,
+              private alertService: AlertService,
               private userService: UserService,
               private companyService: CompanyService) { }
 
@@ -256,7 +257,10 @@ export class HomeComponent implements OnInit {
   saveData(): void {
     console.log('updating editableUser data');
     this.dirty = false;
-    this.userService.update(this.editableUser);
+    this.userService.update(this.editableUser).subscribe(
+      data => this.alertService.success('נשמר בהצלחה', true),
+      error => this.alertService.error(error._body)
+  );
   }
 
   updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {

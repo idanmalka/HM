@@ -51,7 +51,7 @@ export class RegisterComponent {
     this.loading = true;
     this.model.department = "הנהלה";
     this.model.role = "מנהל כללי";
-    this.model.isAdmin = false;
+    this.model.isAdmin = true;
     this.model.isManager = true;
     this.model.shifts = [];
     this.model.companyId = 0;
@@ -66,7 +66,7 @@ export class RegisterComponent {
           this.router.navigate(['/login']);
         },
         error => {
-          this.alertService.error(error);
+          this.alertService.error(error._body);
           this.loading = false;
         });
 

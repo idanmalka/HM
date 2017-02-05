@@ -21,8 +21,8 @@ export class CompanyDetailsComponent implements OnInit {
   @ViewChild('chart2') public chart2: UIChart;
 ////
 
-  user: User;
-  editableCompany: Company;
+  user: User = new User();
+  editableCompany: Company = new Company();
   loading = false;
   visaExpirationDate : Date;
 

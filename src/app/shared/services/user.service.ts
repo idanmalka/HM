@@ -49,7 +49,7 @@ export class UserService {
   }
 
   deleteMultiple(ids: Array<number>) {
-    return this.http.put(this.baseUrl+'/api/users/multiple', ids, this.jwt()).map((response: Response) => response.json());
+    return this.http.post(this.baseUrl+'/api/users/-1', ids, this.jwt()).map((response: Response) => response.json());
   }
 
   getCurrentUser(){
@@ -65,11 +65,10 @@ export class UserService {
   private jwt() {
     // create authorization header with jwt token
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser && currentUser.token) {
-      let headers = new Headers({ 'Authorization': 'Bearer ' + currentUser.token });
+    let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
+    if (currentUser && currentToken) {
+      let headers = new Headers({ 'Authorization': 'Bearer ' + currentToken });
       return new RequestOptions({ headers: headers });
     }
-    let headers = new Headers({'Authorization': 'Basic' + 'newUser'});
-    return new RequestOptions({headers: headers});
   }
 }

@@ -19,7 +19,7 @@ export class AuthenticationService {
 
 
     login(username: string, password: string) {
-    return this.http.post(this.baseUrl+'/api/authenticate', JSON.stringify({ username: username, password: password }))
+    return this.http.post(this.baseUrl+'/api/authenticate', { username: username, password: password })
       .map((response: Response) => {
         // login successful if there's a jwt token in the response
         let obj = response.json();
@@ -28,8 +28,9 @@ export class AuthenticationService {
         if (obj && obj.token) {
           // store user details and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('currentUserToken',JSON.stringify(obj.token));
           localStorage.setItem('currentCompany', JSON.stringify(company));
-          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem('isLoggedIn','true');
           this.user = <User> Object.assign({},user);
           this.company = <Company> Object.assign({},company);
           this.isLoggedIn = true;
@@ -42,8 +43,8 @@ export class AuthenticationService {
     if (this.isLoggedIn) {
       let user = JSON.parse(localStorage.getItem('currentUser'));
       let company = JSON.parse(localStorage.getItem('currentCompany'));
-      this.user = <User> Object.assign({}, user);
-      this.company = <Company> Object.assign({},company);
+      this.user = jQuery.extend(true, {}, user);
+      this.company = jQuery.extend(true, {}, company);
     }
    return this.isLoggedIn;
   }
