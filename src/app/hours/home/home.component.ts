@@ -77,7 +77,8 @@ export class HomeComponent implements OnInit {
   constructor(private authenticationService: AuthenticationService,
               private alertService: AlertService,
               private userService: UserService,
-              private companyService: CompanyService) { }
+              private companyService: CompanyService) {
+  }
 
   ngOnInit() {
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
@@ -91,10 +92,7 @@ export class HomeComponent implements OnInit {
         this.companies = data;
         for (let company of this.companies)
           this.dropdownCompanies.push({label: company.name, value: company});
-
-        console.log(this.companies);
       });
-    console.log(this.user ? this.user : this.editableUser);
     this.modalDate = new Date();
     this.initTableData();
     this.dirty = false;
@@ -110,7 +108,6 @@ export class HomeComponent implements OnInit {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
       let date = new Date(shift.date);
-      console.log(date.getMonth());
       if (date.getMonth() === this.chosenMonth && date.getFullYear() === this.chosenYear) {
 
         let dateStr = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
@@ -177,29 +174,27 @@ export class HomeComponent implements OnInit {
     let end = new Date(this.modalEndHour).toISOString();
     let date = new Date(this.modalDate).toISOString();
 
-    if (this.checkedRow > -1 ) {
+    if (this.checkedRow > -1) {
       this.editableUser.shifts[this.checkedRow].start = start;
       this.editableUser.shifts[this.checkedRow].end = end;
       this.editableUser.shifts[this.checkedRow].date = date;
       this.editableUser.shifts[this.checkedRow].comment = this.modalComment;
     } else {
-      if (this.isExistShiftInChosenDay()){
-          for (let shift of this.editableUser.shifts)
-                if ( shift.date === date) {
-                  shift.start = start;
-                  shift.end = end;
-                  shift.date = date;
-                  shift.comment = this.modalComment;
-                  break;
-                }
+      if (this.isExistShiftInChosenDay()) {
+        for (let shift of this.editableUser.shifts)
+          if (shift.date === date) {
+            shift.start = start;
+            shift.end = end;
+            shift.date = date;
+            shift.comment = this.modalComment;
+            break;
+          }
       }
       else this.editableUser.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
     }
   }
 
   changeSort($event): any {
-
-    console.log($event);
 
     let columnName: string = $event.field;
     let sort: number = $event.order;
@@ -228,7 +223,6 @@ export class HomeComponent implements OnInit {
   }
 
   onRowClick(data: any): any {
-    console.log(data);
     let start: Date = new Date(this.editableUser.shifts[this.checkedRow].start);
     let end: Date = new Date(this.editableUser.shifts[this.checkedRow].end);
     let date: Date = new Date(this.editableUser.shifts[this.checkedRow].date);
@@ -248,19 +242,17 @@ export class HomeComponent implements OnInit {
   }
 
   addShift(): void {
-    console.log("clicked add shift");
     this.checkedRow = -1;
     this.updateModal();
     this.showChildModal();
   }
 
   saveData(): void {
-    console.log('updating editableUser data');
     this.dirty = false;
     this.userService.update(this.editableUser).subscribe(
       data => this.alertService.success('נשמר בהצלחה', true),
       error => this.alertService.error(error._body)
-  );
+    );
   }
 
   updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {
@@ -293,17 +285,13 @@ export class HomeComponent implements OnInit {
 
   confirmShift(): boolean {
     // if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
-      console.log("submitted");
-      this.updateDataFromModal();
-      this.hideChildModal();
-      return false;
+    console.log("submitted");
+    this.updateDataFromModal();
+    this.hideChildModal();
+    return false;
   }
 
   updateDataFromModal(): void {
-    console.log(this.modalStartHour);
-    console.log(this.modalEndHour);
-    console.log(this.modalDate);
-    console.log(this.checkedRow);
     this.updateUserShifts();
     this.initTableData();
   }
@@ -313,11 +301,6 @@ export class HomeComponent implements OnInit {
     this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
-  }
-
-  print(a) {
-    console.log(a.getDate());
-    console.log(this.modalDate);
   }
 
   exportToCsv() {
@@ -333,8 +316,6 @@ export class HomeComponent implements OnInit {
       csv.unshift(header.join(','));
       let csv1 = csv.join('\r\n');
 
-      console.log(csv1);
-
       var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
       FileSaver.saveAs(blob, 'דיווחי שעות ' + this.months[this.chosenMonth].label + '/' + this.chosenYear + '.csv');
     } else this.msgs.push({severity: 'info', summary: '', detail: 'אין דיווחים לשמירה'})
@@ -342,13 +323,12 @@ export class HomeComponent implements OnInit {
   }
 
   undoShiftChange() {
-    if (this.editableUserShiftsStackSave.length > 0) {
-      console.log('poping');
-      this.editableUser.shifts = [];
-      jQuery.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
-      this.initTableData();
-    }
-    else console.log('not poping');
+    if (this.editableUserShiftsStackSave.length <= 0)
+      return;
+    this.editableUser.shifts = [];
+    jQuery.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
+    this.initTableData();
+
   }
 
   setEditCompany(): void {

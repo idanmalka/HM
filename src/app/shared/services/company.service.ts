@@ -42,6 +42,9 @@ export class CompanyService {
     return this.http.get(this.baseUrl+'/api/companies/' + id, this.jwt()).map((response: Response) => response.json());
   }
 
+  delete(id: number) {
+    return this.http.delete(this.baseUrl+'/api/companies/' + id, this.jwt()).map((response: Response) => response.json());
+  }
 
   getAll() {
     return this.http.get(this.baseUrl+'/api/companies/', this.jwt()).map((response: Response) => response.json());

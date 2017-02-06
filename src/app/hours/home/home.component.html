@@ -86,7 +86,7 @@
                      value="{{getDate() | date: 'dd/MM/yyyy'}}"/>
               <div style="display: inline-block;min-height:267px;">
                 <datepicker dir="ltr" shortcutPropagation="true" [(ngModel)]="modalDate" [showWeeks]="false"
-                            #date='ngModel' name="date" requierd (ngModelChange)="print($event)"></datepicker>
+                            #date='ngModel' name="date" requierd></datepicker>
               </div>
               <div *ngIf="f.submitted && !date.valid" class="help-block">אנא הכנס תאריך דיווח</div>
               <div *ngIf="isExistShiftInChosenDay()" class="help-block">קיימת משמרת ביום זה, לחיצה על אישור תחליף את נתוני המשמרת בנתונים המוזנים

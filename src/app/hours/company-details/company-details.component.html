@@ -1,8 +1,11 @@
 <div class="container">
   <h2>פרטי חברה</h2>
-  <p-dropdown *ngIf="user.isAdmin" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
-              [options]="dropdownCompanies"
-              (onChange)="setEditCompany()"></p-dropdown>
+  <div *ngIf="user.isAdmin" class="top-options-container">
+    <p-dropdown name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
+                [options]="dropdownCompanies"
+                (onChange)="setEditCompany()"></p-dropdown>
+    <button id="delete-company-button" (click)="openDeleteCompanyDialog = true">מחק חברה</button>
+  </div>
   <br>
   <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
     <div class="row" *ngIf="user.isManager">
@@ -106,3 +109,13 @@
    </div>
 
 </div>
+
+<p-dialog header="Godfather I" [(visible)]="openDeleteCompanyDialog" modal="modal" width="300" responsive="true">
+  <p>האם אתה בטוח שברצונך למחוק את החברה "{{company.name}}"?</p>
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button type="button" pButton icon="fa-close" (click)="openDeleteCompanyDialog=false" label="לא"></button>
+      <button type="button" pButton icon="fa-check" (click)="deleteCompany()" label="כן"></button>
+    </div>
+  </p-footer>
+</p-dialog>

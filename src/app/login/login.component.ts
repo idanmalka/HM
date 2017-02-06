@@ -27,7 +27,6 @@ export class LoginComponent implements OnInit{
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
         data => {
-          console.log("asdfasdf");
           this.alertService.success('התחבר בהצלחה');
           this.router.navigate(['/']);
         },

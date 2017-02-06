@@ -68,7 +68,6 @@ export class UsersTableComponent implements OnInit {
         for (let company of this.companies) {
           this.dropdownCompanies.push({label: company.name, value: company});
         }
-        console.log(this.companies);
       });
     this.initTableData();
   }
@@ -98,7 +97,6 @@ export class UsersTableComponent implements OnInit {
 
 
   addUser() {
-    console.log("clicked add user");
     this.checkedRow = -1;
     this.updateModal();
     this.showChildModal();
@@ -184,10 +182,10 @@ export class UsersTableComponent implements OnInit {
   deleteUser() {
     this.deletedUsersArray.push(this.editableCompany.employees[this.checkedRow].id);
     this.editableCompanyEmployeesStackSave.push(
-        {
-          users: jQuery.extend(true, {},
+      {
+        users: jQuery.extend(true, {},
           this.editableCompany.employees), state: CRUD.DELETE
-        });
+      });
     this.editableCompany.employees.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -197,7 +195,6 @@ export class UsersTableComponent implements OnInit {
     if (!this.user.isManager && !this.editable)
       return;
 
-    console.log(data);
     this.checkedRow = data.data.index;
     this.modalExistUserNameFlag = false;
     this.updateModal(
@@ -223,7 +220,6 @@ export class UsersTableComponent implements OnInit {
   }
 
   saveData(): void {
-    console.log('updating user data');
     this.userService.deleteMultiple(this.deletedUsersArray);
     this.companyService.updateCompanyUsers(this.editableCompany);
   }
@@ -245,25 +241,23 @@ export class UsersTableComponent implements OnInit {
     csv.unshift(header.join(','));
     let csv1 = csv.join('\r\n');
 
-    console.log(csv1);
-
     var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
     FileSaver.saveAs(blob, 'רשימת עובדים - ' + this.editableCompany.name + '.csv');
   }
 
   undoListChange() {
-    if (this.editableCompanyEmployeesStackSave.length > 0) {
-      console.log('poping');
-      this.editableCompany.employees = [];
-      let stackTop = this.editableCompanyEmployeesStackSave.pop();
+    if (this.editableCompanyEmployeesStackSave.length <= 0)
+      return;
 
-      jQuery.extend(true, this.editableCompany.employees, stackTop.users);
+    this.editableCompany.employees = [];
+    let stackTop = this.editableCompanyEmployeesStackSave.pop();
 
-      if (stackTop.state === CRUD.DELETE)
-        this.deletedUsersArray.pop();
+    jQuery.extend(true, this.editableCompany.employees, stackTop.users);
 
-      this.initTableData();
-    }
-    else console.log('not poping');
+    if (stackTop.state === CRUD.DELETE)
+      this.deletedUsersArray.pop();
+
+    this.initTableData();
+
   }
 }

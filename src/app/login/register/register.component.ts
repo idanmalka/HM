@@ -57,7 +57,6 @@ export class RegisterComponent {
     this.model.companyId = 0;
     this.company.employees = [];
     this.company.visa.expirationDate = this.visaExpirationDate.toISOString();
-    console.log(this.company);
 
     this.companyService.create({company: this.company, user: this.model})
       .subscribe(
@@ -81,7 +80,5 @@ export class RegisterComponent {
         this.visaExpirationDate.setFullYear(this.chosenYear);
         break;
     }
-
-    console.log(this.visaExpirationDate);
   }
 }

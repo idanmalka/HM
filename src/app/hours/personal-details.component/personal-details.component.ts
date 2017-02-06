@@ -32,15 +32,12 @@ export class PersonalDetailsComponent implements OnInit{
 
     ngOnInit(): void {
       this.user = this.editableUser = this.authService.user;
-      console.log(this.user? this.user : this.editableUser);
-
       if(this.user.isAdmin)
         this.companyService.getAll().subscribe((data: Response) => {
           this.companies = data;
           for(let company of this.companies){
             this.dropdownCompanies.push({label:company.name, value: company});
           }
-          console.log(this.companies);
         });
     }
 
