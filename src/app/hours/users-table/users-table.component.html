@@ -9,7 +9,7 @@
     <div class="col-xs-12">
       <p-dataTable [value]="data" [rows]="10" [paginator]="true" [globalFilter]="gb" #dt [responsive]="true"
                    selectionMode="single" (onRowSelect)="onCellClick($event)">
-        <header>
+        <p-header>
           <p-toolbar>
 
             <div class="ui-toolbar-group-left export-button">
@@ -35,7 +35,7 @@
             </div>
           </p-toolbar>
 
-        </header>
+        </p-header>
         <p-column *ngFor="let col of columns" [field]="col.field" [header]="col.header"
                   [sortable]="true"
         ></p-column>
