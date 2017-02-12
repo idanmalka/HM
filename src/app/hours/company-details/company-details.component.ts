@@ -45,6 +45,8 @@ export class CompanyDetailsComponent implements OnInit {
   ];
   chosenMonth: number = (new Date()).getMonth();
   chosenYear: number = (new Date()).getFullYear();
+  chosenGraphMonth: number = (new Date()).getMonth();
+  chosenGraphYear: number = (new Date()).getFullYear();
   chartData: any;
   chartData2: any;
   data2 = [];
@@ -77,17 +79,18 @@ export class CompanyDetailsComponent implements OnInit {
       this.years.push({value: i, label: i});
     this.chosenMonth = this.visaExpirationDate.getMonth();
     this.chosenYear = this.visaExpirationDate.getFullYear();
-    if (this.user.isManager === true && this.user.isAdmin === false)
+    if (this.user.isManager || this.user.isAdmin)
       setTimeout(this.initChartData(), 100);
   }
 
   update() {
     this.loading = true;
-    this.editableCompany.visa.expirationDate = this.visaExpirationDate.toISOString();
+    let date = this.visaExpirationDate.toISOString();
+    // this.editableCompany.visa.expirationDate =
     this.companyService.update(this.editableCompany)
       .subscribe(
         data => {
-          this.alertService.success('Update successful', true);
+          this.alertService.success('עודכן בהצלחה', false);
           this.loading = false;
         },
         error => {
@@ -119,6 +122,8 @@ export class CompanyDetailsComponent implements OnInit {
     let backgroundColors = [];
     let chartLabels = [];
     let currentDate = new Date();
+    currentDate.setMonth(this.chosenGraphMonth);
+    currentDate.setFullYear(this.chosenGraphYear);
     let localUser = new User();
 
 

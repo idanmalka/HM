@@ -8,6 +8,7 @@ import {ModalDirective} from "ng2-bootstrap";
 import {Response} from "@angular/http";
 import * as FileSaver from "file-saver";
 import {FormGroup} from '@angular/forms';
+import {AlertService} from "../../shared/services/alert.service";
 
 enum CRUD{
   'CREATE',
@@ -56,7 +57,8 @@ export class UsersTableComponent implements OnInit {
 
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService,
-              private userService: UserService) {
+              private userService: UserService,
+              private alertService: AlertService) {
   }
 
   ngOnInit(): void {
@@ -220,8 +222,12 @@ export class UsersTableComponent implements OnInit {
   }
 
   saveData(): void {
-    this.userService.deleteMultiple(this.deletedUsersArray);
-    this.companyService.updateCompanyUsers(this.editableCompany);
+    if (this.deletedUsersArray.length > 0)
+      this.userService.deleteMultiple(this.deletedUsersArray);
+    this.companyService.updateCompanyUsers(this.editableCompany).subscribe(
+      data => this.alertService.success('הנתונים עודכנו בהצלחה'),
+      error => this.alertService.error(error)
+    );
   }
 
   setEditCompany(): void {
