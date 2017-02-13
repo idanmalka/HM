@@ -19,7 +19,7 @@ export class CompanyService {
   }
 
   create(companyManagement: CompanyManagement) {
-    return this.http.post(this.baseUrl+'/api/companies', companyManagement, this.jwt()).map((response: Response) => response.json());
+    return this.http.post(this.baseUrl+'/api/companies', companyManagement, this.jwt());//.map((response: Response) => response.json());
   }
 
   update(updatedCompany: Company) {

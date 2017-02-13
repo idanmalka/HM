@@ -52,6 +52,8 @@ export class UsersTableComponent implements OnInit {
   modalDepartment: string;
   modalRole: string;
   modalExistUserNameFlag: boolean = false;
+  modalIsManager: boolean = false;
+  modalIsAdmin: boolean = false;
 
   data: Array<any> = [];
 
@@ -105,7 +107,7 @@ export class UsersTableComponent implements OnInit {
 
   }
 
-  updateModal(UserName = "", Password = "", FirstName = "", LastName = "", Email = "", Phone = "", Address = "", Department = "", Role = "") {
+  updateModal(UserName = "", Password = "", FirstName = "", LastName = "", Email = "", Phone = "", Address = "", Department = "", Role = "",isManager = false, isAdmin = false) {
     this.modalUserName = UserName;
     this.modalPassword = Password;
     this.modalFirstName = FirstName;
@@ -115,6 +117,8 @@ export class UsersTableComponent implements OnInit {
     this.modalAddress = Address;
     this.modalDepartment = Department;
     this.modalRole = Role;
+    this.modalIsManager = isManager;
+    this.modalIsAdmin = isAdmin;
   }
 
   confirmUser(modalForm: FormGroup) {
@@ -199,16 +203,20 @@ export class UsersTableComponent implements OnInit {
 
     this.checkedRow = data.data.index;
     this.modalExistUserNameFlag = false;
+    let employee = this.editableCompany.employees[this.checkedRow];
     this.updateModal(
-      this.editableCompany.employees[this.checkedRow].username,
-      this.editableCompany.employees[this.checkedRow].password,
-      this.editableCompany.employees[this.checkedRow].firstName,
-      this.editableCompany.employees[this.checkedRow].lastName,
-      this.editableCompany.employees[this.checkedRow].email,
-      this.editableCompany.employees[this.checkedRow].phone,
-      this.editableCompany.employees[this.checkedRow].address,
-      this.editableCompany.employees[this.checkedRow].department,
-      this.editableCompany.employees[this.checkedRow].role);
+      employee.username,
+      employee.password,
+      employee.firstName,
+      employee.lastName,
+      employee.email,
+      employee.phone,
+      employee.address,
+      employee.department,
+      employee.role,
+      employee.isManager,
+      employee.isAdmin);
+
     this.showChildModal();
   }
 

@@ -62,7 +62,12 @@ export class CompanyDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
+    console.log("from onInit:");
+    console.log(this.editableCompany.visa.expirationDate);
     this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
+    console.log(this.visaExpirationDate);
+    console.log(this.visaExpirationDate.toISOString());
+
 
     if (this.user.isAdmin)
       this.companyService.getAll().subscribe((data: Response) => {
@@ -86,7 +91,9 @@ export class CompanyDetailsComponent implements OnInit {
   update() {
     this.loading = true;
     let date = this.visaExpirationDate.toISOString();
-    // this.editableCompany.visa.expirationDate =
+    console.log("from update:");
+    console.log(date);
+    this.editableCompany.visa.expirationDate = date;
     this.companyService.update(this.editableCompany)
       .subscribe(
         data => {

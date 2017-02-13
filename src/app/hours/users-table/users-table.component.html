@@ -127,6 +127,10 @@
                        required/>
                 <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
               </div>
+              <div id="isManagerCheckbox">
+                <p-checkbox binary="true" name="modal-is-manager" *ngIf="user.isManager || user.isAdmin" [(ngModel)]="modalIsManager" label="הרשאות ניהול"></p-checkbox>
+                <p-checkbox binary="true" name="modal-is-admin" *ngIf="user.isAdmin" [(ngModel)]="modalIsAdmin" label="הרשאות אדמיניסטרציה"></p-checkbox>
+              </div>
             </div>
           </div>
           <div class="form-group">
