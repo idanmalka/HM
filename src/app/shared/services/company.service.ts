@@ -35,6 +35,7 @@ export class CompanyService {
       company.employees = updatedCompany.employees;
       localStorage.setItem('currentCompany', JSON.stringify(company));
     }
+    console.log(updatedCompany);
     return this.http.put(this.baseUrl+'/api/companyUsers/'+updatedCompany.id, updatedCompany.employees, this.jwt());//.map((response: Response) => response.json());
   }
 
@@ -43,7 +44,7 @@ export class CompanyService {
   }
 
   delete(id: number) {
-    return this.http.delete(this.baseUrl+'/api/companies/' + id, this.jwt()).map((response: Response) => response.json());
+    return this.http.delete(this.baseUrl+'/api/companies/' + id, this.jwt());//.map((response: Response) => response.json());
   }
 
   getAll() {
@@ -56,8 +57,11 @@ export class CompanyService {
     // create authorization header with jwt token
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
+    console.log("from company service token:");
+    console.log(currentUser);
+    console.log(currentToken);
     if (currentUser && currentToken) {
-      let headers = new Headers({ 'Authorization': 'Bearer ' + currentToken });
+      let headers = new Headers({ 'token': currentToken });
       return new RequestOptions({ headers: headers });
     }
   }

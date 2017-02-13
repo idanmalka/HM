@@ -22,7 +22,7 @@ export class UserService {
   }
 
   create(user: User) {
-    return this.http.post(this.baseUrl+'/api/users', user, this.jwt()).map((response: Response) => response.json());
+    return this.http.post(this.baseUrl+'/api/users', user, this.jwt());//.map((response: Response) => response.json());
   }
 
   update(updatedUser: User) {
@@ -41,15 +41,15 @@ export class UserService {
       localStorage.setItem('currentCompany', JSON.stringify(company));
     }
     //
-    return this.http.put(this.baseUrl+'/api/users/'+updatedUser.id, updatedUser, this.jwt()).map((response: Response) => response.json());
+    return this.http.put(this.baseUrl+'/api/users/'+updatedUser.id, updatedUser, this.jwt());//.map((response: Response) => response.json());
   }
 
   delete(id: number) {
-    return this.http.delete(this.baseUrl+'/api/users/' + id, this.jwt()).map((response: Response) => response.json());
+    return this.http.delete(this.baseUrl+'/api/users/' + id, this.jwt());//.map((response: Response) => response.json());
   }
 
   deleteMultiple(ids: Array<number>) {
-    return this.http.post(this.baseUrl+'/api/users/-1', ids, this.jwt()).map((response: Response) => response.json());
+    return this.http.post(this.baseUrl+'/api/users/-1', ids, this.jwt());//.map((response: Response) => response.json());
   }
 
   getCurrentUser(){
