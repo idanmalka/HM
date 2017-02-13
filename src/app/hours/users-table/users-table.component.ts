@@ -156,22 +156,36 @@ export class UsersTableComponent implements OnInit {
     let Address = this.modalAddress;
     let Department = this.modalDepartment;
     let Role = this.modalRole;
+    let isAdmin = this.modalIsAdmin;
+    let isManager = this.modalIsManager;
 
+    let curUser = this.editableCompany.employees[this.checkedRow];
     if (this.checkedRow > -1) {
-      this.editableCompany.employees[this.checkedRow].username = UserName;
-      this.editableCompany.employees[this.checkedRow].password = Password;
-      this.editableCompany.employees[this.checkedRow].firstName = FirstName;
-      this.editableCompany.employees[this.checkedRow].lastName = LastName;
-      this.editableCompany.employees[this.checkedRow].email = Email;
-      this.editableCompany.employees[this.checkedRow].phone = Phone;
-      this.editableCompany.employees[this.checkedRow].address = Address;
-      this.editableCompany.employees[this.checkedRow].department = Department;
-      this.editableCompany.employees[this.checkedRow].role = Role;
+      curUser.username = UserName;
+      curUser.password = Password;
+      curUser.firstName = FirstName;
+      curUser.lastName = LastName;
+      curUser.email = Email;
+      curUser.phone = Phone;
+      curUser.address = Address;
+      curUser.department = Department;
+      curUser.role = Role;
+      curUser.isAdmin = isAdmin;
+      curUser.isManager = isManager;
     } else {
       this.editableCompany.employees.push({
-        id: -1, username: UserName, password: Password, firstName: FirstName,
-        lastName: LastName, email: Email, phone: Phone, address: Address,
-        department: Department, role: Role, isManager: false, isAdmin: false,
+        id: -2,
+        username: UserName,
+        password: Password,
+        firstName: FirstName,
+        lastName: LastName,
+        email: Email,
+        phone: Phone,
+        address: Address,
+        department: Department,
+        role: Role,
+        isManager: isManager,
+        isAdmin: isAdmin,
         companyId: this.editableCompany.employees[0].companyId, shifts: []
       });
     }
@@ -234,7 +248,7 @@ export class UsersTableComponent implements OnInit {
       this.userService.deleteMultiple(this.deletedUsersArray);
     this.companyService.updateCompanyUsers(this.editableCompany).subscribe(
       data => this.alertService.success('הנתונים עודכנו בהצלחה'),
-      error => this.alertService.error(error)
+      error => this.alertService.error("אירעה שגיאה")
     );
   }
 
