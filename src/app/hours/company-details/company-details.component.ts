@@ -1,7 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-
 import {AlertService} from '../../shared/services/alert.service';
-import {UserService} from '../../shared/services/user.service';
 import {CompanyService} from '../../shared/services/company.service';
 import {User} from "../../models/user";
 import {Company} from "../../models/company";
@@ -24,6 +22,7 @@ export class CompanyDetailsComponent implements OnInit {
   editableCompany: Company = new Company();
   loading = false;
   visaExpirationDate: Date;
+  dirty = false;
 
   companies;
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
@@ -60,14 +59,10 @@ export class CompanyDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
-    console.log("from onInit:");
-    console.log(this.editableCompany.visa.expirationDate);
     this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
-    console.log(this.visaExpirationDate);
-    console.log(this.visaExpirationDate.toISOString());
-
 
     if (this.user.isAdmin)
       this.companyService.getAll().subscribe((data: Response) => {
@@ -88,12 +83,9 @@ export class CompanyDetailsComponent implements OnInit {
       setTimeout(this.initChartData(), 100);
   }
 
-  update() {
+  saveData() {
     this.loading = true;
-    let date = this.visaExpirationDate.toISOString();
-    console.log("from update:");
-    console.log(date);
-    this.editableCompany.visa.expirationDate = date;
+    this.editableCompany.visa.expirationDate = this.visaExpirationDate.toISOString();
     this.companyService.update(this.editableCompany)
       .subscribe(
         data => {
@@ -240,6 +232,11 @@ export class CompanyDetailsComponent implements OnInit {
     this.openDeleteCompanyDialog = false;
   }
 
+  confirmNavigation(): boolean {
+    if (this.dirty)
+      this.alertService.error("אנא שמור/בטל את השינויים");
+    return !this.dirty;
+  }
 }
 
 

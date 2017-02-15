@@ -7,7 +7,7 @@
     <button id="delete-company-button" class="btn btn-danger" (click)="openDeleteCompanyDialog = true">מחק חברה</button>
   </div>
   <br>
-  <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
+  <form name="form" (ngSubmit)="f.form.valid && saveData()" #f="ngForm" novalidate>
     <div class="row" *ngIf="user.isManager">
       <div class="col-md-5 ">
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaNumber.valid }">

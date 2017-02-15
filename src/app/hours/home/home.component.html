@@ -7,8 +7,7 @@
   <div class="col-md-6" *ngIf="showDailyHoursChart">
     <p-chart #chart type="bar" [data]="chartData"></p-chart>
   </div>
-  <div [ngClass]="{'col-md-12': !displayCalendar && !showDailyHoursChart,
-                   'col-md-8': displayCalendar,
+  <div [ngClass]="{'col-md-8': displayCalendar,
                    'col-md-6': showDailyHoursChart}">
     <p-growl [value]="msgs"></p-growl>
     <div class="panel panel-primary">
@@ -135,3 +134,4 @@
   </div>
 </div>
 
+<p-confirmDialog width="425" acceptLabel="כן" rejectLabel="לא" [closable]="false" [closeOnEscape]="false"></p-confirmDialog>

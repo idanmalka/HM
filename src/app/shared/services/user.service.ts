@@ -67,7 +67,7 @@ export class UserService {
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
     if (currentUser && currentToken) {
-      let headers = new Headers({ 'Authorization': 'Bearer ' + currentToken });
+      let headers = new Headers({ 'token': currentToken });
       return new RequestOptions({ headers: headers });
     }
   }

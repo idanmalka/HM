@@ -23,7 +23,7 @@ enum CRUD{
 })
 export class UsersTableComponent implements OnInit {
   @ViewChild('childModal') public childModal: ModalDirective;
-  @Input() editable: boolean = false;
+  @Input() editable: boolean = true;
 
   user: User;
   editableCompany: Company = new Company();
@@ -31,6 +31,7 @@ export class UsersTableComponent implements OnInit {
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
   editableCompanyEmployeesStackSave: Array<{ users: User[], state: CRUD }> = [];
   deletedUsersArray: Array<number> = [];
+  dirty = false;
 
   columns: Array<any> = [
     {header: 'שם משפחה', field: 'lastName'},
@@ -57,6 +58,7 @@ export class UsersTableComponent implements OnInit {
 
   data: Array<any> = [];
 
+
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService,
               private userService: UserService,
@@ -64,6 +66,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.user = this.authService.user;
     this.editableCompany = this.authService.company;
     if (this.user.isAdmin)
@@ -107,7 +110,7 @@ export class UsersTableComponent implements OnInit {
 
   }
 
-  updateModal(UserName = "", Password = "", FirstName = "", LastName = "", Email = "", Phone = "", Address = "", Department = "", Role = "",isManager = false, isAdmin = false) {
+  updateModal(UserName = "", Password = "", FirstName = "", LastName = "", Email = "", Phone = "", Address = "", Department = "", Role = "", isManager = false, isAdmin = false) {
     this.modalUserName = UserName;
     this.modalPassword = Password;
     this.modalFirstName = FirstName;
@@ -247,8 +250,12 @@ export class UsersTableComponent implements OnInit {
     if (this.deletedUsersArray.length > 0)
       this.userService.deleteMultiple(this.deletedUsersArray);
     this.companyService.updateCompanyUsers(this.editableCompany).subscribe(
-      data => this.alertService.success('הנתונים עודכנו בהצלחה'),
-      error => this.alertService.error("אירעה שגיאה")
+      data => {
+        this.alertService.success("הנתונים עודכנו בהצלחה");
+      },
+      error => {
+        this.alertService.error("אירעה שגיאה");
+      }
     );
   }
 
@@ -287,5 +294,11 @@ export class UsersTableComponent implements OnInit {
 
     this.initTableData();
 
+  }
+
+  confirmNavigation(): boolean {
+    if (this.dirty)
+      this.alertService.error("אנא שמור/בטל את השינויים");
+    return !this.dirty;
   }
 }

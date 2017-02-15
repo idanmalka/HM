@@ -57,9 +57,6 @@ export class CompanyService {
     // create authorization header with jwt token
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
-    console.log("from company service token:");
-    console.log(currentUser);
-    console.log(currentToken);
     if (currentUser && currentToken) {
       let headers = new Headers({ 'token': currentToken });
       return new RequestOptions({ headers: headers });

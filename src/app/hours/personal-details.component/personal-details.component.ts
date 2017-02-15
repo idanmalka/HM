@@ -17,6 +17,7 @@ export class PersonalDetailsComponent implements OnInit{
     editableUser: User = new User();
     user: User = new User();
     loading = false;
+    dirty = false;
 
     companies;
     dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
@@ -31,6 +32,7 @@ export class PersonalDetailsComponent implements OnInit{
         private companyService: CompanyService) { }
 
     ngOnInit(): void {
+
       this.user = this.editableUser = this.authService.user;
       if(this.user.isAdmin)
         this.companyService.getAll().subscribe((data: Response) => {
@@ -41,7 +43,7 @@ export class PersonalDetailsComponent implements OnInit{
         });
     }
 
-    update() {
+    saveData() {
     this.loading = true;
     this.userService.update(this.editableUser)
         .subscribe(
@@ -64,5 +66,11 @@ export class PersonalDetailsComponent implements OnInit{
 
   setEditableUser(): void {
     this.editableUser = Object.assign({},this.chosenCompanyUser);
+  }
+
+  confirmNavigation(): boolean {
+    if (this.dirty)
+      this.alertService.error("אנא שמור/בטל את השינויים");
+    return !this.dirty;
   }
 }

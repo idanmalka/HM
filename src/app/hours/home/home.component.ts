@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AuthenticationService} from "../../shared/services/authentication.service";
-import {Router} from "@angular/router";
 import {User} from "../../models/user";
 import {UserService} from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
@@ -11,7 +10,6 @@ import {Message} from 'primeng/primeng';
 import {Company} from "../../models/company";
 import {CompanyService} from "../../shared/services/company.service";
 import {Response} from "@angular/http";
-import {DataTable} from "primeng/components/datatable/datatable";
 import {AlertService} from "../../shared/services/alert.service";
 
 @Component({
@@ -27,7 +25,6 @@ export class HomeComponent implements OnInit {
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
   companyUsers = [{label: 'בחר משתמש', value: new User()}];
   chosenCompany;
-  visaExpirationDate;
 
   dirty: boolean = false;
   editableUser: User = new User();
@@ -81,6 +78,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
     this.user = this.editableUser = this.authenticationService.user;
@@ -97,6 +95,13 @@ export class HomeComponent implements OnInit {
     this.initTableData();
     this.dirty = false;
   }
+
+  confirmNavigation(): boolean {
+    if (this.dirty)
+      this.alertService.error("אנא שמור/בטל את השינויים");
+    return !this.dirty;
+  }
+
 
   initTableData(): void {
     this.data = [];
@@ -323,10 +328,15 @@ export class HomeComponent implements OnInit {
   }
 
   undoShiftChange() {
-    if (this.editableUserShiftsStackSave.length <= 0)
+    if (this.editableUserShiftsStackSave.length <= 0) {
       return;
+    }
     this.editableUser.shifts = [];
     jQuery.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
+
+    if (this.editableUserShiftsStackSave.length === 0)
+      this.dirty = false;
+
     this.initTableData();
 
   }
@@ -347,12 +357,7 @@ export class HomeComponent implements OnInit {
   }
 
   isExistShiftInChosenDay(): boolean {
-    // return false;
-
     let currentDate = this.modalDate.getDate();
     return this.shiftsPerDay[currentDate].valueOf();
-
-
   }
-
 }
