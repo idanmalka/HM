@@ -14,8 +14,8 @@ import {CompanyService} from "../../shared/services/company.service";
 })
 
 export class PersonalDetailsComponent implements OnInit{
-    editableUser: User = new User();
-    user: User = new User();
+    editableUser: User;
+    user: User;
     loading = false;
     dirty = false;
 
@@ -23,7 +23,6 @@ export class PersonalDetailsComponent implements OnInit{
     dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
     companyUsers = [{label: 'בחר משתמש', value: new User()}];
     chosenCompany;
-    chosenCompanyUser;
 
     constructor(
         private authService: AuthenticationService,
@@ -34,13 +33,17 @@ export class PersonalDetailsComponent implements OnInit{
     ngOnInit(): void {
 
       this.user = this.editableUser = this.authService.user;
-      if(this.user.isAdmin)
+      if(this.user.isAdmin) {
         this.companyService.getAll().subscribe((data: Response) => {
           this.companies = data;
-          for(let company of this.companies){
-            this.dropdownCompanies.push({label:company.name, value: company});
+          for (let company of this.companies) {
+            this.dropdownCompanies.push({label: company.name, value: company});
           }
         });
+
+        this.chosenCompany = this.authService.company;
+        this.setEditCompany();
+      }
     }
 
     saveData() {
@@ -64,9 +67,9 @@ export class PersonalDetailsComponent implements OnInit{
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
   }
 
-  setEditableUser(): void {
-    this.editableUser = Object.assign({},this.chosenCompanyUser);
-  }
+  // setEditableUser(): void {
+  //   this.editableUser = Object.assign({},this.chosenCompanyUser);
+  // }
 
   confirmNavigation(): boolean {
     if (this.dirty)

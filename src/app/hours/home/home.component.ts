@@ -81,16 +81,19 @@ export class HomeComponent implements OnInit {
 
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
-    this.user = this.editableUser = this.authenticationService.user;
-    if (this.editableUser.isAdmin === true)
-      this.editableUser = new User();
 
-    if (this.user.isAdmin)
+    this.user = this.editableUser = this.authenticationService.user;
+
+    if (this.user.isAdmin) {
       this.companyService.getAll().subscribe((data: Response) => {
         this.companies = data;
         for (let company of this.companies)
           this.dropdownCompanies.push({label: company.name, value: company});
       });
+
+      this.chosenCompany = this.authenticationService.company;
+      this.setEditCompany();
+    }
     this.modalDate = new Date();
     this.initTableData();
     this.dirty = false;

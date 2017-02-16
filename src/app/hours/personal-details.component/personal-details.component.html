@@ -4,9 +4,8 @@
       <p-dropdown dir="ltr" name="companies" id="companies" [(ngModel)]="chosenCompany"
                   [options]="dropdownCompanies"
                   (onChange)="setEditCompany()"></p-dropdown>
-      <p-dropdown dir="ltr" name="users" id="users" [(ngModel)]="chosenCompanyUser"
-                  [options]="companyUsers"
-                  (onChange)="setEditableUser()"></p-dropdown>
+      <p-dropdown dir="ltr" name="users" id="users" [(ngModel)]="editableUser"
+                  [options]="companyUsers"></p-dropdown>
     </div>
     <br>
     <form name="form" (ngSubmit)="f.form.valid && saveData()" #f="ngForm" novalidate>
