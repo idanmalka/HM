@@ -47,7 +47,7 @@
                           (click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
                     <span class="fa fa-undo" aria-hidden="true"></span>
                   </button>
-                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
+                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור" [disabled]="editableUser.id === 0 || chosenCompany.id === 0"><span
                     class="glyphicon glyphicon-floppy-save"></span></button>
                   <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">
                     <span class="glyphicon glyphicon-download-alt"></span></button>

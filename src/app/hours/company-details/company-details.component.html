@@ -4,7 +4,7 @@
     <p-dropdown name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
                 [options]="dropdownCompanies"
                 (onChange)="setEditCompany()"></p-dropdown>
-    <button id="delete-company-button" class="btn btn-danger" (click)="openDeleteCompanyDialog = true">מחק חברה</button>
+    <button id="delete-company-button" class="btn btn-danger" (click)="openDeleteCompanyDialog = true" [disabled]="user.companyId === editableCompany.id || editableCompany.id === 0">מחק חברה</button>
   </div>
   <br>
   <form name="form" (ngSubmit)="f.form.valid && saveData()" #f="ngForm" novalidate>

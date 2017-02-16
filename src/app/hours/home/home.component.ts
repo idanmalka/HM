@@ -83,6 +83,7 @@ export class HomeComponent implements OnInit {
       this.years.push({value: i, label: i});
 
     this.user = this.editableUser = this.authenticationService.user;
+    this.chosenCompany = this.authenticationService.company;
 
     if (this.user.isAdmin) {
       this.companyService.getAll().subscribe((data: Response) => {
@@ -91,8 +92,8 @@ export class HomeComponent implements OnInit {
           this.dropdownCompanies.push({label: company.name, value: company});
       });
 
-      this.chosenCompany = this.authenticationService.company;
       this.setEditCompany();
+      this.editableUser = this.authenticationService.user;
     }
     this.modalDate = new Date();
     this.initTableData();
@@ -231,10 +232,10 @@ export class HomeComponent implements OnInit {
   }
 
   onRowClick(data: any): any {
+    this.checkedRow = data.data.index;
     let start: Date = new Date(this.editableUser.shifts[this.checkedRow].start);
     let end: Date = new Date(this.editableUser.shifts[this.checkedRow].end);
     let date: Date = new Date(this.editableUser.shifts[this.checkedRow].date);
-    this.checkedRow = data.data.index;
     this.updateModal(start, end, date, this.editableUser.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
@@ -347,6 +348,7 @@ export class HomeComponent implements OnInit {
   setEditCompany(): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
+    this.editableUser = this.companyUsers[0].value;
     for (let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
     this.initTableData();

@@ -66,11 +66,7 @@ export class PersonalDetailsComponent implements OnInit{
     for(let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
   }
-
-  // setEditableUser(): void {
-  //   this.editableUser = Object.assign({},this.chosenCompanyUser);
-  // }
-
+  
   confirmNavigation(): boolean {
     if (this.dirty)
       this.alertService.error("אנא שמור/בטל את השינויים");
