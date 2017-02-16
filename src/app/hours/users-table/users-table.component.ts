@@ -128,7 +128,7 @@ export class UsersTableComponent implements OnInit {
     if (modalForm.valid) {
       this.editableCompanyEmployeesStackSave.push(
         {
-          users: jQuery.extend(true, {}, this.editableCompany.employees),
+          users: $.extend(true, {}, this.editableCompany.employees),
           state: CRUD.UPDATE
         });
       this.updateDataFromModal();
@@ -206,7 +206,7 @@ export class UsersTableComponent implements OnInit {
     this.deletedUsersArray.push(this.editableCompany.employees[this.checkedRow].id);
     this.editableCompanyEmployeesStackSave.push(
       {
-        users: jQuery.extend(true, {},
+        users: $.extend(true, {},
           this.editableCompany.employees), state: CRUD.DELETE
       });
     this.editableCompany.employees.splice(this.checkedRow, 1);
@@ -287,7 +287,7 @@ export class UsersTableComponent implements OnInit {
     this.editableCompany.employees = [];
     let stackTop = this.editableCompanyEmployeesStackSave.pop();
 
-    jQuery.extend(true, this.editableCompany.employees, stackTop.users);
+    $.extend(true, this.editableCompany.employees, stackTop.users);
 
     if (stackTop.state === CRUD.DELETE)
       this.deletedUsersArray.pop();
@@ -300,5 +300,13 @@ export class UsersTableComponent implements OnInit {
     if (this.dirty)
       this.alertService.error("אנא שמור/בטל את השינויים");
     return !this.dirty;
+  }
+
+  isPlaceHolderCompany(): boolean {
+    return this.editableCompany.id === 0;
+  }
+
+  isSelf(): boolean {
+    return this.editableCompany.employees[this.checkedRow].id === this.user.id;
   }
 }

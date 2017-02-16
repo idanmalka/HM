@@ -43,6 +43,7 @@ export class PersonalDetailsComponent implements OnInit{
 
         this.chosenCompany = this.authService.company;
         this.setEditCompany();
+        this.editableUser = this.user;
       }
     }
 
@@ -63,13 +64,18 @@ export class PersonalDetailsComponent implements OnInit{
   setEditCompany(): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
+    this.editableUser = this.companyUsers[0].value;
     for(let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
   }
-  
+
   confirmNavigation(): boolean {
     if (this.dirty)
       this.alertService.error("אנא שמור/בטל את השינויים");
     return !this.dirty;
+  }
+
+  isPlaceHolderUser(): boolean {
+      return this.editableUser.id === 0 || this.chosenCompany.id === 0;
   }
 }

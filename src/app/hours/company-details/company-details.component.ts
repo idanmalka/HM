@@ -231,6 +231,10 @@ export class CompanyDetailsComponent implements OnInit {
       this.alertService.error("אנא שמור/בטל את השינויים");
     return !this.dirty;
   }
+
+  isPlaceHolderCompany(): boolean {
+    return this.editableCompany.id === 0;
+  }
 }
 
 

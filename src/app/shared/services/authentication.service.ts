@@ -30,8 +30,8 @@ export class AuthenticationService {
           localStorage.setItem('currentUserToken',JSON.stringify(obj.token));
           localStorage.setItem('currentCompany', JSON.stringify(company));
           localStorage.setItem('isLoggedIn','true');
-          this.user = <User> Object.assign({},user);
-          this.company = <Company> Object.assign({},company);
+          this.user = <User> $.extend(true, {}, user);
+          this.company = <Company> $.extend(true, {}, company);
           this.isLoggedIn = true;
         }
       });
@@ -42,8 +42,8 @@ export class AuthenticationService {
     if (this.isLoggedIn) {
       let user = JSON.parse(localStorage.getItem('currentUser'));
       let company = JSON.parse(localStorage.getItem('currentCompany'));
-      this.user = jQuery.extend(true, {}, user);
-      this.company = jQuery.extend(true, {}, company);
+      this.user = $.extend(true, {}, user);
+      this.company = $.extend(true, {}, company);
     }
    return this.isLoggedIn;
   }

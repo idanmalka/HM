@@ -5,7 +5,7 @@ import { AuthGuard } from "./guards/auth.guard";
 import { SharedModule } from "../shared/shared.module";
 import { TooltipModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { CompanyDetailsComponent } from "./company-details/company-details.component";
-import { PersonalDetailsComponent } from "./personal-details.component/personal-details.component";
+import { PersonalDetailsComponent } from "./personal-details/personal-details.component";
 import { UsersTableComponent } from "./users-table/users-table.component";
 import { ToolbarModule, DataTableModule, DialogModule, ConfirmDialogModule, ConfirmationService } from 'primeng/primeng';
 import {SaveGuard} from "./guards/save.guard";

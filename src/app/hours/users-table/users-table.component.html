@@ -18,7 +18,7 @@
                   <span class="glyphicon glyphicon-download-alt"></span></button>
               </div>
               <div *ngIf="editable" class="ui-toolbar-group-left">
-                <button class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span
+                <button [disabled]="isPlaceHolderCompany()" class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span
                   class="glyphicon glyphicon-plus"></span></button>
                 <button
                   [disabled]="!(editableCompanyEmployeesStackSave && editableCompanyEmployeesStackSave.length > 0)"
@@ -26,7 +26,7 @@
                   (click)="undoListChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
                   <span class="fa fa-undo" aria-hidden="true"></span>
                 </button>
-                <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
+                <button [disabled]="isPlaceHolderCompany()" class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
                   class="glyphicon glyphicon-floppy-save"></span></button>
               </div>
               <div class="ui-toolbar-group-right">

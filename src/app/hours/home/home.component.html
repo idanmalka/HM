@@ -34,7 +34,7 @@
                               (onChange)="setEditableUser()" [style]="{width : '126px'}"></p-dropdown>
                 </div>
                 <div class="ui-toolbar-group-left">
-                  <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
+                  <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח" [disabled]="isPlaceHolderUser()"><span
                     class="glyphicon glyphicon-plus"></span></button>
                   <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top"
                           tooltip="הצג/הסתר לוח שנה"><span
@@ -47,7 +47,7 @@
                           (click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
                     <span class="fa fa-undo" aria-hidden="true"></span>
                   </button>
-                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור" [disabled]="editableUser.id === 0 || chosenCompany.id === 0"><span
+                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור" [disabled]="isPlaceHolderUser()"><span
                     class="glyphicon glyphicon-floppy-save"></span></button>
                   <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">
                     <span class="glyphicon glyphicon-download-alt"></span></button>

@@ -178,7 +178,7 @@ export class HomeComponent implements OnInit {
 
   updateUserShifts() {
     this.dirty = true;
-    this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
+    this.editableUserShiftsStackSave.push($.extend(true, {}, this.editableUser.shifts));
     let start = new Date(this.modalStartHour).toISOString();
     let end = new Date(this.modalEndHour).toISOString();
     let date = new Date(this.modalDate).toISOString();
@@ -306,7 +306,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteShift(): void {
-    this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
+    this.editableUserShiftsStackSave.push($.extend(true, {}, this.editableUser.shifts));
     this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
@@ -336,7 +336,7 @@ export class HomeComponent implements OnInit {
       return;
     }
     this.editableUser.shifts = [];
-    jQuery.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
+    $.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
 
     if (this.editableUserShiftsStackSave.length === 0)
       this.dirty = false;
@@ -364,5 +364,9 @@ export class HomeComponent implements OnInit {
   isExistShiftInChosenDay(): boolean {
     let currentDate = this.modalDate.getDate();
     return this.shiftsPerDay[currentDate].valueOf();
+  }
+
+  isPlaceHolderUser(): boolean {
+    return this.editableUser.id === 0 || this.chosenCompany.id === 0;
   }
 }
