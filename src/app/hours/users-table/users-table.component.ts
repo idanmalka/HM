@@ -63,20 +63,27 @@ export class UsersTableComponent implements OnInit {
               private companyService: CompanyService,
               private userService: UserService,
               private alertService: AlertService) {
+    this.user = this.authService.user;
   }
 
   ngOnInit(): void {
-
-    this.user = this.authService.user;
-    this.editableCompany = this.authService.company;
-    if (this.user.isAdmin)
-      this.companyService.getAll().subscribe((data: Response) => {
-        this.companies = data;
-        for (let company of this.companies) {
-          this.dropdownCompanies.push({label: company.name, value: company});
-        }
-      });
+    this.editableCompany = new Company();
     this.initTableData();
+
+    this.userService.getById(this.authService.user.id).subscribe(user => {
+      this.user = user;
+      this.authService.user = user;
+      if (this.user.isAdmin)
+        this.companyService.getAll().subscribe((data: Response) => {
+          this.companies = data;
+          for (let company of this.companies) {
+            if (company.id === this.user.companyId)
+              this.editableCompany = company;
+            this.dropdownCompanies.push({label: company.name, value: company});
+          }
+        });
+    });
+
   }
 
   initTableData(): void {

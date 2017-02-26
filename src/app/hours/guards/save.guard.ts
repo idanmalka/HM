@@ -6,8 +6,6 @@ export class SaveGuard implements CanDeactivate<any> {
 
   canDeactivate(component) {
     let canDeactivate = component.confirmNavigation();
-    console.log("from canDeactivate:");
-    console.log(canDeactivate);
     return canDeactivate;
   }
 

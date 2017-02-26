@@ -2,13 +2,11 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { User } from "../../models/user";
-import { Company } from "../../models/company";
 import {GatewayConfig} from "../../app.config";
 
 @Injectable()
 export class AuthenticationService {
   user = new User();
-  company = new Company();
   isLoggedIn: boolean = false;
   private baseUrl: string;
 
@@ -23,15 +21,12 @@ export class AuthenticationService {
         // login successful if there's a jwt token in the response
         let obj = response.json();
         let user = obj.user;
-        let company = obj.company;
         if (obj && obj.token) {
           // store user details and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('currentUser', JSON.stringify(user));
           localStorage.setItem('currentUserToken',JSON.stringify(obj.token));
-          localStorage.setItem('currentCompany', JSON.stringify(company));
           localStorage.setItem('isLoggedIn','true');
           this.user = <User> $.extend(true, {}, user);
-          this.company = <Company> $.extend(true, {}, company);
           this.isLoggedIn = true;
         }
       });
@@ -41,9 +36,7 @@ export class AuthenticationService {
     this.isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (this.isLoggedIn) {
       let user = JSON.parse(localStorage.getItem('currentUser'));
-      let company = JSON.parse(localStorage.getItem('currentCompany'));
       this.user = $.extend(true, {}, user);
-      this.company = $.extend(true, {}, company);
     }
    return this.isLoggedIn;
   }
@@ -53,6 +46,5 @@ export class AuthenticationService {
     this.isLoggedIn = false;
     localStorage.setItem("isLoggedIn", "false");
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('currentCompany');
   }
 }

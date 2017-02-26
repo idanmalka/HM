@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit {
 
   modalStartHour: Date;
   modalEndHour: Date;
-  modalDate: Date;
+  modalDate: Date = new Date();
   modalComment: string;
 
   showDailyHoursChart: boolean = false;
@@ -75,6 +75,7 @@ export class HomeComponent implements OnInit {
               private alertService: AlertService,
               private userService: UserService,
               private companyService: CompanyService) {
+    this.user = this.editableUser = this.authenticationService.user;
   }
 
   ngOnInit() {
@@ -82,22 +83,29 @@ export class HomeComponent implements OnInit {
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
 
-    this.user = this.editableUser = this.authenticationService.user;
-    this.chosenCompany = this.authenticationService.company;
-
-    if (this.user.isAdmin) {
-      this.companyService.getAll().subscribe((data: Response) => {
-        this.companies = data;
-        for (let company of this.companies)
-          this.dropdownCompanies.push({label: company.name, value: company});
-      });
-
-      this.setEditCompany();
-      this.editableUser = this.authenticationService.user;
-    }
-    this.modalDate = new Date();
     this.initTableData();
-    this.dirty = false;
+
+    this.userService.getById(this.authenticationService.user.id).subscribe(user => {
+      this.user = this.editableUser = user;
+      console.log("from hours management:",user);
+      this.authenticationService.user = user;
+      if (this.user.isAdmin) {
+        this.companyService.getAll().subscribe((data: Response) => {
+          this.companies = data;
+          for (let company of this.companies) {
+            if (company.id === this.user.companyId)
+              this.chosenCompany = company;
+            this.dropdownCompanies.push({label: company.name, value: company});
+          }
+
+          this.setEditCompany();
+          this.editableUser = this.user;
+          this.initTableData();
+        });
+      }
+
+    });
+
   }
 
   confirmNavigation(): boolean {
@@ -293,8 +301,6 @@ export class HomeComponent implements OnInit {
   }
 
   confirmShift(): boolean {
-    // if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
-    console.log("submitted");
     this.updateDataFromModal();
     this.hideChildModal();
     return false;
@@ -319,7 +325,7 @@ export class HomeComponent implements OnInit {
     }
     if (this.data.length > 0) {
       const items = this.data;
-      const replacer = (key, value) => value === null ? '' : value;// specify how you want to handle null values here
+      const replacer = (key, value) => value === null ? '' : value;
       const header = Object.keys(items[0]);
       let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
       csv.unshift(header.join(','));
@@ -367,6 +373,6 @@ export class HomeComponent implements OnInit {
   }
 
   isPlaceHolderUser(): boolean {
-    return this.editableUser.id === 0 || this.chosenCompany.id === 0;
+    return this.editableUser.id === 0 || (this.chosenCompany && this.chosenCompany.id === 0);
   }
 }

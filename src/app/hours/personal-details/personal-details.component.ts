@@ -28,23 +28,32 @@ export class PersonalDetailsComponent implements OnInit{
         private authService: AuthenticationService,
         private userService: UserService,
         private alertService: AlertService,
-        private companyService: CompanyService) { }
+        private companyService: CompanyService) {
+      this.user = this.editableUser = this.authService.user;
+    }
 
     ngOnInit(): void {
 
-      this.user = this.editableUser = this.authService.user;
-      if(this.user.isAdmin) {
-        this.companyService.getAll().subscribe((data: Response) => {
-          this.companies = data;
-          for (let company of this.companies) {
-            this.dropdownCompanies.push({label: company.name, value: company});
-          }
-        });
+      this.userService.getById(this.authService.user.id).subscribe(user => {
+        this.user = this.editableUser = user;
+        this.authService.user = user;
 
-        this.chosenCompany = this.authService.company;
-        this.setEditCompany();
-        this.editableUser = this.user;
-      }
+        if(this.user.isAdmin) {
+          this.companyService.getAll().subscribe((data: Response) => {
+            this.companies = data;
+            for (let company of this.companies) {
+              if (company.id === this.user.companyId)
+                this.chosenCompany = company;
+              this.dropdownCompanies.push({label: company.name, value: company});
+            }
+
+            this.setEditCompany();
+            this.editableUser = this.user;
+          });
+
+        }
+      });
+
     }
 
     saveData() {
@@ -76,6 +85,6 @@ export class PersonalDetailsComponent implements OnInit{
   }
 
   isPlaceHolderUser(): boolean {
-      return this.editableUser.id === 0 || this.chosenCompany.id === 0;
+      return this.editableUser.id === 0 || (this.chosenCompany && this.chosenCompany.id === 0);
   }
 }

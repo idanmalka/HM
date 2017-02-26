@@ -6,6 +6,7 @@ import {Company} from "../../models/company";
 import {AuthenticationService} from "../../shared/services/authentication.service";
 import {Response} from "@angular/http";
 import {UIChart} from "primeng/components/chart/chart";
+import {UserService} from "../../shared/services/user.service";
 
 
 @Component({
@@ -18,7 +19,7 @@ export class CompanyDetailsComponent implements OnInit {
   @ViewChild('chart') public chart: UIChart;
   @ViewChild('chart2') public chart2: UIChart;
 
-  user: User = new User();
+  user: User;
   editableCompany: Company = new Company();
   loading = false;
   visaExpirationDate: Date;
@@ -55,37 +56,50 @@ export class CompanyDetailsComponent implements OnInit {
 
   constructor(private authService: AuthenticationService,
               private companyService: CompanyService,
+              private userService: UserService,
               private alertService: AlertService) {
+    this.user = authService.user;
   }
 
   ngOnInit(): void {
 
-    this.user = this.authService.user;
-    this.editableCompany = this.authService.company;
-    this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
+    this.visaExpirationDate = new Date();
 
-    if (this.user.isAdmin)
-      this.companyService.getAll().subscribe((data: Response) => {
-        this.updateCompaniesDropdown(data);
-        setTimeout(this.initChartData2(), 100);
-      });
+    this.userService.getById(this.authService.user.id).subscribe(user => {
+      this.user = user;
+      this.authService.user = user;
+
+      if (this.user.isAdmin)
+        this.companyService.getAll().subscribe((data: Response) => {
+          this.updateCompaniesDropdown(data);
+          setTimeout(this.initChartData2(), 100);
+        });
+
+
+    });
 
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
-    this.chosenMonth = this.visaExpirationDate.getMonth();
-    this.chosenYear = this.visaExpirationDate.getFullYear();
-    if (this.user.isManager || this.user.isAdmin)
-      setTimeout(this.initChartData(), 100);
+
   }
 
   updateCompaniesDropdown(data) {
     this.companies = data;
     this.dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
     for (let company of this.companies) {
+      if (company.id === this.user.companyId) {
+        this.editableCompany = company;
+        this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
+      }
       this.dropdownCompanies.push({label: company.name, value: company});
       this.chartLabels2.push(company.name);
       this.data2.push(company.employees.length);
     }
+
+    this.chosenMonth = this.visaExpirationDate.getMonth();
+    this.chosenYear = this.visaExpirationDate.getFullYear();
+    if (this.user.isManager || this.user.isAdmin)
+      setTimeout(this.initChartData(), 100);
   }
 
   saveData() {
@@ -149,8 +163,7 @@ export class CompanyDetailsComponent implements OnInit {
       localUser = this.editableCompany.employees[i];
       chartLabels.push(localUser.firstName + " " + localUser.lastName);
       let totalSum = 0;
-      for (let j = 0; j < localUser.shifts.length; j++)
-      {
+      for (let j = 0; j < localUser.shifts.length; j++) {
         let date = new Date(localUser.shifts[j].date);
         let localMonth = date.getMonth();
         let localYear = date.getFullYear();
@@ -214,7 +227,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.companyService.delete(this.editableCompany.id).subscribe(
       data => {
         let index = this.companies.indexOf(this.editableCompany);
-        this.companies.splice(index,1);
+        this.companies.splice(index, 1);
         this.editableCompany = new Company();
         this.updateCompaniesDropdown(this.companies);
         this.alertService.success("החברה נמחקה בהצלחה")

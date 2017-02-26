@@ -35,7 +35,6 @@ export class CompanyService {
       company.employees = updatedCompany.employees;
       localStorage.setItem('currentCompany', JSON.stringify(company));
     }
-    console.log(updatedCompany);
     return this.http.put(this.baseUrl+'/api/companyUsers/'+updatedCompany.id, updatedCompany.employees, this.jwt());//.map((response: Response) => response.json());
   }
 
