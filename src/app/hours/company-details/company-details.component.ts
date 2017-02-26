@@ -72,8 +72,13 @@ export class CompanyDetailsComponent implements OnInit {
       if (this.user.isAdmin)
         this.companyService.getAll().subscribe((data: Response) => {
           this.updateCompaniesDropdown(data);
-          setTimeout(this.initChartData2(), 100);
+          this.initChartData();
+          this.initChartData2();
         });
+      else this.companyService.getById(this.authService.user.companyId).subscribe(company => {
+        this.editableCompany = company;
+        this.initChartData();
+      });
 
 
     });
@@ -132,7 +137,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
     this.chosenMonth = this.visaExpirationDate.getMonth();
     this.chosenYear = this.visaExpirationDate.getFullYear();
-    setTimeout(this.initChartData(), 100);
+    this.initChartData();
   }
 
   generateRandomColor(): Array<any> {
@@ -150,7 +155,8 @@ export class CompanyDetailsComponent implements OnInit {
     return colors;
   }
 
-  initChartData_old(): void {
+
+  initChartData(): void {
     let data = [];
     let chartLabels = [];
     let currentDate = new Date();
@@ -178,7 +184,6 @@ export class CompanyDetailsComponent implements OnInit {
       data.push(totalSum);
     }
 
-
     this.chartData = {
       labels: chartLabels,
       datasets: [
@@ -189,19 +194,15 @@ export class CompanyDetailsComponent implements OnInit {
           data: data
         }]
     };
-  }
-
-  initChartData(): void {
-    this.initChartData_old();
 
     setTimeout(() => {
       if (this.chart)
         this.chart.refresh();
     }, 100);
+
   }
 
   initChartData2(): void {
-
     this.chartData2 = {
       labels: this.chartLabels2,
       datasets: [
@@ -213,14 +214,7 @@ export class CompanyDetailsComponent implements OnInit {
         }]
     };
 
-    this.initChartData_old();
-
-    setTimeout(() => {
-      if (this.chart && this.chart2) {
-        this.chart.refresh();
-        this.chart2.refresh();
-      }
-    }, 100);
+    setTimeout(this.chart2.refresh(), 100);
   }
 
   deleteCompany(): void {

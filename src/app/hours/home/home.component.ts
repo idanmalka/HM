@@ -98,8 +98,7 @@ export class HomeComponent implements OnInit {
             this.dropdownCompanies.push({label: company.name, value: company});
           }
 
-          this.setEditCompany();
-          this.editableUser = this.user;
+          this.setEditCompany(this.user);
           this.initTableData();
         });
       }
@@ -351,10 +350,15 @@ export class HomeComponent implements OnInit {
 
   }
 
-  setEditCompany(): void {
+  setEditCompany(user?: User): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
-    this.editableUser = this.companyUsers[0].value;
+
+    if (user)
+      this.editableUser = user;
+    else
+      this.editableUser = this.companyUsers[0].value;
+
     for (let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
     this.initTableData();

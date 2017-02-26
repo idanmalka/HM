@@ -96,14 +96,14 @@
   <br>
   <users-table *ngIf="!user.isAdmin && !user.isManager" [editable]="false"></users-table>
 
-  <div [ngClass]="{'col-md-offset-2 col-md-4': user.isAdmin,
+  <div *ngIf="user.isAdmin || user.isManager" [ngClass]="{'col-md-offset-2 col-md-4': user.isAdmin,
                    'col-md-offset-3 col-md-5': !user.isAdmin}">
     <h2 *ngIf="user.isManager">פילוח שעות לחודש לפי עובדים</h2>
     <p-dropdown name="graphMonth" id="graph-month" [(ngModel)]="chosenGraphMonth" [options]="months"
                 (onChange)="initChartData()"></p-dropdown>
     <p-dropdown name="graphYear" id="graph-year" [(ngModel)]="chosenGraphYear" [options]="years"
                 (onChange)="initChartData()"></p-dropdown>
-    <p-chart *ngIf="user.isManager" #chart type="pie" [data]="chartData"></p-chart>
+    <p-chart #chart type="pie" [data]="chartData"></p-chart>
   </div>
 
   <div [ngClass]="{'col-md-offset-1 col-md-4': user.isAdmin,
