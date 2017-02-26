@@ -7,8 +7,7 @@
   <div class="col-md-6" *ngIf="showDailyHoursChart">
     <p-chart #chart type="bar" [data]="chartData"></p-chart>
   </div>
-  <div [ngClass]="{'col-md-12': !displayCalendar && !showDailyHoursChart,
-                   'col-md-8': displayCalendar,
+  <div [ngClass]="{'col-md-8': displayCalendar,
                    'col-md-6': showDailyHoursChart}">
     <p-growl [value]="msgs"></p-growl>
     <div class="panel panel-primary">
@@ -22,7 +21,7 @@
         <div class="col-xs-12">
           <p-dataTable [value]="data" [rows]="10" [paginator]="true" [globalFilter]="gb" #dt [responsive]="true"
                        selectionMode="single" (onRowSelect)="onRowClick($event)">
-            <header>
+            <p-header>
               <p-toolbar>
                 <div class="ui-toolbar-group-right">
                   <p-dropdown name="month" id="month" [(ngModel)]="chosenMonth" [options]="months"
@@ -35,7 +34,7 @@
                               (onChange)="setEditableUser()" [style]="{width : '126px'}"></p-dropdown>
                 </div>
                 <div class="ui-toolbar-group-left">
-                  <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח"><span
+                  <button class="btn btn-info" (click)="addShift()" tooltipPlacement="top" tooltip="הוסף דיווח" [disabled]="isPlaceHolderUser()"><span
                     class="glyphicon glyphicon-plus"></span></button>
                   <button class="btn btn-default" (click)="toggleCalendar()" tooltipPlacement="top"
                           tooltip="הצג/הסתר לוח שנה"><span
@@ -48,13 +47,13 @@
                           (click)="undoShiftChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
                     <span class="fa fa-undo" aria-hidden="true"></span>
                   </button>
-                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
+                  <button class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור" [disabled]="isPlaceHolderUser()"><span
                     class="glyphicon glyphicon-floppy-save"></span></button>
                   <button class="btn btn-default" (click)="exportToCsv()" tooltipPlacement="top" tooltip="שמור דוח">
                     <span class="glyphicon glyphicon-download-alt"></span></button>
                 </div>
               </p-toolbar>
-            </header>
+            </p-header>
             <p-column *ngFor="let col of columns" [field]="col.field" [header]="col.header"
                       [sortable]="col.field !== 'comment'? 'custom' : false" (sortFunction)="changeSort($event)"
             ></p-column>
@@ -86,7 +85,7 @@
                      value="{{getDate() | date: 'dd/MM/yyyy'}}"/>
               <div style="display: inline-block;min-height:267px;">
                 <datepicker dir="ltr" shortcutPropagation="true" [(ngModel)]="modalDate" [showWeeks]="false"
-                            #date='ngModel' name="date" requierd (ngModelChange)="print($event)"></datepicker>
+                            #date='ngModel' name="date" requierd></datepicker>
               </div>
               <div *ngIf="f.submitted && !date.valid" class="help-block">אנא הכנס תאריך דיווח</div>
               <div *ngIf="isExistShiftInChosenDay()" class="help-block">קיימת משמרת ביום זה, לחיצה על אישור תחליף את נתוני המשמרת בנתונים המוזנים
@@ -135,3 +134,4 @@
   </div>
 </div>
 
+<p-confirmDialog width="425" acceptLabel="כן" rejectLabel="לא" [closable]="false" [closeOnEscape]="false"></p-confirmDialog>

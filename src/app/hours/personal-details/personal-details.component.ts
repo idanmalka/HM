@@ -14,37 +14,49 @@ import {CompanyService} from "../../shared/services/company.service";
 })
 
 export class PersonalDetailsComponent implements OnInit{
-    editableUser: User = new User();
-    user: User = new User();
+    editableUser: User;
+    user: User;
     loading = false;
+    dirty = false;
 
     companies;
     dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
     companyUsers = [{label: 'בחר משתמש', value: new User()}];
     chosenCompany;
-    chosenCompanyUser;
 
     constructor(
         private authService: AuthenticationService,
         private userService: UserService,
         private alertService: AlertService,
-        private companyService: CompanyService) { }
-
-    ngOnInit(): void {
+        private companyService: CompanyService) {
       this.user = this.editableUser = this.authService.user;
-      console.log(this.user? this.user : this.editableUser);
-
-      if(this.user.isAdmin)
-        this.companyService.getAll().subscribe((data: Response) => {
-          this.companies = data;
-          for(let company of this.companies){
-            this.dropdownCompanies.push({label:company.name, value: company});
-          }
-          console.log(this.companies);
-        });
     }
 
-    update() {
+    ngOnInit(): void {
+
+      this.userService.getById(this.authService.user.id).subscribe(user => {
+        this.user = this.editableUser = user;
+        this.authService.user = user;
+
+        if(this.user.isAdmin) {
+          this.companyService.getAll().subscribe((data: Response) => {
+            this.companies = data;
+            for (let company of this.companies) {
+              if (company.id === this.user.companyId)
+                this.chosenCompany = company;
+              this.dropdownCompanies.push({label: company.name, value: company});
+            }
+
+            this.setEditCompany();
+            this.editableUser = this.user;
+          });
+
+        }
+      });
+
+    }
+
+    saveData() {
     this.loading = true;
     this.userService.update(this.editableUser)
         .subscribe(
@@ -61,11 +73,18 @@ export class PersonalDetailsComponent implements OnInit{
   setEditCompany(): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
+    this.editableUser = this.companyUsers[0].value;
     for(let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
   }
 
-  setEditableUser(): void {
-    this.editableUser = Object.assign({},this.chosenCompanyUser);
+  confirmNavigation(): boolean {
+    if (this.dirty)
+      this.alertService.error("אנא שמור/בטל את השינויים");
+    return !this.dirty;
+  }
+
+  isPlaceHolderUser(): boolean {
+      return this.editableUser.id === 0 || (this.chosenCompany && this.chosenCompany.id === 0);
   }
 }

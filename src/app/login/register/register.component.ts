@@ -1,24 +1,25 @@
-import { Component } from '@angular/core';
-import { DatePipe } from '@angular/common/src/pipes';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {DatePipe} from '@angular/common/src/pipes';
+import {Router} from '@angular/router';
 
-import { AlertService } from '../../shared/services/alert.service';
-import { UserService } from '../../shared/services/user.service';
-import { CompanyService } from '../../shared/services/company.service';
+import {AlertService} from '../../shared/services/alert.service';
+import {UserService} from '../../shared/services/user.service';
+import {CompanyService} from '../../shared/services/company.service';
 import {User} from "../../models/user";
 import {Company} from "../../models/company";
 
 @Component({
   templateUrl: './register.component.html',
-  styleUrls: [ './register.component.less'],
-  providers: [ DatePipe ]
+  styleUrls: ['./register.component.less'],
+  providers: [DatePipe]
 })
 
 export class RegisterComponent {
   model: User = new User();
-  company : Company = new Company();
+  company: Company = new Company();
   loading = false;
-  ExistUserNameFlag :boolean = false;
+  ExistUserNameFlag: boolean = false;
+  visaExpirationDate: Date;
 
   years = [];
   months = [
@@ -39,53 +40,46 @@ export class RegisterComponent {
   chosenYear: number = (new Date()).getFullYear();
 
   constructor(private router: Router, private companyService: CompanyService, private userService: UserService, private alertService: AlertService) {
-    this.company.visa.expirationDate = new Date();
-    this.company.visa.expirationDate.setDate(1);
-    for(let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
+    this.visaExpirationDate = new Date();
+    this.visaExpirationDate.setDate(1);
+    for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
   }
 
   register() {
 
-  this.userService.isUserNameExist(this.model.username)
-    .subscribe(
-      data => {
-              this.loading = true;
-              this.model.department = "הנהלה";
-              this.model.role = "מנהל כללי";
-              this.model.isAdmin = false;
-              this.model.isManager = true;
-              this.model.shifts = [];
-              this.model.companyId = 0;
-              this.company.employees = [];
-              console.log(this.company);
+    this.loading = true;
+    this.model.department = "הנהלה";
+    this.model.role = "מנהל כללי";
+    this.model.isAdmin = false;
+    this.model.isManager = true;
+    this.model.shifts = [];
+    this.model.companyId = 0;
+    this.company.employees = [];
+    this.company.visa.expirationDate = this.visaExpirationDate.toISOString();
 
-              this.companyService.create({company: this.company, user: this.model })
-                .subscribe(
-                  data => {
-                    this.alertService.success('Registration Company successful', true);
-                    this.router.navigate(['/login']);
-                  },
-                  error => {
-                    this.alertService.error(error);
-                    this.loading = false;
-                  });
-      },
-      error => {
-        this.ExistUserNameFlag = true;
-      });
+    this.companyService.create({company: this.company, user: this.model})
+      .subscribe(
+        data => {
+          this.alertService.success('Registration Company successful', true);
+          this.router.navigate(['/login']);
+        },
+        error => {
+          this.alertService.error(error._body);
+          console.log(error);
+          this.loading = false;
+        });
+
   }
 
-  setExpParameter(param: string){
-    switch(param){
+  setExpParameter(param: string) {
+    switch (param) {
       case 'month':
-        this.company.visa.expirationDate.setMonth(this.chosenMonth);
+        this.visaExpirationDate.setMonth(this.chosenMonth);
         break;
       case 'year':
-        this.company.visa.expirationDate.setFullYear(this.chosenYear);
+        this.visaExpirationDate.setFullYear(this.chosenYear);
         break;
     }
-
-    console.log(this.company.visa.expirationDate);
   }
 }

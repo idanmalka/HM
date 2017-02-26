@@ -10,7 +10,7 @@ import {AlertComponent} from "./alert/alert.component";
 import { AuthenticationService } from "./services/authentication.service";
 import { DatepickerModule, PaginationModule, ModalModule, TimepickerModule } from 'ng2-bootstrap/ng2-bootstrap';
 import { Ng2TableModule } from 'ng2-table/ng2-table';
-import { ChartModule, DropdownModule, GrowlModule } from 'primeng/primeng';
+import { ChartModule, DropdownModule, GrowlModule, CheckboxModule } from 'primeng/primeng';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,8 @@ import { ChartModule, DropdownModule, GrowlModule } from 'primeng/primeng';
             TimepickerModule,
             ChartModule,
             DropdownModule,
-            GrowlModule]
+            GrowlModule,
+            CheckboxModule]
 })
 export class SharedModule {
 

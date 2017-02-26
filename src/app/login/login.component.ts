@@ -27,10 +27,11 @@ export class LoginComponent implements OnInit{
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
         data => {
+          this.alertService.success('התחבר בהצלחה');
           this.router.navigate(['/']);
         },
         error => {
-          this.alertService.error(error);
+          this.alertService.error(error._body);
           this.loading = false;
         });
   }

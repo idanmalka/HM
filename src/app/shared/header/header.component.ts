@@ -13,8 +13,7 @@ import {UserService} from "../services/user.service";
 export class HeaderComponent implements OnInit{
   private user : User;
 
-  constructor(private userService: UserService,
-              private authenticationService : AuthenticationService,
+  constructor(private authenticationService : AuthenticationService,
               private router: Router){
     this.authenticationService.validate();
   }

@@ -1,23 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
+import { GatewayConfig } from '../../app.config';
 
 import { User } from '../../models/user';
 import { Company } from '../../models/company';
 
 @Injectable()
 export class UserService {
-  constructor(private http: Http) { }
+  private baseUrl: string;
+
+  constructor(private http: Http, private gatewayConfig: GatewayConfig) {
+    this.baseUrl = `http://${gatewayConfig.ip}:${gatewayConfig.port}`;
+  }
 
   getAll() {
-    return this.http.get('/api/users', this.jwt()).map((response: Response) => response.json());
+    return this.http.get(this.baseUrl+'/api/users', this.jwt()).map((response: Response) => response.json());
   }
 
   getById(id: number) {
-    return this.http.get('/api/users/' + id, this.jwt()).map((response: Response) => response.json());
+    return this.http.get(this.baseUrl+'/api/users/' + id, this.jwt()).map((response: Response) => response.json());
   }
 
   create(user: User) {
-    return this.http.post('/api/users', user, this.jwt()).map((response: Response) => response.json());
+    return this.http.post(this.baseUrl+'/api/users', user, this.jwt());//.map((response: Response) => response.json());
   }
 
   update(updatedUser: User) {
@@ -28,7 +33,7 @@ export class UserService {
     let company = JSON.parse(localStorage.getItem('currentCompany'));
     if (company.id === updatedUser.companyId) {
       for ( let i=0; i < company.employees.length; i++)
-        if (company.employees[i].id === user.id ) 
+        if (company.employees[i].id === user.id )
         {
           company.employees[i] = updatedUser;
           break;
@@ -36,22 +41,22 @@ export class UserService {
       localStorage.setItem('currentCompany', JSON.stringify(company));
     }
     //
-    return this.http.put('/api/users/'+updatedUser.id, updatedUser, this.jwt()).map((response: Response) => response.json());
+    return this.http.put(this.baseUrl+'/api/users/'+updatedUser.id, updatedUser, this.jwt());//.map((response: Response) => response.json());
   }
 
   delete(id: number) {
-    return this.http.delete('/api/users/' + id, this.jwt()).map((response: Response) => response.json());
+    return this.http.delete(this.baseUrl+'/api/users/' + id, this.jwt());//.map((response: Response) => response.json());
+  }
+
+  deleteMultiple(ids: Array<number>) {
+    return this.http.post(this.baseUrl+'/api/users/-1', ids, this.jwt());//.map((response: Response) => response.json());
   }
 
   getCurrentUser(){
-    if (localStorage.getItem("currentUser") === null)
+    if (localStorage.getItem(this.baseUrl+"currentUser") === null)
       return;
     let user = JSON.parse(localStorage['currentUser']);
     if (user && user.token) return user;
-  }
-
-  isUserNameExist(username : string){
-    return this.http.post('/api/userNameExist', username, this.jwt()).map((response: Response) => response.json());
   }
 
 
@@ -60,8 +65,9 @@ export class UserService {
   private jwt() {
     // create authorization header with jwt token
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser && currentUser.token) {
-      let headers = new Headers({ 'Authorization': 'Bearer ' + currentUser.token });
+    let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
+    if (currentUser && currentToken) {
+      let headers = new Headers({ 'token': currentToken });
       return new RequestOptions({ headers: headers });
     }
   }

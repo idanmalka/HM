@@ -1,24 +1,32 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, RequestOptions, Response} from '@angular/http';
+import { GatewayConfig } from '../../app.config';
 
 import {Company} from '../../models/company';
+import {User} from "../../models/user";
+
+class CompanyManagement{
+  company: Company;
+  user: User;
+}
 
 @Injectable()
 export class CompanyService {
-  constructor(private http: Http) {
+  private baseUrl: string;
+
+  constructor(private http: Http, private gatewayConfig: GatewayConfig) {
+    this.baseUrl = `http://${gatewayConfig.ip}:${gatewayConfig.port}`;
   }
 
-  create(company: any) {
-    //return this.http.post('/api/companies', company, this.jwt()).map((response: Response) => response.json());
-    return this.http.post('/api/companies', company, this.jwt()).map((response: Response) => response.json());
-
+  create(companyManagement: CompanyManagement) {
+    return this.http.post(this.baseUrl+'/api/companies', companyManagement, this.jwt());//.map((response: Response) => response.json());
   }
 
   update(updatedCompany: Company) {
     let company = JSON.parse(localStorage.getItem('currentCompany'));
     if (company.id === updatedCompany.id)
       localStorage.setItem('currentCompany', JSON.stringify(updatedCompany));
-    return this.http.put('/api/companies/' + updatedCompany.id, updatedCompany, this.jwt()).map((response: Response) => response.json());
+    return this.http.put(this.baseUrl+'/api/companies/' + updatedCompany.id, updatedCompany, this.jwt());//.map((response: Response) => response.json());
   }
 
   updateCompanyUsers(updatedCompany: Company) {
@@ -27,27 +35,30 @@ export class CompanyService {
       company.employees = updatedCompany.employees;
       localStorage.setItem('currentCompany', JSON.stringify(company));
     }
-    return this.http.put('/api/companyUsers', updatedCompany.employees, this.jwt()).map((response: Response) => response.json());
+    return this.http.put(this.baseUrl+'/api/companyUsers/'+updatedCompany.id, updatedCompany.employees, this.jwt());//.map((response: Response) => response.json());
   }
 
   getById(id: number) {
-    return this.http.get('/api/companies/' + id, this.jwt()).map((response: Response) => response.json());
+    return this.http.get(this.baseUrl+'/api/companies/' + id, this.jwt()).map((response: Response) => response.json());
   }
 
+  delete(id: number) {
+    return this.http.delete(this.baseUrl+'/api/companies/' + id, this.jwt());//.map((response: Response) => response.json());
+  }
 
   getAll() {
-    return this.http.get('/api/companies/', this.jwt()).map((response: Response) => response.json());
+    return this.http.get(this.baseUrl+'/api/companies/', this.jwt()).map((response: Response) => response.json());
   }
 
   // private helper methods
 
   private jwt() {
     // create authorization header with jwt token
-    let currentCompany = JSON.parse(localStorage.getItem('currentCompany'));
-    if (currentCompany && currentCompany.token) {
-      let headers = new Headers({'Authorization': 'Bearer ' + currentCompany.token});
-      return new RequestOptions({headers: headers});
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    let currentToken = JSON.parse(localStorage.getItem('currentUserToken'));
+    if (currentUser && currentToken) {
+      let headers = new Headers({ 'token': currentToken });
+      return new RequestOptions({ headers: headers });
     }
   }
-
 }

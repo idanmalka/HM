@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AuthenticationService} from "../../shared/services/authentication.service";
-import {Router} from "@angular/router";
 import {User} from "../../models/user";
 import {UserService} from "../../shared/services/user.service";
 import {Shift} from "../../models/shift";
@@ -11,7 +10,7 @@ import {Message} from 'primeng/primeng';
 import {Company} from "../../models/company";
 import {CompanyService} from "../../shared/services/company.service";
 import {Response} from "@angular/http";
-import {DataTable} from "primeng/components/datatable/datatable";
+import {AlertService} from "../../shared/services/alert.service";
 
 @Component({
   selector: 'home-page',
@@ -65,7 +64,7 @@ export class HomeComponent implements OnInit {
 
   modalStartHour: Date;
   modalEndHour: Date;
-  modalDate: Date;
+  modalDate: Date = new Date();
   modalComment: string;
 
   showDailyHoursChart: boolean = false;
@@ -73,30 +72,48 @@ export class HomeComponent implements OnInit {
   shiftsPerDay: boolean[] = [];
 
   constructor(private authenticationService: AuthenticationService,
-              private router: Router,
+              private alertService: AlertService,
               private userService: UserService,
-              private companyService: CompanyService) { }
+              private companyService: CompanyService) {
+    this.user = this.editableUser = this.authenticationService.user;
+  }
 
   ngOnInit() {
+
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
-    this.user = this.editableUser = this.authenticationService.user;
-    if (this.editableUser.isAdmin === true)
-      this.editableUser = new User();
 
-    if (this.user.isAdmin)
-      this.companyService.getAll().subscribe((data: Response) => {
-        this.companies = data;
-        for (let company of this.companies)
-          this.dropdownCompanies.push({label: company.name, value: company});
-
-        console.log(this.companies);
-      });
-    console.log(this.user ? this.user : this.editableUser);
-    this.modalDate = new Date();
     this.initTableData();
-    this.dirty = false;
+
+    this.userService.getById(this.authenticationService.user.id).subscribe(user => {
+      this.user = this.editableUser = user;
+      console.log("from hours management:",user);
+      this.authenticationService.user = user;
+      if (this.user.isAdmin) {
+        this.companyService.getAll().subscribe((data: Response) => {
+          this.companies = data;
+          for (let company of this.companies) {
+            if (company.id === this.user.companyId)
+              this.chosenCompany = company;
+            this.dropdownCompanies.push({label: company.name, value: company});
+          }
+
+          this.setEditCompany();
+          this.editableUser = this.user;
+          this.initTableData();
+        });
+      }
+
+    });
+
   }
+
+  confirmNavigation(): boolean {
+    if (this.dirty)
+      this.alertService.error("אנא שמור/בטל את השינויים");
+    return !this.dirty;
+  }
+
 
   initTableData(): void {
     this.data = [];
@@ -108,7 +125,6 @@ export class HomeComponent implements OnInit {
       let start = new Date(shift.start);
       let end = new Date(shift.end);
       let date = new Date(shift.date);
-      console.log(date.getMonth());
       if (date.getMonth() === this.chosenMonth && date.getFullYear() === this.chosenYear) {
 
         let dateStr = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
@@ -170,34 +186,32 @@ export class HomeComponent implements OnInit {
 
   updateUserShifts() {
     this.dirty = true;
-    this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
-    let start = new Date(this.modalStartHour);
-    let end = new Date(this.modalEndHour);
-    let date = new Date(this.modalDate);
+    this.editableUserShiftsStackSave.push($.extend(true, {}, this.editableUser.shifts));
+    let start = new Date(this.modalStartHour).toISOString();
+    let end = new Date(this.modalEndHour).toISOString();
+    let date = new Date(this.modalDate).toISOString();
 
-    if (this.checkedRow > -1 ) {
+    if (this.checkedRow > -1) {
       this.editableUser.shifts[this.checkedRow].start = start;
       this.editableUser.shifts[this.checkedRow].end = end;
       this.editableUser.shifts[this.checkedRow].date = date;
       this.editableUser.shifts[this.checkedRow].comment = this.modalComment;
     } else {
-      if (this.isExistShiftInChosenDay()){
-          for (let shift of this.editableUser.shifts)
-                if ( shift.date.getDate()=== date.getDate()) {
-                  shift.start = start;
-                  shift.end = end;
-                  shift.date = date;
-                  shift.comment = this.modalComment;
-                  break;
-                }
+      if (this.isExistShiftInChosenDay()) {
+        for (let shift of this.editableUser.shifts)
+          if (shift.date === date) {
+            shift.start = start;
+            shift.end = end;
+            shift.date = date;
+            shift.comment = this.modalComment;
+            break;
+          }
       }
       else this.editableUser.shifts.push({start: start, end: end, date: date, comment: this.modalComment});
     }
   }
 
   changeSort($event): any {
-
-    console.log($event);
 
     let columnName: string = $event.field;
     let sort: number = $event.order;
@@ -226,12 +240,11 @@ export class HomeComponent implements OnInit {
   }
 
   onRowClick(data: any): any {
-    console.log(data);
     this.checkedRow = data.data.index;
-    this.updateModal(this.editableUser.shifts[this.checkedRow].start,
-      this.editableUser.shifts[this.checkedRow].end,
-      this.editableUser.shifts[this.checkedRow].date,
-      this.editableUser.shifts[this.checkedRow].comment);
+    let start: Date = new Date(this.editableUser.shifts[this.checkedRow].start);
+    let end: Date = new Date(this.editableUser.shifts[this.checkedRow].end);
+    let date: Date = new Date(this.editableUser.shifts[this.checkedRow].date);
+    this.updateModal(start, end, date, this.editableUser.shifts[this.checkedRow].comment);
     this.showChildModal();
   }
 
@@ -246,16 +259,17 @@ export class HomeComponent implements OnInit {
   }
 
   addShift(): void {
-    console.log("clicked add shift");
     this.checkedRow = -1;
     this.updateModal();
     this.showChildModal();
   }
 
   saveData(): void {
-    console.log('updating editableUser data');
     this.dirty = false;
-    this.userService.update(this.editableUser);
+    this.userService.update(this.editableUser).subscribe(
+      data => this.alertService.success('נשמר בהצלחה', true),
+      error => this.alertService.error(error._body)
+    );
   }
 
   updateModal(startHour = new Date(), endHour = new Date(), date = new Date(), comment = "") {
@@ -287,32 +301,21 @@ export class HomeComponent implements OnInit {
   }
 
   confirmShift(): boolean {
-    // if (!this.isExistShiftInChosenDay()) {  /// This prevents you from editing shifts
-      console.log("submitted");             
-      this.updateDataFromModal();
-      this.hideChildModal();
-      return false;
+    this.updateDataFromModal();
+    this.hideChildModal();
+    return false;
   }
 
   updateDataFromModal(): void {
-    console.log(this.modalStartHour);
-    console.log(this.modalEndHour);
-    console.log(this.modalDate);
-    console.log(this.checkedRow);
     this.updateUserShifts();
     this.initTableData();
   }
 
   deleteShift(): void {
-    this.editableUserShiftsStackSave.push(jQuery.extend(true, {}, this.editableUser.shifts));
+    this.editableUserShiftsStackSave.push($.extend(true, {}, this.editableUser.shifts));
     this.editableUser.shifts.splice(this.checkedRow, 1);
     this.initTableData();
     this.hideChildModal();
-  }
-
-  print(a) {
-    console.log(a.getDate());
-    console.log(this.modalDate);
   }
 
   exportToCsv() {
@@ -322,13 +325,11 @@ export class HomeComponent implements OnInit {
     }
     if (this.data.length > 0) {
       const items = this.data;
-      const replacer = (key, value) => value === null ? '' : value;// specify how you want to handle null values here
+      const replacer = (key, value) => value === null ? '' : value;
       const header = Object.keys(items[0]);
       let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
       csv.unshift(header.join(','));
       let csv1 = csv.join('\r\n');
-
-      console.log(csv1);
 
       var blob = new Blob([csv1], {type: "text/csv;charset=utf-8"});
       FileSaver.saveAs(blob, 'דיווחי שעות ' + this.months[this.chosenMonth].label + '/' + this.chosenYear + '.csv');
@@ -337,18 +338,23 @@ export class HomeComponent implements OnInit {
   }
 
   undoShiftChange() {
-    if (this.editableUserShiftsStackSave.length > 0) {
-      console.log('poping');
-      this.editableUser.shifts = [];
-      jQuery.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
-      this.initTableData();
+    if (this.editableUserShiftsStackSave.length <= 0) {
+      return;
     }
-    else console.log('not poping');
+    this.editableUser.shifts = [];
+    $.extend(true, this.editableUser.shifts, this.editableUserShiftsStackSave.pop());
+
+    if (this.editableUserShiftsStackSave.length === 0)
+      this.dirty = false;
+
+    this.initTableData();
+
   }
 
   setEditCompany(): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
+    this.editableUser = this.companyUsers[0].value;
     for (let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
     this.initTableData();
@@ -362,12 +368,11 @@ export class HomeComponent implements OnInit {
   }
 
   isExistShiftInChosenDay(): boolean {
-    // return false;
-
     let currentDate = this.modalDate.getDate();
     return this.shiftsPerDay[currentDate].valueOf();
-
-
   }
 
+  isPlaceHolderUser(): boolean {
+    return this.editableUser.id === 0 || (this.chosenCompany && this.chosenCompany.id === 0);
+  }
 }

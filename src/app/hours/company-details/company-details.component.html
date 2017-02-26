@@ -1,15 +1,19 @@
 <div class="container">
   <h2>פרטי חברה</h2>
-  <p-dropdown *ngIf="user.isAdmin" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
-              [options]="dropdownCompanies"
-              (onChange)="setEditCompany()"></p-dropdown>
+  <div *ngIf="user.isAdmin" class="top-options-container">
+    <p-dropdown name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
+                [options]="dropdownCompanies"
+                (onChange)="setEditCompany()"></p-dropdown>
+    <button id="delete-company-button" class="btn btn-danger" (click)="openDeleteCompanyDialog = true" [disabled]="user.companyId === editableCompany.id || isPlaceHolderCompany()">מחק חברה</button>
+  </div>
   <br>
-  <form name="form" (ngSubmit)="f.form.valid && update()" #f="ngForm" novalidate>
+  <form name="form" (ngSubmit)="f.form.valid && saveData()" #f="ngForm" novalidate>
     <div class="row" *ngIf="user.isManager">
       <div class="col-md-5 ">
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaNumber.valid }">
           <label for="visaNumber">מספר ויזה</label>
-          <input id="visaNumber" type="number" class="form-control" name="visaNumber" [(ngModel)]="editableCompany.visa.visaNumber"
+          <input id="visaNumber" type="number" class="form-control" name="visaNumber"
+                 [(ngModel)]="editableCompany.visa.visaNumber"
                  #visaNumber="ngModel"
                  required/>
           <div *ngIf="f.submitted && !visaNumber.valid" class="help-block">אנא הכנס מספר ויזה</div>
@@ -21,15 +25,16 @@
           <p-dropdown name="year" id="year" [(ngModel)]="chosenYear" [options]="years"
                       (onChange)="setExpParameter('year')"></p-dropdown>
         </div>
-        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }" title="אנא הכנס 3 ספרות אימות, לדוגמא : 123">
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }"
+             title="אנא הכנס 3 ספרות אימות, לדוגמא : 123">
           <label for="visaCVV">ספרות אימות</label>
           <input id="visaCVV" type="number" class="form-control" name="visaCVV" [(ngModel)]="editableCompany.visa.cvv"
-                 #visaCVV="ngModel" pattern = "[0-9]{3}"
+                 #visaCVV="ngModel" pattern="[0-9]{3}"
                  required/>
           <div *ngIf="f.submitted && !visaCVV.valid" class="help-block">אנא הכנס ספרות אימות</div>
         </div>
         <div class="form-group">
-          <button [disabled]="loading" class="btn btn-primary">עדכן</button>
+          <button [disabled]="loading || isPlaceHolderCompany()" class="btn btn-primary">עדכן</button>
           <img *ngIf="loading"
                src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
         </div>
@@ -44,14 +49,16 @@
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !editableCompanyAddress.valid }">
           <label for="editableCompanyAddress">כתובת החברה</label>
-          <input id="editableCompanyAddress" type="text" class="form-control" name="editableCompanyAddress" [(ngModel)]="editableCompany.address"
+          <input id="editableCompanyAddress" type="text" class="form-control" name="editableCompanyAddress"
+                 [(ngModel)]="editableCompany.address"
                  #editableCompanyAddress="ngModel"
                  required/>
           <div *ngIf="f.submitted && !editableCompanyAddress.valid" class="help-block">אנא הכנס את כתובת החברה</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !editableCompanyField.valid }">
           <label for="editableCompanyField">תחום עיסוק חברה</label>
-          <input id="editableCompanyField" type="text" class="form-control" name="editableCompanyField" [(ngModel)]="editableCompany.field"
+          <input id="editableCompanyField" type="text" class="form-control" name="editableCompanyField"
+                 [(ngModel)]="editableCompany.field"
                  #editableCompanyField="ngModel"
                  required/>
           <div *ngIf="f.submitted && !editableCompanyField.valid" class="help-block">אנא הכנס את תחום עיסוק החברה</div>
@@ -64,7 +71,8 @@
     <div class="col-md-offset-7 col-md-5">
       <div>
         <label for="editableCompanyName">שם החברה</label>
-        <input id="editableCompanyName" [disabled]="!user.isManager" type="text" class="form-control" name="editableCompanyName"
+        <input id="editableCompanyName" [disabled]="!user.isManager" type="text" class="form-control"
+               name="editableCompanyName"
                [ngModel]="editableCompany.name"
                #editableCompanyName="ngModel"
         />
@@ -90,19 +98,30 @@
 
   <div [ngClass]="{'col-md-offset-2 col-md-4': user.isAdmin,
                    'col-md-offset-3 col-md-5': !user.isAdmin}">
-    <h2 *ngIf="user.isManager" >פילוח שעות לחודש נוכחי לפי עובדים</h2>
-  <p-dropdown *ngIf="user.isAdmin" name="companies" id="companies" [(ngModel)]="editableCompany" size="1"
-              [options]="dropdownCompanies"
-              (onChange)="setEditCompany()"></p-dropdown>
+    <h2 *ngIf="user.isManager">פילוח שעות לחודש לפי עובדים</h2>
+    <p-dropdown name="graphMonth" id="graph-month" [(ngModel)]="chosenGraphMonth" [options]="months"
+                (onChange)="initChartData()"></p-dropdown>
+    <p-dropdown name="graphYear" id="graph-year" [(ngModel)]="chosenGraphYear" [options]="years"
+                (onChange)="initChartData()"></p-dropdown>
     <p-chart *ngIf="user.isManager" #chart type="pie" [data]="chartData"></p-chart>
   </div>
 
   <div [ngClass]="{'col-md-offset-1 col-md-4': user.isAdmin,
                    'col-md-5': !user.isAdmin}">
-    <h2 *ngIf="user.isAdmin" >מעקב עובדים בחברות</h2>
+    <h2 *ngIf="user.isAdmin">מעקב עובדים בחברות</h2>
     <br>
     <br>
     <p-chart *ngIf="user.isAdmin" #chart2 type="doughnut" [data]="chartData2"></p-chart>
-   </div>
+  </div>
 
 </div>
+
+<p-dialog header="מחיקת חברה" [(visible)]="openDeleteCompanyDialog" modal="modal" width="300" responsive="true">
+  <p>האם אתה בטוח שברצונך למחוק את החברה "{{editableCompany.name}}"?</p>
+  <footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+      <button class="btn btn-default" (click)="openDeleteCompanyDialog=false">ביטול</button>
+      <button class="btn btn-danger" (click)="deleteCompany()">מחק חברה</button>
+    </div>
+  </footer>
+</p-dialog>
