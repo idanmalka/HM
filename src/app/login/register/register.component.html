@@ -3,71 +3,71 @@
   <br>
   <form name="form" (ngSubmit)="f.form.valid && register()" #f="ngForm" novalidate>
     <div class="row">
-      <div class="col-md-5 ">
+      <div class="col-sm-push-7 col-sm-5">
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !firstName.valid }">
-          <label for="firstName">שם פרטי</label>
+          <label>שם פרטי</label>
           <input type="text" class="form-control" name="firstName" [(ngModel)]="model.firstName" #firstName="ngModel"
                  required/>
           <div *ngIf="f.submitted && !firstName.valid" class="help-block">אנא הכנס שם פרטי</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !lastName.valid }">
-          <label for="lastName">שם משפחה</label>
+          <label>שם משפחה</label>
           <input type="text" class="form-control" name="lastName" [(ngModel)]="model.lastName" #lastName="ngModel"
                  required/>
           <div *ngIf="f.submitted && !lastName.valid" class="help-block">אנא הכנס שם משפחה</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !username.valid }">
-          <label for="username">שם משתמש</label>
+          <label>שם משתמש</label>
           <input type="text" class="form-control" name="username" [(ngModel)]="model.username" #username="ngModel"
                  required/>
           <div *ngIf="f.submitted && !username.valid" class="help-block">אנא הכנס שם משתמש</div>
           <div *ngIf="f.submitted && ExistUserNameFlag" class="help-block">שם משתמש קיים במערכת, אנא בחר שם
                   משתמש אחר
-          </div>         
+          </div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
-          <label for="password">סיסמא</label>
+          <label>סיסמא</label>
           <input type="password" class="form-control" name="password" [(ngModel)]="model.password" #password="ngModel"
                  required/>
           <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
         </div>
          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }" title= "כתובת דואר אלקטרוני לדוגמא : abc@gmail.com">
-          <label for="email">דוא"ל</label>
+          <label>דוא"ל</label>
           <input type="email" class="form-control" name="email" [(ngModel)]="model.email"
                  #email="ngModel" pattern="[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*"
                   required/>
           <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס כתובת דוא"ל תקינה</div>
         </div>
          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }" title= "מספר טלפון תקין בעל 10 ספרות לדוגמא: 0501234567">
-          <label for="phone">מספר טלפון</label>
+          <label>מספר טלפון</label>
           <input type="text" class="form-control" name="phone" [(ngModel)]="model.phone"
-                 #phone="ngModel" pattern = "[0-9]{10}" 
+                 #phone="ngModel" pattern = "[0-9]{10}"
                  required/>
           <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון תקין</div>
         </div>
          <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !userAddress.valid }">
-          <label for="userAddress">כתובת</label>
+          <label>כתובת</label>
           <input type="text" class="form-control" name="userAddress" [(ngModel)]="model.address"
                  #userAddress="ngModel"
                  required/>
           <div *ngIf="f.submitted && !userAddress.valid" class="help-block">אנא הכנס כתובת</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyName.valid }">
-          <label for="companyName">שם החברה</label>
+          <label>שם החברה</label>
           <input type="text" class="form-control" name="companyName" [(ngModel)]="company.name"
                  #companyName="ngModel"
                  required/>
           <div *ngIf="f.submitted && !companyName.valid" class="help-block">אנא הכנס שם חברה</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyAddress.valid }">
-          <label for="companyAddress">כתובת החברה</label>
+          <label>כתובת החברה</label>
           <input type="text" class="form-control" name="companyAddress" [(ngModel)]="company.address"
                  #companyAddress="ngModel"
                  required/>
           <div *ngIf="f.submitted && !companyAddress.valid" class="help-block">אנא הכנס את כתובת החברה</div>
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !companyField.valid }">
-          <label for="companyField">תחום עיסוק החברה</label>
+          <label>תחום עיסוק החברה</label>
           <input type="text" class="form-control" name="companyField" [(ngModel)]="company.field"
                  #companyField="ngModel"
                  required/>
@@ -75,9 +75,9 @@
         </div>
       </div>
 
-      <div class="col-md-offset-2 col-md-5">
+      <div class="col-sm-offset-2 col-sm-5 col-sm-pull-7">
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaNumber.valid }">
-          <label for="visaNumber">מספר ויזה</label>
+          <label>מספר ויזה</label>
           <input type="number" class="form-control" name="visaNumber" [(ngModel)]="company.visa.visaNumber"
                  #visaNumber="ngModel"
                  required/>
@@ -86,25 +86,21 @@
 
         <div class="form-group">
           <label>תאריך תפוגה</label><br>
-          <!--<input type="text" disabled class="form-control" name="expDate"-->
-                 <!--[ngModel]="company.visa.expirationDate | date"-->
-                 <!--#expDate="ngModel"-->
-                 <!--required/>-->
-          <!--<div style="display: inline-block;min-height:267px;">-->
-            <!--&lt;!&ndash;<datepicker shortcutPropagation="true" [(ngModel)]="company.visa.expirationDate" [showWeeks]="true"&ndash;&gt;-->
-                        <!--&lt;!&ndash;name="exp"></datepicker>&ndash;&gt;-->
-          <!--</div>-->
           <p-dropdown dir="ltr" name="month" id="month" [(ngModel)]="chosenMonth" [options]="months" (onChange)="setExpParameter('month')"></p-dropdown>
           <p-dropdown dir="ltr" name="year" id="year" [(ngModel)]="chosenYear" [options]="years" (onChange)="setExpParameter('year')"></p-dropdown>
-          <!--<div *ngIf="f.submitted && !expDate.valid" class="help-block">אנא הכנס תאריך תפוגה</div>-->
         </div>
 
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !visaCVV.valid }" title="אנא הכנס 3 ספרות אימות, לדוגמא : 123">
-          <label for="visaCVV">ספרות אימות</label>
+          <label>ספרות אימות</label>
           <input type="text" class="form-control" name="visaCVV" [(ngModel)]="company.visa.cvv"
                  #visaCVV="ngModel" pattern = "[0-9]{3}"
                  required/>
           <div *ngIf="f.submitted && !visaCVV.valid" class="help-block">אנא הכנס את ספרות האימות</div>
+        </div>
+        <div class="form-group" title="קוד אדמיניסטרציה">
+          <label>קוד אדמיניסטרציה (אופציונלי)</label>
+          <input type="text" class="form-control" name="acode" [(ngModel)]="adminCode"
+                 #acode="ngModel"/>
         </div>
         <div class="form-group">
           <button [disabled]="loading" class="btn btn-primary">הירשם</button>

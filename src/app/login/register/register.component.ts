@@ -20,6 +20,7 @@ export class RegisterComponent {
   loading = false;
   ExistUserNameFlag: boolean = false;
   visaExpirationDate: Date;
+  adminCode = "";
 
   years = [];
   months = [
@@ -47,7 +48,6 @@ export class RegisterComponent {
   }
 
   register() {
-
     this.loading = true;
     this.model.department = "הנהלה";
     this.model.role = "מנהל כללי";
@@ -58,10 +58,11 @@ export class RegisterComponent {
     this.company.employees = [];
     this.company.visa.expirationDate = this.visaExpirationDate.toISOString();
 
-    this.companyService.create({company: this.company, user: this.model})
+    this.companyService.create({company: this.company, user: this.model, adminCode :this.adminCode})
       .subscribe(
         data => {
           this.alertService.success('Registration Company successful', true);
+          console.log(data);
           this.router.navigate(['/login']);
         },
         error => {
