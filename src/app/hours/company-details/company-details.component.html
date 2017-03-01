@@ -106,12 +106,11 @@
     <p-chart #chart type="pie" [data]="chartData"></p-chart>
   </div>
 
-  <div [ngClass]="{'col-md-offset-1 col-md-4': user.isAdmin,
-                   'col-md-5': !user.isAdmin}">
-    <h2 *ngIf="user.isAdmin">מעקב עובדים בחברות</h2>
+  <div *ngIf="user.isAdmin" class="col-md-offset-1 col-md-4">
+    <h2>מעקב עובדים בחברות</h2>
     <br>
     <br>
-    <p-chart *ngIf="user.isAdmin" #chart2 type="doughnut" [data]="chartData2"></p-chart>
+    <p-chart #chart2 type="doughnut" [data]="chartData2"></p-chart>
   </div>
 
 </div>

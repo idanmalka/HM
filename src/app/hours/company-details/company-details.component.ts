@@ -62,7 +62,6 @@ export class CompanyDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.visaExpirationDate = new Date();
 
     this.userService.getById(this.authService.user.id).subscribe(user => {
@@ -71,6 +70,8 @@ export class CompanyDetailsComponent implements OnInit {
 
       if (this.user.isAdmin)
         this.companyService.getAll().subscribe((data: Response) => {
+          console.log("after getall im company details");
+          console.log(data);
           this.updateCompaniesDropdown(data);
           this.initChartData();
           this.initChartData2();
@@ -103,6 +104,7 @@ export class CompanyDetailsComponent implements OnInit {
 
     this.chosenMonth = this.visaExpirationDate.getMonth();
     this.chosenYear = this.visaExpirationDate.getFullYear();
+
     if (this.user.isManager || this.user.isAdmin)
       setTimeout(this.initChartData(), 100);
   }
@@ -164,7 +166,6 @@ export class CompanyDetailsComponent implements OnInit {
     currentDate.setFullYear(this.chosenGraphYear);
     let localUser = new User();
 
-
     for (let i = 0; i < this.editableCompany.employees.length; i++) {
       localUser = this.editableCompany.employees[i];
       chartLabels.push(localUser.firstName + " " + localUser.lastName);
@@ -214,7 +215,7 @@ export class CompanyDetailsComponent implements OnInit {
         }]
     };
 
-    setTimeout(this.chart2.refresh(), 100);
+    setTimeout(() => this.chart2.refresh(), 100);
   }
 
   deleteCompany(): void {
