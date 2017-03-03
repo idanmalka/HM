@@ -92,6 +92,8 @@ export class CompanyDetailsComponent implements OnInit {
   updateCompaniesDropdown(data) {
     this.companies = data;
     this.dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
+    this.chartLabels2 = [];
+    this.data2 = [];
     for (let company of this.companies) {
       if (company.id === this.user.companyId) {
         this.editableCompany = company;
@@ -107,6 +109,9 @@ export class CompanyDetailsComponent implements OnInit {
 
     if (this.user.isManager || this.user.isAdmin)
       setTimeout(this.initChartData(), 100);
+
+    if (this.user.isAdmin)
+      setTimeout(this.initChartData2(), 100);
   }
 
   saveData() {
