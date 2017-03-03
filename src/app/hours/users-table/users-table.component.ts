@@ -81,6 +81,7 @@ export class UsersTableComponent implements OnInit {
               this.editableCompany = company;
             this.dropdownCompanies.push({label: company.name, value: company});
           }
+          this.initTableData();
         });
     });
 
