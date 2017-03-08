@@ -18,7 +18,8 @@
                   <span class="glyphicon glyphicon-download-alt"></span></button>
               </div>
               <div *ngIf="editable" class="ui-toolbar-group-left">
-                <button [disabled]="isPlaceHolderCompany()" class="btn btn-info" (click)="addUser()" tooltipPlacement="top" tooltip="הוסף עובד"><span
+                <button [disabled]="isPlaceHolderCompany()" class="btn btn-info" (click)="addUser()"
+                        tooltipPlacement="top" tooltip="הוסף עובד"><span
                   class="glyphicon glyphicon-plus"></span></button>
                 <button
                   [disabled]="!(editableCompanyEmployeesStackSave && editableCompanyEmployeesStackSave.length > 0)"
@@ -26,7 +27,8 @@
                   (click)="undoListChange()" tooltipPlacement="top" tooltip="בטל שינוי אחרון">
                   <span class="fa fa-undo" aria-hidden="true"></span>
                 </button>
-                <button [disabled]="isPlaceHolderCompany()" class="btn btn-success" (click)="saveData()" tooltipPlacement="top" tooltip="שמור"><span
+                <button [disabled]="isPlaceHolderCompany()" class="btn btn-success" (click)="saveData()"
+                        tooltipPlacement="top" tooltip="שמור"><span
                   class="glyphicon glyphicon-floppy-save"></span></button>
               </div>
               <div class="ui-toolbar-group-right">
@@ -35,6 +37,8 @@
                             size="1"
                             [options]="dropdownCompanies"
                             (onChange)="setEditCompany()" [style]="{width : '126px'}"></p-dropdown>
+                <img *ngIf="loading"
+                     src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
               </div>
             </p-toolbar>
 
@@ -124,12 +128,22 @@
                     משתמש אחר
                   </div>
                 </div>
-                <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+                <div *ngIf="checkedRow === -1" class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
                   <label for="password">סיסמא</label>
-                  <input id="password" type="password" class="form-control" name="password" [(ngModel)]="modalPassword"
-                         #password="ngModel"
-                         required/>
-                  <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
+                    <input id="password" type="password" class="form-control" name="password"
+                           [(ngModel)]="modalPassword"
+                           #password="ngModel"
+                           required/>
+                    <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
+                </div>
+
+                <div *ngIf="checkedRow !== -1" class="form-group" [ngClass]="{ 'has-error': f.submitted && !Newpassword.valid }">
+                  <label for="Newpassword">סיסמא חדשה (אופציונלי)</label>
+                  <input id="Newpassword" type="password" class="form-control" name="Newpassword"
+                         [(ngModel)]="modalPassword"
+                         #Newpassword="ngModel"
+                  />
+                  <div *ngIf="f.submitted && !Newpassword.valid" class="help-block">אנא הכנס סיסמא</div>
                 </div>
                 <div id="isManagerCheckbox">
                   <p-checkbox binary="true" name="modal-is-manager" *ngIf="user.isManager || user.isAdmin"

@@ -29,9 +29,10 @@ export class UsersTableComponent implements OnInit {
   editableCompany: Company = new Company();
   companies;
   dropdownCompanies = [{label: 'בחר חברה', value: new Company()}];
-  editableCompanyEmployeesStackSave: Array<{ users: User[], state: CRUD }> = [];
+  editableCompanyEmployeesStackSave: Array<{users: User[], state: CRUD}> = [];
   deletedUsersArray: Array<number> = [];
   dirty = false;
+  loading: boolean = false;
 
   columns: Array<any> = [
     {header: 'שם משפחה', field: 'lastName'},
@@ -67,6 +68,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.editableCompany = new Company();
     this.initTableData();
 
@@ -82,7 +84,15 @@ export class UsersTableComponent implements OnInit {
             this.dropdownCompanies.push({label: company.name, value: company});
           }
           this.initTableData();
+          this.loading = false;
         });
+      else
+        this.companyService.getById(this.authService.user.companyId).subscribe(company => {
+          this.editableCompany = company;
+          this.initTableData();
+          this.loading = false;
+      });
+
     });
 
   }
@@ -311,7 +321,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   isPlaceHolderCompany(): boolean {
-    return this.editableCompany.id === 0;
+    return this.user.isAdmin && this.editableCompany.id === 0;
   }
 
   isSelf(): boolean {

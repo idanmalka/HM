@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
   companyUsers = [{label: 'בחר משתמש', value: new User()}];
   chosenCompany;
 
+  loading: boolean = false;
   dirty: boolean = false;
   editableUser: User = new User();
   user: User;
@@ -79,7 +80,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.loading = true;
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)
       this.years.push({value: i, label: i});
 
@@ -100,8 +101,9 @@ export class HomeComponent implements OnInit {
 
           this.setEditCompany(this.user);
           this.initTableData();
+          this.loading = false;
         });
-      }
+      } else this.loading = false;
 
     });
 

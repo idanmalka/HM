@@ -63,7 +63,7 @@ export class CompanyDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.visaExpirationDate = new Date();
-
+    this.loading = true;
     this.userService.getById(this.authService.user.id).subscribe(user => {
       this.user = user;
       this.authService.user = user;
@@ -75,10 +75,12 @@ export class CompanyDetailsComponent implements OnInit {
           this.updateCompaniesDropdown(data);
           this.initChartData();
           this.initChartData2();
+          this.loading = false;
         });
       else this.companyService.getById(this.authService.user.companyId).subscribe(company => {
         this.editableCompany = company;
         this.initChartData();
+        this.loading = false;
       });
 
 

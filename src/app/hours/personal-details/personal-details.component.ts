@@ -33,12 +33,12 @@ export class PersonalDetailsComponent implements OnInit{
     }
 
     ngOnInit(): void {
-
+      this.loading = true;
       this.userService.getById(this.authService.user.id).subscribe(user => {
         this.user = this.editableUser = user;
         this.authService.user = user;
 
-        if(this.user.isAdmin) {
+        if(this.user.isAdmin)
           this.companyService.getAll().subscribe((data: Response) => {
             this.companies = data;
             for (let company of this.companies) {
@@ -48,10 +48,11 @@ export class PersonalDetailsComponent implements OnInit{
             }
 
             this.setEditCompany();
-            this.editableUser = this.user;
-          });
 
-        }
+            this.loading = false;
+          });
+          else this.loading = false;
+
       });
 
     }
@@ -73,9 +74,9 @@ export class PersonalDetailsComponent implements OnInit{
   setEditCompany(): void {
     this.companyUsers = [];
     this.companyUsers.push({label: 'בחר משתמש', value: new User()});
-    this.editableUser = this.companyUsers[0].value;
     for(let user of this.chosenCompany.employees)
       this.companyUsers.push({label: user.firstName + " " + user.lastName, value: user});
+    this.editableUser = this.user;
   }
 
   confirmNavigation(): boolean {

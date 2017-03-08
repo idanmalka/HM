@@ -68,10 +68,10 @@
           />
         </div>
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
-          <label for="password">סיסמא</label>
+          <label for="password">סיסמא חדשה (אופציונלי)</label>
           <input id="password" type="password" class="form-control" name="password" [(ngModel)]="editableUser.password"
                  #password="ngModel"
-                 required/>
+                 />
           <div *ngIf="f.submitted && !password.valid" class="help-block">אנא הכנס סיסמא</div>
         </div>
         <div class="form-group">
