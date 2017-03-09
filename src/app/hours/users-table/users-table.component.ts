@@ -167,6 +167,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   updateUsersData(): void {
+    this.dirty = true;
     let UserName = this.modalUserName;
     let Password = this.modalPassword;
     let FirstName = this.modalFirstName;
@@ -220,6 +221,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   deleteUser() {
+    this.dirty = true;
     this.deletedUsersArray.push(this.editableCompany.employees[this.checkedRow].id);
     this.editableCompanyEmployeesStackSave.push(
       {
@@ -264,6 +266,7 @@ export class UsersTableComponent implements OnInit {
   }
 
   saveData(): void {
+    this.dirty = false;
     this.loading = true;
     if (this.deletedUsersArray.length > 0)
       this.userService.deleteMultiple(this.deletedUsersArray);
@@ -301,9 +304,10 @@ export class UsersTableComponent implements OnInit {
   }
 
   undoListChange() {
-    if (this.editableCompanyEmployeesStackSave.length <= 0)
+    if (this.editableCompanyEmployeesStackSave.length <= 0) {
+      this.dirty = false;
       return;
-
+    }
     this.editableCompany.employees = [];
     let stackTop = this.editableCompanyEmployeesStackSave.pop();
 
@@ -311,6 +315,9 @@ export class UsersTableComponent implements OnInit {
 
     if (stackTop.state === CRUD.DELETE)
       this.deletedUsersArray.pop();
+
+    if (this.editableCompanyEmployeesStackSave.length <= 0)
+      this.dirty = false;
 
     this.initTableData();
 

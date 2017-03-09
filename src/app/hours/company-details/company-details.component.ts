@@ -190,7 +190,7 @@ export class CompanyDetailsComponent implements OnInit {
           let end = new Date(localUser.shifts[j].end);
           let diff = new Date(Math.abs(end.getTime() - start.getTime()));
 
-          totalSum = diff.getHours() - 2 + (diff.getMinutes()) / 60;
+          totalSum += diff.getHours() - 2 + (diff.getMinutes()) / 60;
         }
       }
       data.push(totalSum);
@@ -208,7 +208,6 @@ export class CompanyDetailsComponent implements OnInit {
     };
 
     setTimeout(() => {
-      if (this.chart)
         this.chart.refresh();
     }, 100);
 
