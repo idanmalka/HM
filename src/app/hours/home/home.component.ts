@@ -105,7 +105,14 @@ export class HomeComponent implements OnInit {
         this.initTableData();
         this.loading = false;
       });
-    } else this.loading = false;
+    } else if (this.user.isManager)
+              this.companyService.getById(this.user.companyId).subscribe((data: Response) => {
+                this.chosenCompany = data;
+                this.setEditCompany(this.user);
+                this.initTableData();
+                this.loading = false;
+              });
+      else this.loading = false;
 
   }
 
@@ -267,9 +274,16 @@ export class HomeComponent implements OnInit {
 
   saveData(): void {
     this.dirty = false;
+    this.loading = true;
     this.userService.update(this.editableUser).subscribe(
-      data => this.alertService.success('נשמר בהצלחה', true),
-      error => this.alertService.error(error._body)
+      data => {
+        this.loading = false;
+        this.alertService.success('נשמר בהצלחה', true);
+      },
+      error => {
+        this.loading = false;
+        this.alertService.error(error._body);
+      }
     );
   }
 
