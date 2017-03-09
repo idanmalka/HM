@@ -90,22 +90,22 @@ export class HomeComponent implements OnInit {
       this.user = this.editableUser = user;
       console.log("from hours management:",user);
       this.authenticationService.user = user;
-      if (this.user.isAdmin) {
-        this.companyService.getAll().subscribe((data: Response) => {
-          this.companies = data;
-          for (let company of this.companies) {
-            if (company.id === this.user.companyId)
-              this.chosenCompany = company;
-            this.dropdownCompanies.push({label: company.name, value: company});
-          }
-
-          this.setEditCompany(this.user);
-          this.initTableData();
-          this.loading = false;
-        });
-      } else this.loading = false;
-
     });
+
+    if (this.user.isAdmin) {
+      this.companyService.getAll().subscribe((data: Response) => {
+        this.companies = data;
+        for (let company of this.companies) {
+          if (company.id === this.user.companyId)
+            this.chosenCompany = company;
+          this.dropdownCompanies.push({label: company.name, value: company});
+        }
+
+        this.setEditCompany(this.user);
+        this.initTableData();
+        this.loading = false;
+      });
+    } else this.loading = false;
 
   }
 

@@ -64,26 +64,30 @@ export class CompanyDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.visaExpirationDate = new Date();
     this.loading = true;
+
     this.userService.getById(this.authService.user.id).subscribe(user => {
       this.user = user;
       this.authService.user = user;
+    });
 
-      if (this.user.isAdmin)
-        this.companyService.getAll().subscribe((data: Response) => {
-          console.log("after getall im company details");
-          console.log(data);
-          this.updateCompaniesDropdown(data);
-          this.initChartData();
-          this.initChartData2();
-          this.loading = false;
-        });
-      else this.companyService.getById(this.authService.user.companyId).subscribe(company => {
-        this.editableCompany = company;
+    if (this.user.isAdmin)
+      this.companyService.getAll().subscribe((data: Response) => {
+        console.log("after getall im company details");
+        console.log(data);
+        this.updateCompaniesDropdown(data);
         this.initChartData();
+        this.initChartData2();
         this.loading = false;
+        console.log("yes admin visa expiration date: ", this.visaExpirationDate);
       });
-
-
+    else this.companyService.getById(this.authService.user.companyId).subscribe(company => {
+      this.editableCompany = company;
+      this.visaExpirationDate = new Date(this.editableCompany.visa.expirationDate);
+      this.chosenMonth = this.visaExpirationDate.getMonth();
+      this.chosenYear = this.visaExpirationDate.getFullYear();
+      this.initChartData();
+      this.loading = false;
+      console.log("not admin visa expiration date: ", this.visaExpirationDate);
     });
 
     for (let i = this.chosenYear - 10; i < this.chosenYear + 10; i++)

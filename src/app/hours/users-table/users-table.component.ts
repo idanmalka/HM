@@ -75,26 +75,25 @@ export class UsersTableComponent implements OnInit {
     this.userService.getById(this.authService.user.id).subscribe(user => {
       this.user = user;
       this.authService.user = user;
-      if (this.user.isAdmin)
-        this.companyService.getAll().subscribe((data: Response) => {
-          this.companies = data;
-          for (let company of this.companies) {
-            if (company.id === this.user.companyId)
-              this.editableCompany = company;
-            this.dropdownCompanies.push({label: company.name, value: company});
-          }
-          this.initTableData();
-          this.loading = false;
-        });
-      else
-        this.companyService.getById(this.authService.user.companyId).subscribe(company => {
-          this.editableCompany = company;
-          this.initTableData();
-          this.loading = false;
-      });
-
     });
 
+    if (this.user.isAdmin)
+      this.companyService.getAll().subscribe((data: Response) => {
+        this.companies = data;
+        for (let company of this.companies) {
+          if (company.id === this.user.companyId)
+            this.editableCompany = company;
+          this.dropdownCompanies.push({label: company.name, value: company});
+        }
+        this.initTableData();
+        this.loading = false;
+      });
+    else
+      this.companyService.getById(this.authService.user.companyId).subscribe(company => {
+        this.editableCompany = company;
+        this.initTableData();
+        this.loading = false;
+      });
   }
 
   initTableData(): void {
