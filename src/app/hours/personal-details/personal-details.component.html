@@ -15,6 +15,7 @@
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
           <label for="email">דוא"ל</label>
           <input id="email" type="email" class="form-control" name="email" [(ngModel)]="editableUser.email"
+                 pattern="[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*"
                  #email="ngModel"
                  required/>
           <div *ngIf="f.submitted && !email.valid" class="help-block">אנא הכנס דוא"ל</div>
@@ -22,6 +23,7 @@
         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !phone.valid }">
           <label for="phone">מספר טלפון</label>
           <input id="phone" type="text" class="form-control" name="phone" [(ngModel)]="editableUser.phone"
+                 pattern = "[0-9]{10}"
                  #phone="ngModel"
                  required/>
           <div *ngIf="f.submitted && !phone.valid" class="help-block">אנא הכנס מספר טלפון</div>
