@@ -264,13 +264,16 @@ export class UsersTableComponent implements OnInit {
   }
 
   saveData(): void {
+    this.loading = true;
     if (this.deletedUsersArray.length > 0)
       this.userService.deleteMultiple(this.deletedUsersArray);
     this.companyService.updateCompanyUsers(this.editableCompany).subscribe(
       data => {
+        this.loading = false;
         this.alertService.success("הנתונים עודכנו בהצלחה");
       },
       error => {
+        this.loading = false;
         this.alertService.error("אירעה שגיאה");
       }
     );
