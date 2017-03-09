@@ -58,7 +58,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.userService.update(this.editableUser)
       .subscribe(
         data => {
-          this.alertService.success('Update successful', true);
+          this.alertService.success('עודכן בהצלחה', true);
           this.loading = false;
         },
         error => {
